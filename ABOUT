@@ -1,0 +1,18 @@
+libsigmf: https://www.deepsig.io/libsigmf
+
+libsigmf is a free & opensource library for working with SigMF recordings.
+(https://sigmf.org)
+
+It was designed to enable the use of SigMF through static types in C++, thus
+enabling things like compile-time errors and code inspection.
+
+It was created and first authored by DeepSig Inc., and then released to
+the community as an Apache 2.0-licensed FOSS project at FOSDEM 2019.
+
+Contributors:
+
+Nathan West
+Tim O'Shea
+Ben Hilburn
+
+

@@ -1,0 +1,11 @@
+
+site_name: libsigmf
+site_url: https://pages.gitlab.io/deepsig/opensource/libsigmf
+repo_url: https://github.com/deepsig/opensource/libsigmf/
+
+theme:
+    name: readthedocs
+
+nav:
+    - Home: 'index.md'
+    - License: 'license.md'

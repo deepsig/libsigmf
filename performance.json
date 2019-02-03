@@ -1,0 +1,52 @@
+[
+  {
+    "subject": "/gitlab-org/gitlab-ce/issues/1",
+    "metrics": [
+      {
+        "name": "Transfer Size (KB)",
+        "value": "1529.2",
+        "desiredSize": "smaller"
+      },
+      {
+        "name": "Speed Index",
+        "value": 1162,
+        "desiredSize": "smaller"
+      },
+      {
+        "name": "Total Score",
+        "value": 57,
+        "desiredSize": "larger"
+      },
+      {
+        "name": "Requests",
+        "value": 41,
+        "desiredSize": "smaller"
+      }
+    ]
+  },
+  {
+    "subject": "/gitlab-org/gitlab-ee/merge_requests/3507",
+    "metrics": [
+      {
+        "name": "Transfer Size (KB)",
+        "value": "2399.8",
+        "desiredSize": "smaller"
+      },
+      {
+        "name": "Speed Index",
+        "value": 3122,
+        "desiredSize": "smaller"
+      },
+      {
+        "name": "Total Score",
+        "value": 53,
+        "desiredSize": "larger"
+      },
+      {
+        "name": "Requests",
+        "value": 41,
+        "desiredSize": "smaller"
+      }
+    ]
+  }
+]

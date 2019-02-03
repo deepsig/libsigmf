@@ -1,0 +1,43 @@
+
+namespace core;
+
+table Global {
+    datatype:string;
+    sample_rate:double;
+    version:string;
+    sha512:string;
+    offset:uint;
+    description:string;
+    author:string;
+    meta_doi:string;
+    data_doi:string;
+    recorder:string;
+    license:string;
+    hw:string;
+}
+// TODO: complain to Ben / issue tracker that extensions should be a list of objects like
+// [{"name": "extension-01", "version": "v1.2.3"}]
+// also, that meta-doi and data-doi should be underscores
+
+table Capture {
+    sample_start:uint64;
+    global_index:uint64;
+    frequency:double;
+    datetime:string;
+}
+
+table Annotation {
+    freq_lower_edge:float64;
+    freq_upper_edge:float64;
+    start_sample:uint64;
+    sample_count:uint64;
+    description:string;
+    generator:string;
+    comment:string;
+}
+
+table Descr {
+    global:Global;
+    annotation:Annotation;
+    capture:Capture;
+}

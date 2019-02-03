@@ -1,0 +1,33 @@
+
+namespace antenna;
+
+table Global {
+    model:string;
+    type:string;
+    low_frequency:float;
+    high_frequency:float;
+    gain:float;
+    horizontal_beam_width:float;
+    vertical_beam_width:float;
+    cross_polar_discrimination:float;
+    voltage_standing_wave_ratio:float;
+    cable_loss:float;
+    steerable:bool;
+    mobile:bool;
+    version:string;
+}
+
+table Capture {
+}
+
+table Annotation {
+    azimuth_angle:float64;
+    elevation_angle:float64;
+    polarization:string;
+}
+
+table Descr {
+    global:Global;
+    annotation:Annotation;
+    capture:Capture;
+}

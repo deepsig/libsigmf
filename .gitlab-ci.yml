@@ -1,0 +1,80 @@
+
+stages:
+    - build
+    - check
+    - deploy
+
+build-16.04:
+    stage: build
+    image: ubuntu:16.04
+    before_script:
+        - apt update && apt install -y cmake build-essential git
+        - git submodule update --init --recursive
+
+    script:
+        - mkdir build && cd build
+        - cmake ..
+        - make
+        - ./example
+    artifacts:
+        paths: 
+            - build
+        reports:
+            performance:
+                - performance.json
+        expire_in:
+            1 week
+
+
+build-18.04:
+    stage: build
+    image: ubuntu:18.04
+    before_script:
+        - apt update && apt install -y cmake build-essential git
+        - git submodule update --init --recursive
+    script:
+        - mkdir build && cd build
+        - cmake ..
+        - make
+        - ./example
+    artifacts:
+        paths: 
+            - build
+        expire_in:
+            1 week
+
+test-16.04:
+    stage: check
+    dependencies:
+        - build-16.04
+    image: ubuntu:16.04
+    before_script:
+        - apt update && apt install -y valgrind
+    script:
+        - valgrind --tool=memcheck --leak-check=full --show-leak-kinds=all build/example
+
+test-18.04:
+    stage: check
+    dependencies:
+        - build-18.04
+    image: ubuntu:18.04
+    before_script:
+        - apt update && apt install -y valgrind
+    script:
+        - valgrind --tool=memcheck --leak-check=full --show-leak-kinds=all build/example
+
+
+pages:
+    stage: deploy
+    image: python:alpine
+    before_script:
+        - pip install mkdocs
+    script:
+        - mkdocs build
+        - mv site public
+    artifacts:
+        paths:
+            - public
+    only:
+        - master
+
