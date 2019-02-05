@@ -28,9 +28,9 @@ set(JSON_INCLUDE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/external/json/single_include")
 set(FLATBUFFERS_INCLUDE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/external/flatbuffers/include")
 
 # Create targets for generating the namespace definitions that we ship by default (using this requiers building flatc)
-generate_sigmf_header(generated_core_ns "${CMAKE_SOURCE_DIR}/sigmf_protocols/sigmf_core.fbs" "${CMAKE_CURRENT_BINARY_DIR}/include")
-generate_sigmf_header(generated_antenna_ns "${CMAKE_SOURCE_DIR}/sigmf_protocols/sigmf_antenna.fbs" "${CMAKE_CURRENT_BINARY_DIR}/include")
-generate_sigmf_header(generated_testing_ns "${CMAKE_SOURCE_DIR}/sigmf_protocols/testing_protocols.fbs" "${CMAKE_CURRENT_BINARY_DIR}/include")
+generate_sigmf_header(generated_core_ns "${CMAKE_CURRENT_SOURCE_DIR}/sigmf_protocols/sigmf_core.fbs" "${CMAKE_CURRENT_BINARY_DIR}/include")
+generate_sigmf_header(generated_antenna_ns "${CMAKE_CURRENT_SOURCE_DIR}/sigmf_protocols/sigmf_antenna.fbs" "${CMAKE_CURRENT_BINARY_DIR}/include")
+generate_sigmf_header(generated_testing_ns "${CMAKE_CURRENT_SOURCE_DIR}/sigmf_protocols/testing_protocols.fbs" "${CMAKE_CURRENT_BINARY_DIR}/include")
 # We also carry around pre-generated headers so downstream doesn't need to build flatc
 set(SIGMF_GEN_HEADERS "${CMAKE_CURRENT_SOURCE_DIR}/sigmf_protocols")
 
@@ -54,8 +54,8 @@ add_custom_target(makedocs
         WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
 
 configure_file(
-        ${CMAKE_SOURCE_DIR}/cmake/SigmfConfig.cmake.in
-        ${CMAKE_BINARY_DIR}/cmake/SigmfConfig.cmake
+        ${CMAKE_CURRENT_SOURCE_DIR}/cmake/SigmfConfig.cmake.in
+        ${CMAKE_CURRENT_BINARY_DIR}/cmake/SigmfConfig.cmake
         @ONLY
 )
 

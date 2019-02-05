@@ -140,7 +140,8 @@ struct FromSigMFVisitor : public flatbuffers::IterationVisitor {
 template<typename T>
 flatbuffers::Offset<void> json_vector_to_flatbuffer(flatbuffers::FlatBufferBuilder &fbb, const json &jvec) {
     size_t dtype_size = sizeof(T);
-    std::vector<T> tmpvec(jvec.size());
+    std::vector<T> tmpvec;
+    tmpvec.reserve(jvec.size());
     for (auto elem = jvec.begin(); elem != jvec.end(); ++elem) {
         tmpvec.emplace_back(elem->get<T>());
     }
@@ -234,8 +235,6 @@ inline void IterateType(const flatbuffers::TypeTable *type_table, FromSigMFVisit
                 std::vector<flatbuffers::Offset<void> > vecofstrings;
 
                 for (const auto &item : original_json[name]) {
-                    std::cout << item << std::endl;
-
                     auto strval = item.get<std::string>();
                     auto last_fb_offset = flatbuffers::Offset<void>(visitor->fbb.CreateString(strval).o);
 
@@ -244,17 +243,17 @@ inline void IterateType(const flatbuffers::TypeTable *type_table, FromSigMFVisit
                 auto vecoffset = flatbuffers::Offset<void>(visitor->fbb.CreateVector(vecofstrings).o);
                 comosite_type_offsets[i] = vecoffset;
             } else {
-                visitor->Field(i, 0, type, is_vector, ref, name, val, original_json);
-                IterateValue(type, val, ref, prev_val, -1, visitor);
-                comosite_type_offsets[i] = visitor->last_fb_offset;
+                if(! original_json[name].is_null() ) {
+                    visitor->Field(i, 0, type, is_vector, ref, name, val, original_json);
+                    IterateValue(type, val, ref, prev_val, -1, visitor);
+                    comosite_type_offsets[i] = visitor->last_fb_offset;
+                }
             }
         } else if (type == flatbuffers::ET_SEQUENCE) {
             if (is_vector) {
                 std::vector<flatbuffers::Offset<void> > vecofstrings;
 
                 for (const auto &item : original_json[name]) {
-                    std::cout << item << std::endl;
-
                     auto seq_typetable = type_table->type_refs[ref_idx]();
                     IterateType(seq_typetable, visitor, item);
                     auto vecelement = flatbuffers::Offset<void>(visitor->_stop);
@@ -265,6 +264,7 @@ inline void IterateType(const flatbuffers::TypeTable *type_table, FromSigMFVisit
                 comosite_type_offsets[i] = vecoffset;
             } else {
                 auto seq_typetable = type_table->type_refs[ref_idx]();
+
                 IterateType(seq_typetable, visitor, original_json[name]);
                 comosite_type_offsets[i] = flatbuffers::Offset<void>(visitor->_stop);
             }
@@ -286,8 +286,12 @@ inline void IterateType(const flatbuffers::TypeTable *type_table, FromSigMFVisit
             auto this_voffset = flatbuffers::FieldIndexToOffset(static_cast<flatbuffers::voffset_t >(i));
             visitor->fbb.AddOffset(this_voffset, comosite_type_offsets.at(i));
         } else if (type == flatbuffers::ET_STRING) {
-            auto this_voffset = flatbuffers::FieldIndexToOffset(static_cast<flatbuffers::voffset_t>(i));
-            visitor->fbb.AddOffset(this_voffset, comosite_type_offsets.at(i));
+            try {
+                auto this_voffset = flatbuffers::FieldIndexToOffset(static_cast<flatbuffers::voffset_t>(i));
+                visitor->fbb.AddOffset(this_voffset, comosite_type_offsets.at(i));
+            } catch (std::out_of_range &e) {
+                // It's ok... this is just because a field wasn't present in json so we never had to deserialize
+            }
         } else if (type == flatbuffers::ET_SEQUENCE) {
             auto this_voffset = flatbuffers::FieldIndexToOffset(static_cast<flatbuffers::voffset_t>(i));
             visitor->fbb.AddOffset(this_voffset, comosite_type_offsets.at(i));
@@ -305,7 +309,7 @@ inline void IterateType(const flatbuffers::TypeTable *type_table, FromSigMFVisit
 inline json
 FlatBufferToJson(const uint8_t *buffer_root, const flatbuffers::TypeTable *typetable, const std::string &ns_prefix);
 
-json
+inline json
 flatbuffer_field_to_json(const uint8_t *val, flatbuffers::ElementaryType type,
                          const flatbuffers::TypeTable *tt = nullptr,
                          const std::string &ns_prefix = "") {
@@ -379,7 +383,6 @@ flatbuffer_field_to_json(const uint8_t *val, flatbuffers::ElementaryType type,
         case flatbuffers::ET_SEQUENCE: {
             switch (tt->st) {
                 case flatbuffers::ST_TABLE:
-                    std::cout << "we need to make a table to put in our table man" << std::endl;
                     val += flatbuffers::ReadScalar<flatbuffers::uoffset_t>(val);
                     return FlatBufferToJson(val, tt, ns_prefix);
                     // Have not implemented structs, unions, or enums which are all supported by flatbuffers schema
