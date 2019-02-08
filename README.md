@@ -2,7 +2,7 @@
 # libsigmf
 
 libsigmf is a header-only C++ library for working with [SigMF](https://github.com/gnuradio/sigmf) metadata. It is
-provided under the Apache License 2.0 and the copyright notice can be found in LICENSE.
+provided under the Apache License 2.0 and the copyright notice can be found in NOTICE.
 
 ## Usage
 
@@ -10,7 +10,7 @@ provided under the Apache License 2.0 and the copyright notice can be found in L
 
 To use libsigmf, your application needs to `#include <sigmf.h>`.
 
-One option, is to include libsigmf (this git repo) as a submodule inside your project sources. A typical cmake
+One option is to include libsigmf (this git repo) as a submodule inside your project sources. A typical cmake
 usage would look like the following (see the CMakeLists.txt in this examples directory for what this looks like
 in real usage).
 
@@ -32,3 +32,5 @@ objects that are all you need to use:
 4) `sigmf::Annotation`
 
 ## Contributing
+
+Please see `CONTRIBUTING.md` for more information!
