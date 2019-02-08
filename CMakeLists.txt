@@ -60,7 +60,7 @@ configure_file(
 )
 
 # TODO: can we install flatc with a different binary name?  sigmf-flatc?
-install(TARGETS flatc DESTINATION bin)
+#install(TARGETS flatc DESTINATION bin)
 INSTALL(  # install original headers
         DIRECTORY ${CMAKE_SOURCE_DIR}/src/
         DESTINATION include/sigmf
