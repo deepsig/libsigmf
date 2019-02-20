@@ -29,7 +29,7 @@ table Capture {
 table Annotation {
     freq_lower_edge:float64;
     freq_upper_edge:float64;
-    start_sample:uint64;
+    sample_start:uint64;
     sample_count:uint64;
     description:string;
     generator:string;

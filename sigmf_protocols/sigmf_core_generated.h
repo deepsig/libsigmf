@@ -369,7 +369,7 @@ struct AnnotationT : public flatbuffers::NativeTable {
   typedef Annotation TableType;
   double freq_lower_edge;
   double freq_upper_edge;
-  uint64_t start_sample;
+  uint64_t sample_start;
   uint64_t sample_count;
   std::string description;
   std::string generator;
@@ -377,7 +377,7 @@ struct AnnotationT : public flatbuffers::NativeTable {
   AnnotationT()
       : freq_lower_edge(0.0),
         freq_upper_edge(0.0),
-        start_sample(0),
+        sample_start(0),
         sample_count(0) {
   }
 };
@@ -390,7 +390,7 @@ struct Annotation FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
   enum FlatBuffersVTableOffset FLATBUFFERS_VTABLE_UNDERLYING_TYPE {
     VT_FREQ_LOWER_EDGE = 4,
     VT_FREQ_UPPER_EDGE = 6,
-    VT_START_SAMPLE = 8,
+    VT_SAMPLE_START = 8,
     VT_SAMPLE_COUNT = 10,
     VT_DESCRIPTION = 12,
     VT_GENERATOR = 14,
@@ -402,8 +402,8 @@ struct Annotation FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
   double freq_upper_edge() const {
     return GetField<double>(VT_FREQ_UPPER_EDGE, 0.0);
   }
-  uint64_t start_sample() const {
-    return GetField<uint64_t>(VT_START_SAMPLE, 0);
+  uint64_t sample_start() const {
+    return GetField<uint64_t>(VT_SAMPLE_START, 0);
   }
   uint64_t sample_count() const {
     return GetField<uint64_t>(VT_SAMPLE_COUNT, 0);
@@ -421,7 +421,7 @@ struct Annotation FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
     return VerifyTableStart(verifier) &&
            VerifyField<double>(verifier, VT_FREQ_LOWER_EDGE) &&
            VerifyField<double>(verifier, VT_FREQ_UPPER_EDGE) &&
-           VerifyField<uint64_t>(verifier, VT_START_SAMPLE) &&
+           VerifyField<uint64_t>(verifier, VT_SAMPLE_START) &&
            VerifyField<uint64_t>(verifier, VT_SAMPLE_COUNT) &&
            VerifyOffset(verifier, VT_DESCRIPTION) &&
            verifier.VerifyString(description()) &&
@@ -445,8 +445,8 @@ struct AnnotationBuilder {
   void add_freq_upper_edge(double freq_upper_edge) {
     fbb_.AddElement<double>(Annotation::VT_FREQ_UPPER_EDGE, freq_upper_edge, 0.0);
   }
-  void add_start_sample(uint64_t start_sample) {
-    fbb_.AddElement<uint64_t>(Annotation::VT_START_SAMPLE, start_sample, 0);
+  void add_sample_start(uint64_t sample_start) {
+    fbb_.AddElement<uint64_t>(Annotation::VT_SAMPLE_START, sample_start, 0);
   }
   void add_sample_count(uint64_t sample_count) {
     fbb_.AddElement<uint64_t>(Annotation::VT_SAMPLE_COUNT, sample_count, 0);
@@ -476,14 +476,14 @@ inline flatbuffers::Offset<Annotation> CreateAnnotation(
     flatbuffers::FlatBufferBuilder &_fbb,
     double freq_lower_edge = 0.0,
     double freq_upper_edge = 0.0,
-    uint64_t start_sample = 0,
+    uint64_t sample_start = 0,
     uint64_t sample_count = 0,
     flatbuffers::Offset<flatbuffers::String> description = 0,
     flatbuffers::Offset<flatbuffers::String> generator = 0,
     flatbuffers::Offset<flatbuffers::String> comment = 0) {
   AnnotationBuilder builder_(_fbb);
   builder_.add_sample_count(sample_count);
-  builder_.add_start_sample(start_sample);
+  builder_.add_sample_start(sample_start);
   builder_.add_freq_upper_edge(freq_upper_edge);
   builder_.add_freq_lower_edge(freq_lower_edge);
   builder_.add_comment(comment);
@@ -496,7 +496,7 @@ inline flatbuffers::Offset<Annotation> CreateAnnotationDirect(
     flatbuffers::FlatBufferBuilder &_fbb,
     double freq_lower_edge = 0.0,
     double freq_upper_edge = 0.0,
-    uint64_t start_sample = 0,
+    uint64_t sample_start = 0,
     uint64_t sample_count = 0,
     const char *description = nullptr,
     const char *generator = nullptr,
@@ -508,7 +508,7 @@ inline flatbuffers::Offset<Annotation> CreateAnnotationDirect(
       _fbb,
       freq_lower_edge,
       freq_upper_edge,
-      start_sample,
+      sample_start,
       sample_count,
       description__,
       generator__,
@@ -703,7 +703,7 @@ inline void Annotation::UnPackTo(AnnotationT *_o, const flatbuffers::resolver_fu
   (void)_resolver;
   { auto _e = freq_lower_edge(); _o->freq_lower_edge = _e; };
   { auto _e = freq_upper_edge(); _o->freq_upper_edge = _e; };
-  { auto _e = start_sample(); _o->start_sample = _e; };
+  { auto _e = sample_start(); _o->sample_start = _e; };
   { auto _e = sample_count(); _o->sample_count = _e; };
   { auto _e = description(); if (_e) _o->description = _e->str(); };
   { auto _e = generator(); if (_e) _o->generator = _e->str(); };
@@ -720,7 +720,7 @@ inline flatbuffers::Offset<Annotation> CreateAnnotation(flatbuffers::FlatBufferB
   struct _VectorArgs { flatbuffers::FlatBufferBuilder *__fbb; const AnnotationT* __o; const flatbuffers::rehasher_function_t *__rehasher; } _va = { &_fbb, _o, _rehasher}; (void)_va;
   auto _freq_lower_edge = _o->freq_lower_edge;
   auto _freq_upper_edge = _o->freq_upper_edge;
-  auto _start_sample = _o->start_sample;
+  auto _sample_start = _o->sample_start;
   auto _sample_count = _o->sample_count;
   auto _description = _o->description.empty() ? 0 : _fbb.CreateString(_o->description);
   auto _generator = _o->generator.empty() ? 0 : _fbb.CreateString(_o->generator);
@@ -729,7 +729,7 @@ inline flatbuffers::Offset<Annotation> CreateAnnotation(flatbuffers::FlatBufferB
       _fbb,
       _freq_lower_edge,
       _freq_upper_edge,
-      _start_sample,
+      _sample_start,
       _sample_count,
       _description,
       _generator,
@@ -835,7 +835,7 @@ inline const flatbuffers::TypeTable *AnnotationTypeTable() {
   static const char * const names[] = {
     "freq_lower_edge",
     "freq_upper_edge",
-    "start_sample",
+    "sample_start",
     "sample_count",
     "description",
     "generator",
