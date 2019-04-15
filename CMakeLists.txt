@@ -13,10 +13,17 @@ add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/external/flatbuffers
         EXCLUDE_FROM_ALL)
 
 function(generate_sigmf_header generate_sigmf_target FBS_FILE OUTPUT_LOCATION)
-    add_custom_target(generate_sigmf_target_${generate_sigmf_target}
+    get_filename_component(generated_output_name ${FBS_FILE} NAME_WE)
+    message("Filename is ${generated_output_name}")
+    add_custom_command(OUTPUT ${OUTPUT_LOCATION}/${generated_output_name}_generated.h
             COMMAND flatc -c --reflect-types --reflect-names --gen-object-api -o "${OUTPUT_LOCATION}/" "${FBS_FILE}"
             COMMENT "Building C++ header for flatbuffers definition ${FBS_FILE}"
-            WORKING_DIRECTORY .)
+            WORKING_DIRECTORY .
+            DEPENDS "${FBS_FILE}"
+    )
+    add_custom_target(generate_sigmf_target_${generate_sigmf_target}
+            DEPENDS ${OUTPUT_LOCATION}/${generated_output_name}_generated.h
+            )
     add_library(${generate_sigmf_target} INTERFACE)
     add_dependencies(${generate_sigmf_target} generate_sigmf_target_${generate_sigmf_target} flatc)
     target_include_directories(${generate_sigmf_target} INTERFACE "${OUTPUT_LOCATION}/")

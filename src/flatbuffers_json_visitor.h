@@ -234,7 +234,7 @@ inline void IterateType(const flatbuffers::TypeTable *type_table, FromSigMFVisit
             if (is_vector) {
                 std::vector<flatbuffers::Offset<void> > vecofstrings;
 
-                for (const auto &item : original_json[name]) {
+                for (const auto &item : original_json[visitor->p + name]) {
                     auto strval = item.get<std::string>();
                     auto last_fb_offset = flatbuffers::Offset<void>(visitor->fbb.CreateString(strval).o);
 
@@ -253,7 +253,7 @@ inline void IterateType(const flatbuffers::TypeTable *type_table, FromSigMFVisit
             if (is_vector) {
                 std::vector<flatbuffers::Offset<void> > vecofstrings;
 
-                for (const auto &item : original_json[name]) {
+                for (const auto &item : original_json[visitor->p + name]) {
                     auto seq_typetable = type_table->type_refs[ref_idx]();
                     IterateType(seq_typetable, visitor, item);
                     auto vecelement = flatbuffers::Offset<void>(visitor->_stop);
