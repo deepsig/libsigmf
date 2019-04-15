@@ -1,25 +1,23 @@
 
-table testing_vecs {
-    myvecfortesting: [uint32];
-    name: string;
+
+
+table one {
+    fieldone: float;
 }
 
-table very_nested_thing {
-    wow: uint64;
+table two {
+    fieldtwo: float;
 }
 
-table composed_type {
-    name: string;
-    comments: [string];
-    index: int32;
-    nnnnnn: [very_nested_thing];
+table three {
+    fieldthree: float;
 }
 
-table containing_type {
-    bigname: string;
-    metadata: composed_type;
+union myunion {
+    one, two, three
 }
 
-table big_thing {
-    otherstuff: containing_type;
+table testingunions {
+    myfield: myunion;
+    dumbfield: int;
 }
