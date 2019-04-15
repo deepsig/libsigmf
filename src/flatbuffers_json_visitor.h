@@ -509,7 +509,6 @@ FlatBufferToJson(const uint8_t *buffer_root, const flatbuffers::TypeTable *typet
                     "libsigmf::FlatBufferToJson was called with a non-table type. Please file an issue with your fbs schema and input data.");
             // Here is what flatbuffers does internally: val = obj + typetable->values[i];
         }
-        std::cout << ns_prefix + name << std::endl;
         const flatbuffers::TypeTable *ttptr = nullptr;
         if (val) {
             if (ref_idx >= 0) {
