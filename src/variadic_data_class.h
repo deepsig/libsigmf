@@ -82,7 +82,7 @@ namespace sigmf {
         json to_json(bool include_defaults=false) const {
             constexpr auto tuple_size = std::tuple_size<sigmftypes>::value;
             constexpr auto at_the_end = ReachedEnd<0, tuple_size>::value;
-            json r = TupleIterator<0, sigmftypes, at_the_end>::to_json(sigmf_namespaces, false);
+            json r = TupleIterator<0, sigmftypes, at_the_end>::to_json(sigmf_namespaces, include_defaults);
             return r;
         }
 

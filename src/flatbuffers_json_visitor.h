@@ -532,7 +532,7 @@ FlatBufferToJson(const uint8_t *buffer_root, const flatbuffers::TypeTable *typet
             // required fields. Although maybe flatbuffers schema language and the flatbuffersbuilders have
             // already enforced such things.
         }
-        if (!is_vector && include_defaults) {
+        if (!is_vector && type < flatbuffers::ET_SEQUENCE && include_defaults) {
             json lval = flatbuffer_field_to_json(val, type, ttptr, ns_prefix, include_defaults);
             json_object[ns_prefix + name] = lval;
         }
