@@ -8,10 +8,6 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 list(APPEND CMAKE_MODULE_PATH cmake)
 
-add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/external/flatbuffers
-        ${CMAKE_CURRENT_BINARY_DIR}/flatbuffers-build
-        EXCLUDE_FROM_ALL)
-
 function(generate_sigmf_header generate_sigmf_target FBS_FILE OUTPUT_LOCATION)
     get_filename_component(generated_output_name ${FBS_FILE} NAME_WE)
     message("Filename is ${generated_output_name}")
@@ -29,10 +25,31 @@ function(generate_sigmf_header generate_sigmf_target FBS_FILE OUTPUT_LOCATION)
     target_include_directories(${generate_sigmf_target} INTERFACE "${OUTPUT_LOCATION}/")
 endfunction(generate_sigmf_header)
 
+# Initialize Json submodule if unititialized
+set(JSON_INCLUDE_DIR 
+	${CMAKE_CURRENT_SOURCE_DIR}/external/json/single_include
+	CACHE PATH "json include directory")
 
-# TODO: check that these directories exist and submodule init them if not
-set(JSON_INCLUDE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/external/json/single_include")
-set(FLATBUFFERS_INCLUDE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/external/flatbuffers/include")
+if (NOT IS_DIRECTORY ${JSON_INCLUDE_DIR})
+    message("Json submodule not found! Downloading...")
+    execute_process(COMMAND git submodule update --init -- external/json
+	    WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
+endif(NOT IS_DIRECTORY ${JSON_INCLUDE_DIR})
+
+# Initialize Flatbuffers submodule if unititialized
+set(FLATBUFFERS_INCLUDE_DIR 
+	${CMAKE_CURRENT_SOURCE_DIR}/external/flatbuffers/include
+	CACHE PATH "flatbuffers include directory")
+
+if (NOT IS_DIRECTORY ${FLATBUFFERS_INCLUDE_DIR})
+    message("Flatbuffers submodule not found! Downloading...")
+    execute_process(COMMAND git submodule update --init -- external/flatbuffers
+	    WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
+endif(NOT IS_DIRECTORY ${FLATBUFFERS_INCLUDE_DIR})
+
+add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/external/flatbuffers
+        ${CMAKE_CURRENT_BINARY_DIR}/flatbuffers-build
+        EXCLUDE_FROM_ALL)
 
 # Create targets for generating the namespace definitions that we ship by default (using this requiers building flatc)
 generate_sigmf_header(generated_core_ns "${CMAKE_CURRENT_SOURCE_DIR}/sigmf_protocols/sigmf_core.fbs" "${CMAKE_CURRENT_BINARY_DIR}/include")
