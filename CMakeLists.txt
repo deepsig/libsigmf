@@ -32,6 +32,8 @@ endfunction(generate_sigmf_header)
 
 # TODO: check that these directories exist and submodule init them if not
 set(JSON_INCLUDE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/external/json/single_include")
+set(JSON_BuildTests OFF CACHE INTERNAL "")
+add_subdirectory(external/json)
 set(FLATBUFFERS_INCLUDE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/external/flatbuffers/include")
 
 # Create targets for generating the namespace definitions that we ship by default (using this requiers building flatc)
@@ -43,7 +45,8 @@ set(SIGMF_GEN_HEADERS "${CMAKE_CURRENT_SOURCE_DIR}/sigmf_protocols")
 
 # Our interface target that downstream should ideally use target_link_libraries( ) with to get access to our include dirs
 add_library(libsigmf INTERFACE)
-target_include_directories(libsigmf INTERFACE ${JSON_INCLUDE_DIR} ${FLATBUFFERS_INCLUDE_DIR} ${SIGMF_GEN_HEADERS} ${CMAKE_CURRENT_SOURCE_DIR}/src)
+target_include_directories(libsigmf INTERFACE ${FLATBUFFERS_INCLUDE_DIR} ${SIGMF_GEN_HEADERS} ${CMAKE_CURRENT_SOURCE_DIR}/src)
+target_link_libraries(libsigmf INTERFACE nlohmann_json::nlohmann_json)
 
 # Ensure that our protocol headers are generated before libsigmf dependency is satisfied (i.e. so examples have them)
 add_dependencies(libsigmf libsigmf_genheaders)
