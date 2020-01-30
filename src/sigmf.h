@@ -21,8 +21,8 @@
 #include "global.h"
 #include "capture.h"
 #include "annotation.h"
+#include "sigmf_core_generated.h"
 #include <vector>
-#include <sigmf_core_generated.h>
 #include <iostream>
 
 
