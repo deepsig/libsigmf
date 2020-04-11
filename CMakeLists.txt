@@ -11,6 +11,8 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 list(APPEND CMAKE_MODULE_PATH cmake)
 option(ENABLE_EXAMPLES "Enable building of examples" ON)
+option(USE_SYSTEM_JSON "Attempt to use the system installed nlohmann JSON library" OFF)
+option(USE_SYSTEM_FLATBUFFERS "Attempt to use the system installed flatbuffers library and flatc" OFF)
 
 include(GNUInstallDirs)
 
@@ -31,9 +33,11 @@ set(LIBSIGMF_CMAKE_PROJECT_TARGETS_FILE "${LIBSIGMF_CMAKE_CONFIG_DIR}/${PROJECT_
 set(libsigmf_deps "")
 
 # flatbuffers
-find_package(Flatbuffers QUIET)
+if (${USE_SYSTEM_FLATBUFFERS})
+  find_package(Flatbuffers REQUIRED)
+endif (${USE_SYSTEM_FLATBUFFERS})
 
-if (NOT ${Flatbuffers_FOUND})
+if (NOT ${USE_SYSTEM_FLATBUFFERS})
   message(STATUS "Flatbuffers was not found. Submodule will be used. This will require building flatc")
   set(FLATBUFFERS_INCLUDE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/external/flatbuffers/include")
   # Initialize Flatbuffers submodule if unititialized
@@ -50,12 +54,14 @@ if (NOT ${Flatbuffers_FOUND})
   add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/external/flatbuffers
           ${CMAKE_CURRENT_BINARY_DIR}/flatbuffers-build
           EXCLUDE_FROM_ALL)
-endif (NOT ${Flatbuffers_FOUND})
+endif (NOT ${USE_SYSTEM_FLATBUFFERS})
 
 # nlohmann_json
-find_package(nlohmann_json QUIET)
+if (${USE_SYSTEM_JSON})
+  find_package(nlohmann_json REQUIRED)
+endif (${USE_SYSTEM_JSON})
 
-if (NOT ${nlohmann_json_FOUND})
+if (NOT ${USE_SYSTEM_JSON})
   message(STATUS "Nlohmann JSON was not found. Submodule will be used.")
   # Initialize Json submodule if unititialized
   set(JSON_INCLUDE_DIR
@@ -67,7 +73,7 @@ if (NOT ${nlohmann_json_FOUND})
       execute_process(COMMAND git submodule update --init -- external/json
         WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
   endif(NOT IS_DIRECTORY ${JSON_INCLUDE_DIR})
-endif(NOT ${nlohmann_json_FOUND})
+endif(NOT ${USE_SYSTEM_JSON})
 
 ########################################################################
 # Use flatbuffers to generate SigMF headers
