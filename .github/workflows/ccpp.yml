@@ -1,0 +1,21 @@
+name: C/C++ CI
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: configure
+      run: cmake -B build
+    - name: build
+      run: cmake --build build
+    - name: run examples
+      run: .build/examples/example_sigmf_json_roundtrip 
