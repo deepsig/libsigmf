@@ -117,13 +117,20 @@ set(LIBSIGMF_GEN_HEADERS "${CMAKE_CURRENT_SOURCE_DIR}/sigmf_protocols")
 ########################################################################
 # Our interface target that downstream have to use
 ########################################################################
-add_library(libsigmf INTERFACE)
-target_include_directories(libsigmf INTERFACE
+add_library(libsigmf
+  STATIC
+  ${CMAKE_CURRENT_SOURCE_DIR}/src/lib/flatbuffers_json_visitor.cpp
+  ${CMAKE_CURRENT_SOURCE_DIR}/src/lib/json_wrap.cpp
+  )
+target_include_directories(libsigmf
+  INTERFACE
   $<INSTALL_INTERFACE:include>
   $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/src/include>
   $<INSTALL_INTERFACE:include/sigmf/fbs>
   $<BUILD_INTERFACE:${LIBSIGMF_GEN_HEADERS}>
-)
+  PRIVATE
+  ${CMAKE_CURRENT_SOURCE_DIR}/src/include
+  )
 
 if (${Flatbuffers_FOUND})
   # System flatbuffers can import this target
@@ -131,8 +138,11 @@ if (${Flatbuffers_FOUND})
     flatbuffers::flatbuffers_shared
   )
 else()
-  target_include_directories(libsigmf INTERFACE
+  target_include_directories(libsigmf
+    INTERFACE
     $<BUILD_INTERFACE:${FLATBUFFERS_INCLUDE_DIR}>
+    PRIVATE
+    ${FLATBUFFERS_INCLUDE_DIR}
   )
 endif(${Flatbuffers_FOUND})
 
@@ -140,8 +150,11 @@ if (${nlohmann_json_FOUND})
   # TODO: add target_link_libraries interface to nlohmann json
   # when we use the system version
 else()
-  target_include_directories(libsigmf INTERFACE
+  target_include_directories(libsigmf
+    INTERFACE
     $<BUILD_INTERFACE:${JSON_INCLUDE_DIR}>
+    PRIVATE
+    ${JSON_INCLUDE_DIR}
   )
 endif(${nlohmann_json_FOUND})
 

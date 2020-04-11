@@ -19,6 +19,7 @@
 
 #include "flatbuffers_json_visitor.h"
 #include "json_wrap.h"
+#include <nlohmann/json.hpp>
 #include <flatbuffers/flatbuffers.h>
 #include <tuple>
 #include <string>
@@ -26,7 +27,6 @@
 #include <cxxabi.h>
 
 namespace sigmf {
-
 
     template<class T1, class T2>
     struct SameType {
