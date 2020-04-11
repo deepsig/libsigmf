@@ -57,10 +57,9 @@ find_package(nlohmann_json QUIET)
 
 if (NOT ${nlohmann_json_FOUND})
   message(STATUS "Nlohmann JSON was not found. Submodule will be used.")
-  set(JSON_INCLUDE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/external/json/single_include")
   # Initialize Json submodule if unititialized
   set(JSON_INCLUDE_DIR
-	  ${CMAKE_CURRENT_SOURCE_DIR}/external/json/single_include
+	  ${CMAKE_CURRENT_SOURCE_DIR}/external/json/include
 	  CACHE PATH "json include directory")
 
   if (NOT IS_DIRECTORY ${JSON_INCLUDE_DIR})
