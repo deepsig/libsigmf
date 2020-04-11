@@ -1,0 +1,37 @@
+{
+    "global": {
+        "core:version": "0.0.1",
+        "core:datatype": "cf32_le",
+        "core:sample_rate": 1,
+        "core:description": "An example to show reading a SigMF meta file in libsigmf"
+    },
+    "captures": [
+        {
+            "core:sample_start": 0,
+            "core:frequency": 0.0
+        }
+    ],
+    "annotations": [
+        {
+            "core:sample_start": 0,
+            "core:sample_count": 1000,
+            "core:comment": "test comment of an annotation",
+            "core:freq_edge_lower": 0.3,
+            "core:freq_upper_edge": 0.35
+        },
+        {
+            "core:sample_start": 50,
+            "core:sample_count": 950,
+            "core:comment": "test comment2 of an annotation",
+            "core:freq_lower_edge": -0.3,
+            "core:freq_upper_edge": -0.1
+        },
+        {
+            "core:sample_start": 2000,
+            "core:sample_count": 1000,
+            "core:comment": "test comment3 of an annotation",
+            "core:freq_lower_edge": -0.3,
+            "core:freq_upper_edge": 0.3
+        }        
+    ]
+}
