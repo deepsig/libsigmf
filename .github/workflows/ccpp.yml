@@ -7,12 +7,72 @@ on:
     branches: [ master ]
 
 jobs:
-  build:
+  build-both-submodules:
 
     runs-on: ubuntu-18.04
 
     steps:
     - uses: actions/checkout@v2
+    - name: configure
+      run: cmake -B build
+    - name: build
+      run: cmake --build build
+    - name: run examples
+      run: |
+        ./build/examples/example_sigmf_json_roundtrip 
+        ./build/examples/example_record_with_multiple_namespaces 
+        ./build/examples/example_record_with_variadic_dataclass 
+
+
+  build-json-submodule-flatbuffer-system:
+
+    runs-on: ubuntu-18.04
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: add deps
+      run: |
+        wget http://ppa.launchpad.net/team-xbmc/ppa/ubuntu/pool/main/f/flatbuffers/flatbuffers-dev_1.9.0-2~bionic_amd64.deb && dpkg -i flatbuffers-dev_1.9.0-2~bionic_amd64.deb
+    - name: configure
+      run: cmake -B build
+    - name: build
+      run: cmake --build build
+    - name: run examples
+      run: |
+        ./build/examples/example_sigmf_json_roundtrip 
+        ./build/examples/example_record_with_multiple_namespaces 
+        ./build/examples/example_record_with_variadic_dataclass 
+        
+  build-json-system-flatbuffer-submodule:
+
+    runs-on: ubuntu-18.04
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: add deps
+      run: |
+        apt-get install nlohmann-json-dev
+    - name: configure
+      run: cmake -B build
+    - name: build
+      run: cmake --build build
+    - name: run examples
+      run: |
+        ./build/examples/example_sigmf_json_roundtrip 
+        ./build/examples/example_record_with_multiple_namespaces 
+        ./build/examples/example_record_with_variadic_dataclass 
+
+        
+  build-json-system-flatbuffer-system:
+
+    runs-on: ubuntu-18.04
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: add deps
+      run: |
+        wget http://ppa.launchpad.net/team-xbmc/ppa/ubuntu/pool/main/f/flatbuffers/flatbuffers-dev_1.9.0-2~bionic_amd64.deb && dpkg -i flatbuffers-dev_1.9.0-2~bionic_amd64.deb
+        apt-get install nlohmann-json-dev
     - name: configure
       run: cmake -B build
     - name: build
