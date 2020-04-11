@@ -25,15 +25,17 @@ set(LIBSIGMF_CMAKE_PROJECT_TARGETS_FILE "${LIBSIGMF_CMAKE_CONFIG_DIR}/${PROJECT_
 
 ########################################################################
 # Dependency management
+#
+# Prefer system-installed versions, but revert to using submodules
 ########################################################################
 set(libsigmf_deps "")
 
 # flatbuffers
 find_package(Flatbuffers QUIET)
-list(APPEND libsigmf_deps flatbuffers::flatbuffers_shared)
 
 if (NOT ${Flatbuffers_FOUND})
   message(STATUS "Flatbuffers was not found. Submodule will be used. This will require building flatc")
+  set(FLATBUFFERS_INCLUDE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/external/flatbuffers/include")
   # Initialize Flatbuffers submodule if unititialized
   set(FLATBUFFERS_INCLUDE_DIR 
     ${CMAKE_CURRENT_SOURCE_DIR}/external/flatbuffers/include
@@ -55,6 +57,7 @@ find_package(nlohmann_json QUIET)
 
 if (NOT ${nlohmann_json_FOUND})
   message(STATUS "Nlohmann JSON was not found. Submodule will be used.")
+  set(JSON_INCLUDE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/external/json/single_include")
   # Initialize Json submodule if unititialized
   set(JSON_INCLUDE_DIR
 	  ${CMAKE_CURRENT_SOURCE_DIR}/external/json/single_include
@@ -116,9 +119,28 @@ target_include_directories(libsigmf INTERFACE
   $<INSTALL_INTERFACE:include/sigmf/fbs>
   $<BUILD_INTERFACE:${LIBSIGMF_GEN_HEADERS}>
 )
-target_link_libraries(libsigmf INTERFACE
-  ${libsigmf_deps}
-)
+
+if (${Flatbuffers_FOUND})
+  # System flatbuffers can import this target
+  target_link_libraries(libsigmf INTERFACE
+    flatbuffers::flatbuffers_shared
+  )
+else()
+  target_include_directories(libsigmf INTERFACE
+    $<BUILD_INTERFACE:${FLATBUFFERS_INCLUDE_DIR}>
+  )
+endif(${Flatbuffers_FOUND})
+
+if (${nlohmann_json_FOUND})
+  # TODO: add target_link_libraries interface to nlohmann json
+  # when we use the system version
+else()
+  target_include_directories(libsigmf INTERFACE
+    $<BUILD_INTERFACE:${JSON_INCLUDE_DIR}>
+  )
+endif(${nlohmann_json_FOUND})
+
+
 ########################################################################
 # Ensure that our protocol headers are generated before libsigmf dep
 ########################################################################
