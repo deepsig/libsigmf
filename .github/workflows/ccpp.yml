@@ -32,7 +32,10 @@ jobs:
     - uses: actions/checkout@v2
     - name: add deps
       run: |
-        wget http://ppa.launchpad.net/team-xbmc/ppa/ubuntu/pool/main/f/flatbuffers/flatbuffers-dev_1.9.0-2~bionic_amd64.deb && sudo dpkg -i flatbuffers-dev_1.9.0-2~bionic_amd64.deb
+        wget http://ppa.launchpad.net/team-xbmc/ppa/ubuntu/pool/main/f/flatbuffers/flatbuffers_1.9.0-2~bionic_amd64.deb
+        wget http://ppa.launchpad.net/team-xbmc/ppa/ubuntu/pool/main/f/flatbuffers/flatbuffers-dev_1.9.0-2~bionic_amd64.deb
+        sudo apt install latbuffers_1.9.0-2~bionic_amd64.deb
+        sudo apt install flatbuffers-dev_1.9.0-2~bionic_amd64.deb
     - name: configure
       run: cmake -B build
     - name: build
@@ -71,7 +74,10 @@ jobs:
     - uses: actions/checkout@v2
     - name: add deps
       run: |
-        wget http://ppa.launchpad.net/team-xbmc/ppa/ubuntu/pool/main/f/flatbuffers/flatbuffers-dev_1.9.0-2~bionic_amd64.deb && sudo dpkg -i flatbuffers-dev_1.9.0-2~bionic_amd64.deb
+        wget http://ppa.launchpad.net/team-xbmc/ppa/ubuntu/pool/main/f/flatbuffers/flatbuffers_1.9.0-2~bionic_amd64.deb
+        wget http://ppa.launchpad.net/team-xbmc/ppa/ubuntu/pool/main/f/flatbuffers/flatbuffers-dev_1.9.0-2~bionic_amd64.deb
+        sudo apt install latbuffers_1.9.0-2~bionic_amd64.deb
+        sudo apt install flatbuffers-dev_1.9.0-2~bionic_amd64.deb
         sudo apt-get install nlohmann-json-dev
     - name: configure
       run: cmake -B build
