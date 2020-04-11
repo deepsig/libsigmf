@@ -18,6 +18,8 @@
 #define LIBSIGMF_VARIADICDATACLASS_H
 
 #include "flatbuffers_json_visitor.h"
+#include "json_wrap.h"
+#include <flatbuffers/flatbuffers.h>
 #include <tuple>
 #include <string>
 #include <typeinfo>

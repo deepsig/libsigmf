@@ -120,7 +120,7 @@ set(LIBSIGMF_GEN_HEADERS "${CMAKE_CURRENT_SOURCE_DIR}/sigmf_protocols")
 add_library(libsigmf INTERFACE)
 target_include_directories(libsigmf INTERFACE
   $<INSTALL_INTERFACE:include>
-  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/src>
+  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/src/include>
   $<INSTALL_INTERFACE:include/sigmf/fbs>
   $<BUILD_INTERFACE:${LIBSIGMF_GEN_HEADERS}>
 )
@@ -176,15 +176,15 @@ configure_file(
 ########################################################################
 install(  # install flatbuf proto defs
   DIRECTORY ${LIBSIGMF_GEN_HEADERS}/
-  DESTINATION include/sigmf/fbs
+  DESTINATION include/libsigmf/fbs
   FILES_MATCHING PATTERN "*.fbs)")
 install(  # install generated headers
   DIRECTORY ${LIBSIGMF_GEN_HEADERS}/
-  DESTINATION include/sigmf
+  DESTINATION include/libsigmf
   FILES_MATCHING PATTERN "*.h")
 install(  # install original headers
-  DIRECTORY ${CMAKE_SOURCE_DIR}/src/
-  DESTINATION include/sigmf
+  DIRECTORY ${CMAKE_SOURCE_DIR}/src/include
+  DESTINATION include/
   FILES_MATCHING PATTERN "*.h")
 
 ########################################################################

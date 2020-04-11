@@ -17,13 +17,11 @@
 #ifndef LIBSIGMF_SIGMF_H
 #define LIBSIGMF_SIGMF_H
 
-#include "variadic_data_class.h"
 #include "global.h"
 #include "capture.h"
 #include "annotation.h"
 #include "sigmf_core_generated.h"
 #include <vector>
-#include <iostream>
 
 
 namespace sigmf {

@@ -16,7 +16,8 @@
 
 #include "sigmf_core_generated.h"
 #include "sigmf_antenna_generated.h"
-#include "sigmf.h"
+#include "libsigmf/sigmf.h"
+#include <iostream>
 
 int main() {
 

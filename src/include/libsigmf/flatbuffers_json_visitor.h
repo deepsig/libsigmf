@@ -17,13 +17,9 @@
 #ifndef LIBSIGMF_FLATBUFFERS_TO_JSON_VISITOR_H
 #define LIBSIGMF_FLATBUFFERS_TO_JSON_VISITOR_H
 
-#include "variadic_data_class.h"
+#include "json_wrap.h"
 #include <flatbuffers/minireflect.h>
 #include <flatbuffers/flatbuffers.h>
-#include <nlohmann/json.hpp>
-#include <iostream>
-
-using json = nlohmann::json;
 
 
 /*
@@ -40,7 +36,6 @@ struct FromSigMFVisitor : public flatbuffers::IterationVisitor {
     flatbuffers::FlatBufferBuilder fbb;
     flatbuffers::voffset_t last_offset;
     flatbuffers::Offset<void> last_fb_offset;
-
 
     explicit FromSigMFVisitor(std::string namespace_prefix, const json &j)
             : p(namespace_prefix), last_offset(0), _start(0), _stop(0) {
@@ -124,12 +119,13 @@ struct FromSigMFVisitor : public flatbuffers::IterationVisitor {
     }
 
     void StartVector() override {
-        std::cout << "the visitor was called on startvector... not implemented" << std::endl;
+        
+        throw std::runtime_error("the visitor was called on startvector... not implemented");
 
     }
 
     void EndVector() override {
-        std::cout << "the visitor was called on endvector... not implemented" << std::endl;
+        throw std::runtime_error("the visitor was called on endvector... not implemented");
     }
 
     void Element(size_t i, flatbuffers::ElementaryType /*type*/,
