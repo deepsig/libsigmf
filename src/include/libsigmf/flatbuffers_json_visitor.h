@@ -19,7 +19,6 @@
 
 #include "json_wrap.h"
 #include <flatbuffers/minireflect.h>
-#include <flatbuffers/flatbuffers.h>
 
 
 /*
@@ -83,9 +82,6 @@ struct FromSigMFVisitor : public flatbuffers::IterationVisitor {
                  const flatbuffers::TypeTable * /*type_table*/, const uint8_t * /*val*/) override;
 };
 
-flatbuffers::Offset<void>
-json_vector_to_chararray(flatbuffers::FlatBufferBuilder &fbb, const json &jvec, flatbuffers::ElementaryType type);
-
 /**
  * Iterate through a typetable-- I'll be honest here. This is kind of bullshit. We need to create all of
  * the types like Strings, Lists, Vectors, and other flatbuffer types before we create our table. I'm not
@@ -99,19 +95,6 @@ json_vector_to_chararray(flatbuffers::FlatBufferBuilder &fbb, const json &jvec, 
  * @param visitor the visitor responsible for creating objects and adding fields to its internal flatbufferbuilder
  */
 void IterateType(const flatbuffers::TypeTable *type_table, FromSigMFVisitor *visitor, json original_json);
-
-// forward declare so we can create objects as fields
-json
-FlatBufferToJson(const uint8_t *buffer_root, const flatbuffers::TypeTable *typetable, const std::string &ns_prefix,
-                 bool include_defaults = false);
-
-json
-flatbuffer_field_to_json(const uint8_t *val,
-                         flatbuffers::ElementaryType type,
-                         const flatbuffers::TypeTable *tt = nullptr,
-                         const std::string &ns_prefix = "",
-                         bool include_defaults = false);
-
 
 /**
  * A function to iterate through a flatbuffer that is described by the type and build up a json object to return.
@@ -127,6 +110,5 @@ flatbuffer_field_to_json(const uint8_t *val,
 json
 FlatBufferToJson(const uint8_t *buffer_root, const flatbuffers::TypeTable *typetable, const std::string &ns_prefix,
                  bool include_defaults);
-
 
 #endif //LIBSIGMF_FLATBUFFERS_TO_JSON_VISITOR_H

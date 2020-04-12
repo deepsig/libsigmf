@@ -14,18 +14,14 @@
  *  limitations under the License.
  */
 
-#include "sigmf_core_generated.h"
-#include "sigmf_antenna_generated.h"
-#include "libsigmf/sigmf.h"
-#include "libsigmf/sigmf_helpers.h"
-#include <iostream>
-#include <fstream>
+#ifndef LIBSIGMF_VARIADICDATACLASS_FORWARD_H
+#define LIBSIGMF_VARIADICDATACLASS_FORWARD_H
 
-int main(int argc, char* argv[]) {
-    std::cout << "Reading file " << argv[1] << std::endl;;
-    auto meta_fstream = std::ifstream(argv[1]);
-    auto record = sigmf::metadata_file_to_json(meta_fstream);
+namespace sigmf {
 
-    std::cout << "The record we read is: \n" << 
-        to_json(record).dump(2) << std::endl;
+    template<typename... SigMFNamespaces>
+    class VariadicDataClass;
+
 }
+
+#endif // LIBSIGMF_VARIADICDATACLASS_FORWARD_H

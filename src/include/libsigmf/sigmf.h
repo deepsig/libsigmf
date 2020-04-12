@@ -20,72 +20,71 @@
 #include "global.h"
 #include "capture.h"
 #include "annotation.h"
+#include "json_wrap.h"
+#include <nlohmann/json.hpp>
+#include "sigmf_forward.h"
 #include "sigmf_core_generated.h"
 #include <vector>
 
 
 namespace sigmf {
 
-    template<typename T>
-    class SigMFVector : public std::vector<T> {
-    public:
-        T &create_new() {
-            T new_element;
-            this->emplace_back(new_element);
-            return this->back();
-        }
-    };
-
-    template<typename GlobalType, typename CaptureType, typename AnnotationType>
-    struct SigMF {
-        GlobalType global;
-        SigMFVector<CaptureType> captures;
-        SigMFVector<AnnotationType> annotations;
-
-        /**
-         * Export the record to a JSON object
-         */
-        json to_json() const {
-            json j;
-            j["global"] = global.to_json();
-            j["captures"] = captures;
-            j["annotations"] = annotations;
-            return j;
-        }
-
-        /**
-         * Write over the fields with a new record from a JSON object
-         */
-        void from_json(const json &j) {
-            global.from_json(j["global"]);
-            captures.clear();
-            annotations.clear();
-            for (auto &element : j["annotations"]) {
-                AnnotationType a;
-                a.from_json(element);
-                annotations.emplace_back(a);
-            }
-            for (auto &element : j["captures"]) {
-                CaptureType c;
-                c.from_json(element);
-                captures.emplace_back(c);
-            }
-        }
-    };
-
     /*
      * This makes conversion between json types and SigMF types work out of the box
      */
 
     template<typename GlobalType, typename CaptureType, typename AnnotationType>
+    json to_json(const SigMF<GlobalType, CaptureType, AnnotationType> t) {
+        json j;
+        j["global"] = t.global.to_json();
+        j["captures"] = t.captures;
+        j["annotations"] = t.annotations;
+        return j;
+    }
+
+    template<typename GlobalType, typename CaptureType, typename AnnotationType>
     void to_json(json &j, const SigMF<GlobalType, CaptureType, AnnotationType> t) {
-        j = t.to_json();
+        j["global"] = t.global.to_json();
+        j["captures"] = t.captures;
+        j["annotations"] = t.annotations;
+    }
+
+    template<typename GlobalType, typename CaptureType, typename AnnotationType>
+    SigMF<GlobalType, CaptureType, AnnotationType> from_json(const json &j) {
+        SigMF<GlobalType, CaptureType, AnnotationType> t;
+        t.global.from_json(j["global"]);
+        t.captures.clear();
+        t.annotations.clear();
+        for (auto &element : j["annotations"]) {
+            AnnotationType a;
+            a.from_json(element);
+            t.annotations.emplace_back(a);
+        }
+        for (auto &element : j["captures"]) {
+            CaptureType c;
+            c.from_json(element);
+            t.captures.emplace_back(c);
+        }
+        return t;
     }
 
     template<typename GlobalType, typename CaptureType, typename AnnotationType>
     void from_json(const json &j, SigMF<GlobalType, CaptureType, AnnotationType> &t) {
-        t.from_json(j);
+            t.global.from_json(j["global"]);
+            t.captures.clear();
+            t.annotations.clear();
+            for (auto &element : j["annotations"]) {
+                AnnotationType a;
+                a.from_json(element);
+                t.annotations.emplace_back(a);
+            }
+            for (auto &element : j["captures"]) {
+                CaptureType c;
+                c.from_json(element);
+                t.captures.emplace_back(c);
+            }
+        }
     }
-}
+
 
 #endif //LIBSIGMF_SIGMF_H

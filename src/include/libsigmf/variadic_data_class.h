@@ -17,6 +17,7 @@
 #ifndef LIBSIGMF_VARIADICDATACLASS_H
 #define LIBSIGMF_VARIADICDATACLASS_H
 
+#include "variadic_data_class_forward.h"
 #include "flatbuffers_json_visitor.h"
 #include "json_wrap.h"
 #include <nlohmann/json.hpp>
