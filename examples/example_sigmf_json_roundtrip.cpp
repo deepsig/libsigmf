@@ -14,8 +14,9 @@
  *  limitations under the License.
  */
 
-#include "sigmf.h"
+#include "libsigmf/sigmf.h"
 #include <nlohmann/json.hpp>
+#include <iostream>
 
 int main() {
 

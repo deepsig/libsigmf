@@ -1,144 +1,12 @@
-/*
- *    Copyright 2019 DeepSig Inc.
- *
- *  Licensed under the Apache License, Version 2.0 (the "License");
- *  you may not use this file except in compliance with the License.
- *  You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- *   Unless required by applicable law or agreed to in writing, software
- *  distributed under the License is distributed on an "AS IS" BASIS,
- *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- *  See the License for the specific language governing permissions and
- *  limitations under the License.
- */
 
-#ifndef LIBSIGMF_FLATBUFFERS_TO_JSON_VISITOR_H
-#define LIBSIGMF_FLATBUFFERS_TO_JSON_VISITOR_H
 
-#include "variadic_data_class.h"
-#include <flatbuffers/minireflect.h>
+#include "libsigmf/flatbuffers_json_visitor.h"
 #include <flatbuffers/flatbuffers.h>
-#include <nlohmann/json.hpp>
-#include <iostream>
-
-using json = nlohmann::json;
-
-
-/*
- * Designed to be run by our TypeIterator-- it adds fields to a flatbuffer (fbb) it owns by reading from a json
- * object given in its ctor. After the TypeIterator runs the flatbuffer can be made in to a specific flatbuffer
- * object or shipped somewhere
- */
-struct FromSigMFVisitor : public flatbuffers::IterationVisitor {
-    flatbuffers::uoffset_t _start;
-    flatbuffers::uoffset_t _stop;
-    json narrowest_json;
-    std::string p;
-    std::string last_field_name;
-    flatbuffers::FlatBufferBuilder fbb;
-    flatbuffers::voffset_t last_offset;
-    flatbuffers::Offset<void> last_fb_offset;
-
-
-    explicit FromSigMFVisitor(std::string namespace_prefix, const json &j)
-            : p(namespace_prefix), last_offset(0), _start(0), _stop(0) {
-        fbb = flatbuffers::FlatBufferBuilder();
-    }
-
-    void StartSequence() override {
-        _start = fbb.StartTable();
-    }
-
-    void EndSequence() override {
-        _stop = fbb.EndTable(_start);
-    }
-
-    void Field(size_t field_idx, size_t set_idx, flatbuffers::ElementaryType e_type,
-               bool is_vector, const flatbuffers::TypeTable *type_table,
-               const char *name, const uint8_t *val, json jj) {
-        narrowest_json = jj;
-        last_field_name = name;
-        last_offset = flatbuffers::FieldIndexToOffset(static_cast<flatbuffers::voffset_t>(field_idx));
-    }
-
-    template<typename T>
-    void Named(T x, const char *name) {
-        try {
-            fbb.AddElement(last_offset, narrowest_json.at(p + last_field_name).get<T>(), T{});
-        } catch (nlohmann::detail::out_of_range &e) {
-        }
-    }
-
-    void UType(uint8_t x, const char *name) override { Named(x, name); }
-
-    // void Bool(bool x) override { s += x ? "true" : "false"; }
-    void Char(int8_t x, const char *name) override { Named(x, name); }
-
-    void UChar(uint8_t x, const char *name) override { Named(x, name); }
-
-    void Short(int16_t x, const char *name) override { Named(x, name); }
-
-    void UShort(uint16_t x, const char *name) override { Named(x, name); }
-
-    void Int(int32_t x, const char *name) override { Named(x, name); }
-
-    void UInt(uint32_t x, const char *name) override { Named(x, name); }
-
-    void Long(int64_t x) override {
-        try {
-            fbb.AddElement(last_offset, narrowest_json.at(p + last_field_name).get<int64_t>(), int64_t(0));
-        } catch (nlohmann::detail::out_of_range &e) {
-        }
-    }
-
-    void ULong(uint64_t x) override {
-        try {
-            fbb.AddElement(last_offset, narrowest_json.at(p + last_field_name).get<uint64_t>(), uint64_t(0));
-        } catch (nlohmann::detail::out_of_range &e) {
-        }
-    }
-
-    void Float(float x) override {
-        try {
-            fbb.AddElement(last_offset, narrowest_json.at(p + last_field_name).get<float>(), 0.f);
-        } catch (nlohmann::detail::out_of_range &e) {
-        }
-    }
-
-    void Double(double x) override {
-        try {
-            fbb.AddElement(last_offset, narrowest_json.at(p + last_field_name).get<double>(), 0.0);
-        } catch (nlohmann::detail::out_of_range &e) {
-        }
-    }
-
-    void String(const struct flatbuffers::String *str) override {
-        try {
-            auto strval = narrowest_json.at(p + last_field_name).get<std::string>();
-            last_fb_offset = flatbuffers::Offset<void>(fbb.CreateString(strval).o);
-        } catch (nlohmann::detail::out_of_range &e) {
-            last_fb_offset.o = 0;
-        };
-    }
-
-    void StartVector() override {
-        std::cout << "the visitor was called on startvector... not implemented" << std::endl;
-
-    }
-
-    void EndVector() override {
-        std::cout << "the visitor was called on endvector... not implemented" << std::endl;
-    }
-
-    void Element(size_t i, flatbuffers::ElementaryType /*type*/,
-                 const flatbuffers::TypeTable * /*type_table*/, const uint8_t * /*val*/) override {}
-};
+#include "json_wrap.cpp"
 
 
 template<typename T>
-flatbuffers::Offset<void> json_vector_to_flatbuffer(flatbuffers::FlatBufferBuilder &fbb, const json &jvec) {
+flatbuffers::Offset<void> json_vector_to_flatbuffer(flatbuffers::FlatBufferBuilder &fbb, json jvec) {
     size_t dtype_size = sizeof(T);
     std::vector<T> tmpvec;
     tmpvec.reserve(jvec.size());
@@ -146,10 +14,10 @@ flatbuffers::Offset<void> json_vector_to_flatbuffer(flatbuffers::FlatBufferBuild
         tmpvec.emplace_back(elem->get<T>());
     }
     return flatbuffers::Offset<void>(fbb.CreateVector(tmpvec).o);
-
 }
 
-inline flatbuffers::Offset<void>
+
+flatbuffers::Offset<void>
 json_vector_to_chararray(flatbuffers::FlatBufferBuilder &fbb, const json &jvec, flatbuffers::ElementaryType type) {
     size_t dtype_size;
     size_t num_elements = jvec.size();
@@ -196,7 +64,6 @@ json_vector_to_chararray(flatbuffers::FlatBufferBuilder &fbb, const json &jvec, 
     }
 }
 
-
 /**
  * Iterate through a typetable-- I'll be honest here. This is kind of bullshit. We need to create all of
  * the types like Strings, Lists, Vectors, and other flatbuffer types before we create our table. I'm not
@@ -209,7 +76,7 @@ json_vector_to_chararray(flatbuffers::FlatBufferBuilder &fbb, const json &jvec, 
  * @param type_table the table to iterate over
  * @param visitor the visitor responsible for creating objects and adding fields to its internal flatbufferbuilder
  */
-inline void IterateType(const flatbuffers::TypeTable *type_table, FromSigMFVisitor *visitor, json original_json) {
+void IterateType(const flatbuffers::TypeTable *type_table, FromSigMFVisitor *visitor, json original_json) {
     const uint8_t *prev_val = nullptr;
     const uint8_t val[8] = {};
     auto comosite_type_offsets = std::map<size_t, flatbuffers::Offset<void> >();
@@ -303,18 +170,13 @@ inline void IterateType(const flatbuffers::TypeTable *type_table, FromSigMFVisit
     }
     visitor->EndSequence();
 }
-
-
-// forward declare so we can create objects as fields
-inline json
-FlatBufferToJson(const uint8_t *buffer_root, const flatbuffers::TypeTable *typetable, const std::string &ns_prefix,
-                 bool include_defaults = false);
-
-inline json
-flatbuffer_field_to_json(const uint8_t *val, flatbuffers::ElementaryType type,
-                         const flatbuffers::TypeTable *tt = nullptr,
-                         const std::string &ns_prefix = "",
-                         bool include_defaults = false) {
+                 
+json
+flatbuffer_field_to_json(const uint8_t *val,
+                         flatbuffers::ElementaryType type,
+                         const flatbuffers::TypeTable *tt,
+                         const std::string &ns_prefix,
+                         bool include_defaults) {
     switch (type) {
         case flatbuffers::ET_UTYPE: {
             uint8_t tval = 0;
@@ -469,7 +331,6 @@ flatbuffer_field_to_json(const uint8_t *val, flatbuffers::ElementaryType type,
     }
 }
 
-
 /**
  * A function to iterate through a flatbuffer that is described by the type and build up a json object to return.
  * The flatbuffer should have already been Finished, and the result of FlatBufferBuilder::Finish() -> GetRoot should
@@ -481,7 +342,7 @@ flatbuffer_field_to_json(const uint8_t *val, flatbuffers::ElementaryType type,
  * if there is a value. If so, serialize it to json and shove its value inside the json_object we want to return
  * using the name of the field as the key.
  */
-inline json
+json
 FlatBufferToJson(const uint8_t *buffer_root, const flatbuffers::TypeTable *typetable, const std::string &ns_prefix,
                  bool include_defaults) {
     json json_object;
@@ -541,4 +402,98 @@ FlatBufferToJson(const uint8_t *buffer_root, const flatbuffers::TypeTable *typet
 }
 
 
-#endif //LIBSIGMF_FLATBUFFERS_TO_JSON_VISITOR_H
+FromSigMFVisitor::FromSigMFVisitor(std::string namespace_prefix, const json &j)
+            : p(namespace_prefix), last_offset(0), _start(0), _stop(0) {
+    fbb = flatbuffers::FlatBufferBuilder();
+    narrowest_json = std::make_unique<json>();
+    *narrowest_json = j;
+}
+
+void FromSigMFVisitor::StartSequence() {
+        _start = fbb.StartTable();
+}
+
+void FromSigMFVisitor::EndSequence() {
+        _stop = fbb.EndTable(_start);
+}
+
+void FromSigMFVisitor::Field(size_t field_idx, size_t set_idx, flatbuffers::ElementaryType e_type,
+               bool is_vector, const flatbuffers::TypeTable *type_table,
+               const char *name, const uint8_t *val, json jj) {
+        *narrowest_json = jj;
+        last_field_name = name;
+        last_offset = flatbuffers::FieldIndexToOffset(static_cast<flatbuffers::voffset_t>(field_idx));
+}
+
+    template<typename T>
+    void FromSigMFVisitor::Named(T x, const char *name) {
+        try {
+            fbb.AddElement(last_offset, narrowest_json->at(p + last_field_name).get<T>(), T{});
+        } catch (nlohmann::detail::out_of_range &e) {
+        }
+    }
+
+void FromSigMFVisitor::UType(uint8_t x, const char *name) {
+    Named(x, name);
+}
+
+
+    void FromSigMFVisitor::Char(int8_t x, const char *name) { Named(x, name); }
+
+    void FromSigMFVisitor::UChar(uint8_t x, const char *name) { Named(x, name); }
+
+    void FromSigMFVisitor::Short(int16_t x, const char *name) { Named(x, name); }
+
+    void FromSigMFVisitor::UShort(uint16_t x, const char *name) { Named(x, name); }
+
+    void FromSigMFVisitor::Int(int32_t x, const char *name) { Named(x, name); }
+
+    void FromSigMFVisitor::UInt(uint32_t x, const char *name) { Named(x, name); }
+
+    void FromSigMFVisitor::Long(int64_t x) {
+        try {
+            fbb.AddElement(last_offset, narrowest_json->at(p + last_field_name).get<int64_t>(), int64_t(0));
+        } catch (nlohmann::detail::out_of_range &e) {
+        }
+    }
+
+    void FromSigMFVisitor::ULong(uint64_t x) {
+        try {
+            fbb.AddElement(last_offset, narrowest_json->at(p + last_field_name).get<uint64_t>(), uint64_t(0));
+        } catch (nlohmann::detail::out_of_range &e) {
+        }
+    }
+
+    void FromSigMFVisitor::Float(float x) {
+        try {
+            fbb.AddElement(last_offset, narrowest_json->at(p + last_field_name).get<float>(), 0.f);
+        } catch (nlohmann::detail::out_of_range &e) {
+        }
+    }
+
+    void FromSigMFVisitor::Double(double x) {
+        try {
+            fbb.AddElement(last_offset, narrowest_json->at(p + last_field_name).get<double>(), 0.0);
+        } catch (nlohmann::detail::out_of_range &e) {
+        }
+    }
+
+    void FromSigMFVisitor::String(const struct flatbuffers::String *str) {
+        try {
+            auto strval = narrowest_json->at(p + last_field_name).get<std::string>();
+            last_fb_offset = flatbuffers::Offset<void>(fbb.CreateString(strval).o);
+        } catch (nlohmann::detail::out_of_range &e) {
+            last_fb_offset.o = 0;
+        };
+    }
+
+    void FromSigMFVisitor::StartVector() {
+        throw std::runtime_error("the visitor was called on startvector... not implemented");
+    }
+
+    void FromSigMFVisitor::EndVector() {
+        throw std::runtime_error("the visitor was called on endvector... not implemented");
+    }
+
+    void FromSigMFVisitor::Element(size_t i, flatbuffers::ElementaryType /*type*/,
+                 const flatbuffers::TypeTable * /*type_table*/, const uint8_t * /*val*/) {}
