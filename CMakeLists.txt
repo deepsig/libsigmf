@@ -79,24 +79,8 @@ endif(NOT ${USE_SYSTEM_JSON})
 # Use flatbuffers to generate SigMF headers
 ########################################################################
 function(generate_sigmf_header generate_sigmf_target FBS_FILE OUTPUT_LOCATION)
-<<<<<<< Updated upstream
-get_filename_component(generated_output_name ${FBS_FILE} NAME_WE)
-message(STATUS "Flatbuffers generated ${generated_output_name}")
-add_custom_command(OUTPUT ${OUTPUT_LOCATION}/${generated_output_name}_generated.h
-        COMMAND flatc -c --reflect-types --reflect-names --gen-object-api -o "${OUTPUT_LOCATION}/" "${FBS_FILE}"
-        COMMENT "Building C++ header for flatbuffers definition ${FBS_FILE}"
-        WORKING_DIRECTORY .
-        DEPENDS "${FBS_FILE}"
-)
-add_custom_target(generate_sigmf_target_${generate_sigmf_target}
-        DEPENDS ${OUTPUT_LOCATION}/${generated_output_name}_generated.h
-        )
-add_library(${generate_sigmf_target} INTERFACE)
-add_dependencies(${generate_sigmf_target} generate_sigmf_target_${generate_sigmf_target} flatc)
-target_include_directories(${generate_sigmf_target} INTERFACE "${OUTPUT_LOCATION}/")
-=======
     get_filename_component(generated_output_name ${FBS_FILE} NAME_WE)
-    message("Filename is ${generated_output_name}")
+    message(STATUS "Flatbuffers generated ${generated_output_name}")
     if( ${ARGC} GREATER 3)
         set(FLATC_EXTRA_ARGS ${ARGN})
         string(REPLACE " " ";" FLATC_EXTRA_ARGS ${FLATC_EXTRA_ARGS})
@@ -115,7 +99,6 @@ target_include_directories(${generate_sigmf_target} INTERFACE "${OUTPUT_LOCATION
     add_library(${generate_sigmf_target} INTERFACE)
     add_dependencies(${generate_sigmf_target} generate_sigmf_target_${generate_sigmf_target} flatc)
     target_include_directories(${generate_sigmf_target} INTERFACE "${OUTPUT_LOCATION}/")
->>>>>>> Stashed changes
 endfunction(generate_sigmf_header)
 
 ########################################################################
