@@ -43,7 +43,7 @@ struct FromSigMFVisitor : public flatbuffers::IterationVisitor {
 
 
     explicit FromSigMFVisitor(std::string namespace_prefix, const json &j)
-            : p(namespace_prefix), last_offset(0), _start(0), _stop(0) {
+            : _start(0), _stop(0), p(namespace_prefix), last_offset(0)  {
         fbb = flatbuffers::FlatBufferBuilder();
     }
 
@@ -139,7 +139,6 @@ struct FromSigMFVisitor : public flatbuffers::IterationVisitor {
 
 template<typename T>
 flatbuffers::Offset<void> json_vector_to_flatbuffer(flatbuffers::FlatBufferBuilder &fbb, const json &jvec) {
-    size_t dtype_size = sizeof(T);
     std::vector<T> tmpvec;
     tmpvec.reserve(jvec.size());
     for (auto elem = jvec.begin(); elem != jvec.end(); ++elem) {
@@ -151,8 +150,7 @@ flatbuffers::Offset<void> json_vector_to_flatbuffer(flatbuffers::FlatBufferBuild
 
 inline flatbuffers::Offset<void>
 json_vector_to_chararray(flatbuffers::FlatBufferBuilder &fbb, const json &jvec, flatbuffers::ElementaryType type) {
-    size_t dtype_size;
-    size_t num_elements = jvec.size();
+    //size_t num_elements = jvec.size();
     switch (type) {
         case flatbuffers::ET_UTYPE: {
             auto rvec = jvec.get<std::vector<uint8_t> >();

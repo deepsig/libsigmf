@@ -142,7 +142,7 @@ namespace sigmf {
              * @return
              */
             static json to_json(const Tuple &tp, bool include_defaults) {
-                typename std::tuple_element<Index, sigmftypes>::type::TableType *ttype;
+                typename std::tuple_element<Index, sigmftypes>::type::TableType *ttype=nullptr;
                 auto &flatbuffers_type = std::get<Index>(tp);
                 auto reflection_table = ttype->MiniReflectTypeTable();
                 std::string namespace_part = get_namespace(ttype);
@@ -172,7 +172,7 @@ namespace sigmf {
              * @param j
              */
             static void from_json(Tuple &tp, const json j) {
-                typename std::tuple_element<Index, sigmftypes>::type::TableType *ttype;
+                typename std::tuple_element<Index, sigmftypes>::type::TableType *ttype=nullptr;
                 auto &flatbuffers_type = std::get<Index>(tp);
                 auto reflection_table = ttype->MiniReflectTypeTable();
                 std::string namespace_part = get_namespace(ttype);
