@@ -177,7 +177,7 @@ configure_file(
 install(  # install flatbuf proto defs
   DIRECTORY ${LIBSIGMF_GEN_HEADERS}/
   DESTINATION include/sigmf/fbs
-  FILES_MATCHING PATTERN "*.fbs)")
+  FILES_MATCHING PATTERN "*.fbs")
 install(  # install generated headers
   DIRECTORY ${LIBSIGMF_GEN_HEADERS}/
   DESTINATION include/sigmf
