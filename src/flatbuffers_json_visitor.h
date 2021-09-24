@@ -475,6 +475,9 @@ flatbuffer_field_to_json(const uint8_t *val, flatbuffers::ElementaryType type,
 
             }
         }
+        default:
+            throw std::runtime_error(
+                    "type not implemented by libsigmf");
     }
 }
 
