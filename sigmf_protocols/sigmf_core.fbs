@@ -31,7 +31,9 @@ table Annotation {
     freq_upper_edge:float64;
     sample_start:uint64;
     sample_count:uint64;
+// 'description' no longer valid per SigMF, included for compatibility... new work should use `label`
     description:string;
+    label:string;
     generator:string;
     comment:string;
 }
