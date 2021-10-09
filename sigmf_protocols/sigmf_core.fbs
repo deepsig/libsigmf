@@ -31,7 +31,7 @@ table Annotation {
     freq_upper_edge:float64;
     sample_start:uint64;
     sample_count:uint64;
-    description:string;
+    label:string;
     generator:string;
     comment:string;
 }
