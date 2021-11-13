@@ -1,12 +1,24 @@
 
 namespace core;
 
+table sigmf_extension {
+    name:string;
+    version:string;
+    optional:bool;
+}
+
+table geojson_point {
+    type:string;
+    coordinates:[double];
+}
+
 table Global {
     datatype:string;
-    sample_rate:double;
+    sample_rate:double=null;
     version:string;
+    num_channels:ulong=null;
     sha512:string;
-    offset:uint;
+    offset:ulong=null;
     description:string;
     author:string;
     meta_doi:string;
@@ -14,26 +26,44 @@ table Global {
     recorder:string;
     license:string;
     hw:string;
+// FIXME: subtables are not working right now...
+    // geolocation:geojson_point;
+    // extensions:[sigmf_extension];
+    collection:string;
 }
-// TODO: complain to Ben / issue tracker that extensions should be a list of objects like
-// [{"name": "extension-01", "version": "v1.2.3"}]
-// also, that meta-doi and data-doi should be underscores
 
 table Capture {
-    sample_start:uint64;
-    global_index:uint64;
-    frequency:double;
+    sample_start:ulong=null;
+    global_index:ulong=null;
+    frequency:double=null;
     datetime:string;
 }
 
 table Annotation {
-    freq_lower_edge:float64;
-    freq_upper_edge:float64;
-    sample_start:uint64;
-    sample_count:uint64;
-    description:string;
+    sample_start:ulong=null;
+    sample_count:ulong=null;
     generator:string;
+// 'description' not defined by SigMF, included for compatibility... new work should use `label`
+    description:string;
+    label:string;
     comment:string;
+    freq_lower_edge:double=null;
+    freq_upper_edge:double=null;
+    // latitude and longitude are deprecated, use the `global` `geolocation` field
+    latitude:double=null;
+    longitude:double=null;
+}
+
+// TODO: collections are not yet supported
+table Collection {
+    version:string;
+    description:string;
+    author:string;
+    collection_doi:string;
+    license:string;
+// FIXME: subtables are not working right now...
+    // extensions:[sigmf_extension];
+    streams:[string];
 }
 
 table Descr {

@@ -93,7 +93,8 @@ int main() {
   ],
   "captures": [
     {
-      "core:frequency": 870000000.0
+      "core:frequency": 870000000.0,
+      "core:global_index": 0
     },
     {
       "core:datetime": "the future",

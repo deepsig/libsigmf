@@ -5,8 +5,8 @@
 cmake_minimum_required(VERSION 3.0)
 project(libsigmf LANGUAGES CXX)
 
-# c++14 used for auto return type for functions without having to do the -> declaration
-set(CMAKE_CXX_STANDARD 14)
+# c++17 used for supporting flatbuffers optional scalar fields via std::optional<T>
+set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 list(APPEND CMAKE_MODULE_PATH cmake)

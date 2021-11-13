@@ -19,27 +19,51 @@
 
 int main() {
 
+
+/*
+ * this test will fail right now because the annotation core:sample_count field
+ * is still not truly optional (default = 0). adding `=null` to this field will
+ * make this test pass demonstrating the std::optional scalar field operation.
+ */
+
+
     std::string starting_str(R"({
     "annotations": [
         {
+            "core:description": "no fish",
+            "core:sample_count": 0,
+            "core:sample_start": 0
+        },
+        {
             "core:description": "one fish",
-            "core:sample_count": 1
+            "core:sample_count": 1,
+            "core:sample_start": 1
         },
         {
             "core:description": "two fish",
-            "core:sample_count": 2
+            "core:sample_count": 2,
+            "core:sample_start": 2
         },
         {
             "core:description": "red fish",
-            "core:sample_count": 3
+            "core:freq_lower_edge": 0.0,
+            "core:freq_upper_edge": 100000000.0,
+            "core:sample_count": 3,
+            "core:sample_start": 3
         },
         {
             "core:description": "blue fish",
-            "core:sample_count": 4
+            "core:sample_count": 4,
+            "core:sample_start": 4
         }
     ],
     "captures": [
         {
+            "core:frequency": 99999.1,
+            "core:sample_start": 0
+        },
+        {
+            "core:frequency": 99999.2,
             "core:sample_start": 42
         }
     ],

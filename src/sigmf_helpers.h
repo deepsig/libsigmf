@@ -113,15 +113,22 @@ namespace sigmf {
         while (original_annotation != input_md.annotations.end()) {
             bool increment_iterator = true;
             core::AnnotationT &original_annotation_md = original_annotation->template get<core::DescrT>();
-            if (original_annotation_md.sample_start >= (segment_sample_start + segment_sample_count)) {
+
+            if (!original_annotation_md.sample_start.has_value()) {
+                continue;  // this is not a valid annotation, skip it
+            }
+            uint64_t original_annotation_sample_start = original_annotation_md.sample_start.value();
+            uint64_t original_annotation_sample_count = original_annotation_md.sample_count.value_or(0ULL);
+
+            if (original_annotation_sample_start >= (segment_sample_start + segment_sample_count)) {
                 // annotations are in sorted order, if above is true, all other annotations will be out of bounds
                 break;
-            } else if ((original_annotation_md.sample_start + original_annotation_md.sample_count) >
+            } else if ((original_annotation_sample_start + original_annotation_sample_count) >
                        segment_sample_start) {
                 auto new_annotation = *original_annotation;
-                uint64_t start_offset = std::max(original_annotation_md.sample_start, segment_sample_start);
+                uint64_t start_offset = std::max(original_annotation_sample_start, segment_sample_start);
                 uint64_t count_from_new_offset =
-                        original_annotation_md.sample_start + original_annotation_md.sample_count - start_offset;
+                        original_annotation_sample_start + original_annotation_sample_count - start_offset;
                 uint64_t new_start = start_offset - segment_sample_start;
                 uint64_t new_count = std::min(count_from_new_offset, segment_sample_count - new_start);
 
@@ -139,12 +146,12 @@ namespace sigmf {
                     implicit_annotation.template get<core::DescrT>().sample_start =
                             next_applicable_capture->template get<core::DescrT>().sample_start + segment_sample_start;
 
-                    original_annotation_md.sample_count =
+                    original_annotation_sample_count =
                             implicit_annotation.template get<core::DescrT>().sample_start -
-                            original_annotation_md.sample_start;
+                            original_annotation_sample_start;
 
                     implicit_annotation.template get<core::DescrT>().sample_count -=
-                            original_annotation_md.sample_count;
+                            original_annotation_sample_count;
                     if (implicit_annotation.template get<core::DescrT>().sample_start <
                         (segment_sample_start + segment_sample_count)) {
                         original_annotation = input_md.annotations.insert((original_annotation + 1),

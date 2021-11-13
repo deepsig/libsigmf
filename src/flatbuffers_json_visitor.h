@@ -66,7 +66,7 @@ struct FromSigMFVisitor : public flatbuffers::IterationVisitor {
     template<typename T>
     void Named(T x, const char *name) {
         try {
-            fbb.AddElement(last_offset, narrowest_json.at(p + last_field_name).get<T>(), T{});
+            fbb.AddElement(last_offset, narrowest_json.at(p + last_field_name).get<T>());//, T{});
         } catch (nlohmann::detail::out_of_range &e) {
         }
     }
@@ -88,28 +88,28 @@ struct FromSigMFVisitor : public flatbuffers::IterationVisitor {
 
     void Long(int64_t x) override {
         try {
-            fbb.AddElement(last_offset, narrowest_json.at(p + last_field_name).get<int64_t>(), int64_t(0));
+            fbb.AddElement(last_offset, narrowest_json.at(p + last_field_name).get<int64_t>());//, int64_t(0));
         } catch (nlohmann::detail::out_of_range &e) {
         }
     }
 
     void ULong(uint64_t x) override {
         try {
-            fbb.AddElement(last_offset, narrowest_json.at(p + last_field_name).get<uint64_t>(), uint64_t(0));
+            fbb.AddElement(last_offset, narrowest_json.at(p + last_field_name).get<uint64_t>());//, uint64_t(0));
         } catch (nlohmann::detail::out_of_range &e) {
         }
     }
 
     void Float(float x) override {
         try {
-            fbb.AddElement(last_offset, narrowest_json.at(p + last_field_name).get<float>(), 0.f);
+            fbb.AddElement(last_offset, narrowest_json.at(p + last_field_name).get<float>());//, 0.f);
         } catch (nlohmann::detail::out_of_range &e) {
         }
     }
 
     void Double(double x) override {
         try {
-            fbb.AddElement(last_offset, narrowest_json.at(p + last_field_name).get<double>(), 0.0);
+            fbb.AddElement(last_offset, narrowest_json.at(p + last_field_name).get<double>());//, 0.0);
         } catch (nlohmann::detail::out_of_range &e) {
         }
     }
@@ -317,115 +317,88 @@ inline json
 FlatBufferToJson(const uint8_t *buffer_root, const flatbuffers::TypeTable *typetable, const std::string &ns_prefix,
                  bool include_defaults = false);
 
+// TODO: function args are a disaster now... clean this up - its only this way for POC testing
+// of the FBS object API.
 inline json
-flatbuffer_field_to_json(const uint8_t *val, flatbuffers::ElementaryType type,
+flatbuffer_field_to_json(const uint8_t *buffer_root,
+                         const size_t elem,
+                         const flatbuffers::TypeTable *typetable = nullptr,
                          const flatbuffers::TypeTable *tt = nullptr,
                          const std::string &ns_prefix = "",
                          bool include_defaults = false) {
+
+    const flatbuffers::Table *tbl = reinterpret_cast<const flatbuffers::Table *>(buffer_root);
+    auto type_code = typetable->type_codes[elem];
+    auto type = static_cast<flatbuffers::ElementaryType>(type_code.base_type);
+    auto buf_voffset = static_cast<flatbuffers::voffset_t>(elem);
+    auto field_offset = flatbuffers::FieldIndexToOffset(buf_voffset);
+    const uint8_t *val = tbl->GetAddressOf(field_offset);
+
+
     switch (type) {
         case flatbuffers::ET_UTYPE: {
-            uint8_t tval = 0;
-            if (val) {
-                tval = *reinterpret_cast<const uint8_t *>(val);
-            }
-            return json(tval);
+            std::optional<uint8_t> tval = tbl->GetOptional<uint8_t,uint8_t>(field_offset);
+            return tval.has_value() ? json(*tval) : json{};
             break;
         }
         case flatbuffers::ET_BOOL: {
-            uint8_t tval = 0;
-            if (val) {
-                tval = json(*reinterpret_cast<const uint8_t *>(val) != 0);
-            }
-            return json(tval);
+            std::optional<uint8_t> tval = tbl->GetOptional<uint8_t,uint8_t>(field_offset);
+            return tval.has_value() ? json(*tval) : json{};
             break;
         }
         case flatbuffers::ET_CHAR: {
-            int8_t tval = 0;
-            if (val) {
-                tval = *reinterpret_cast<const int8_t *>(val);
-            }
-            return json(tval);
+            std::optional<int8_t> tval = tbl->GetOptional<int8_t,int8_t>(field_offset);
+            return tval.has_value() ? json(*tval) : json{};
             break;
         }
         case flatbuffers::ET_UCHAR: {
-            uint8_t tval = 0;
-            if (val) {
-                tval = *reinterpret_cast<const uint8_t *>(val);
-            }
-            return json(tval);
+            std::optional<uint8_t> tval = tbl->GetOptional<uint8_t,uint8_t>(field_offset);
+            return tval.has_value() ? json(*tval) : json{};
             break;
         }
         case flatbuffers::ET_SHORT: {
-            int16_t tval =0;
-            if (val) {
-                tval = *reinterpret_cast<const int16_t *>(val);
-            }
-            return json(tval);
+            std::optional<int16_t> tval = tbl->GetOptional<int16_t,int16_t>(field_offset);
+            return tval.has_value() ? json(*tval) : json{};
             break;
         }
         case flatbuffers::ET_USHORT: {
-            uint16_t tval = 0;
-            if (val) {
-                tval = *reinterpret_cast<const uint16_t *>(val);
-            }
-            return json(tval);
+            std::optional<uint16_t> tval = tbl->GetOptional<uint16_t,uint16_t>(field_offset);
+            return tval.has_value() ? json(*tval) : json{};
             break;
         }
         case flatbuffers::ET_INT: {
-            auto tval = 0;
-            if (val) {
-                tval = *reinterpret_cast<const int32_t *>(val);
-            }
-            return json(tval);
+            std::optional<int32_t> tval = tbl->GetOptional<int32_t,int32_t>(field_offset);
+            return tval.has_value() ? json(*tval) : json{};
             break;
         }
         case flatbuffers::ET_UINT: {
-            auto tval = 0UL;
-            if (val) {
-                tval = *reinterpret_cast<const uint32_t *>(val);
-            }
-            return json(tval);
+            std::optional<uint32_t> tval = tbl->GetOptional<uint32_t,uint32_t>(field_offset);
+            return tval.has_value() ? json(*tval) : json{};
             break;
         }
         case flatbuffers::ET_LONG: {
-            auto tval = 0LL;
-            if (val) {
-                tval = *reinterpret_cast<const int64_t *>(val);
-            }
-            return json(tval);
+            std::optional<int64_t> tval = tbl->GetOptional<int64_t,int64_t>(field_offset);
+            return tval.has_value() ? json(*tval) : json{};
             break;
         }
         case flatbuffers::ET_ULONG: {
-            auto tval = 0ULL;
-            if (val) {
-                tval = *reinterpret_cast<const uint64_t *>(val);
-            }
-            return json(tval);
+            std::optional<uint64_t> tval = tbl->GetOptional<uint64_t,uint64_t>(field_offset);
+            return tval.has_value() ? json(*tval) : json{};
             break;
         }
         case flatbuffers::ET_FLOAT: {
-            auto tval = 0.0;
-            if (val) {
-                tval = *reinterpret_cast<const float *>(val);
-            }
-            return json(tval);
+            std::optional<float> tval = tbl->GetOptional<float,float>(field_offset);
+            return tval.has_value() ? json(*tval) : json{};
             break;
         }
         case flatbuffers::ET_DOUBLE: {
-            auto tval = 0.0;
-            if (val) {
-                tval = *reinterpret_cast<const double *>(val);
-            }
-            return json(tval);
+            std::optional<double> tval = tbl->GetOptional<double,double>(field_offset);
+            return tval.has_value() ? json(*tval) : json{};
             break;
         }
         case flatbuffers::ET_STRING: {
-            std::string tval{};
-            if (val) {
-                val += flatbuffers::ReadScalar<flatbuffers::uoffset_t>(val);
-                tval = reinterpret_cast<const flatbuffers::String *>(val)->c_str();
-            }
-            return json(tval);
+            auto tval = tbl->GetPointer<const flatbuffers::String *>(field_offset);
+            return tval ? json(tval->c_str()) : json{};
             break;
         }
         case flatbuffers::ET_SEQUENCE: {
@@ -504,6 +477,7 @@ FlatBufferToJson(const uint8_t *buffer_root, const flatbuffers::TypeTable *typet
         if (ref_idx >= 0) { ref = typetable->type_refs[ref_idx](); }
         auto name = typetable->names ? typetable->names[i] : nullptr;
         const uint8_t *val = nullptr;
+        auto buf_voffset = static_cast<flatbuffers::voffset_t>(i);
 
         // Fetch the actual value of this field now and stick it inside our json object
         if (typetable->st == flatbuffers::ST_TABLE) {
@@ -528,11 +502,11 @@ FlatBufferToJson(const uint8_t *buffer_root, const flatbuffers::TypeTable *typet
                 auto elem_ptr = vec->Data();
                 for (size_t j = 0; j < vec->size(); j++) {
                     json_object[ns_prefix + name].push_back(
-                            flatbuffer_field_to_json(elem_ptr, type, ttptr, ns_prefix, include_defaults));
+                            flatbuffer_field_to_json(buffer_root, i, typetable, ttptr, ns_prefix, include_defaults));
                     elem_ptr += InlineSize(type, ref);
                 }
             } else {
-                json lval = flatbuffer_field_to_json(val, type, ttptr, ns_prefix, include_defaults);
+                json lval = flatbuffer_field_to_json(buffer_root, i, typetable, ttptr, ns_prefix, include_defaults);
                 json_object[ns_prefix + name] = lval;
             }
         } else {
@@ -541,7 +515,7 @@ FlatBufferToJson(const uint8_t *buffer_root, const flatbuffers::TypeTable *typet
             // already enforced such things.
         }
         if (!is_vector && type < flatbuffers::ET_SEQUENCE && include_defaults) {
-            json lval = flatbuffer_field_to_json(val, type, ttptr, ns_prefix, include_defaults);
+            json lval = flatbuffer_field_to_json(buffer_root, i, typetable, ttptr, ns_prefix, include_defaults);
             json_object[ns_prefix + name] = lval;
         }
     }
