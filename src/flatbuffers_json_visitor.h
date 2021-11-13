@@ -474,6 +474,7 @@ flatbuffer_field_to_json(const uint8_t *val, flatbuffers::ElementaryType type,
             }
         }
     }
+    return json{};
 }
 
 
