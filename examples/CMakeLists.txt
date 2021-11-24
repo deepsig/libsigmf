@@ -14,6 +14,10 @@ add_executable(example_sigmf_json_roundtrip example_sigmf_json_roundtrip.cpp)
 target_link_libraries(example_sigmf_json_roundtrip libsigmf)
 target_include_directories(example_sigmf_json_roundtrip PRIVATE ${CMAKE_BINARY_DIR}/include)
 
+add_executable(example_reading_sigmf_file example_reading_sigmf_file.cpp)
+target_link_libraries(example_reading_sigmf_file libsigmf)
+target_include_directories(example_reading_sigmf_file PRIVATE ${CMAKE_BINARY_DIR}/include)
+
 add_test(NAME simple_variadic_sigmf_to_json
         COMMAND example_record_with_variadic_dataclass)
 add_test(NAME simple_variadic_2ns_sigmf_to_json
