@@ -4,7 +4,7 @@ namespace core;
 table sigmf_extension {
     name:string;
     version:string;
-    optional:bool;
+    optional:bool=null;
 }
 
 table geojson_point {

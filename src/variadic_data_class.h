@@ -79,10 +79,10 @@ namespace sigmf {
          * return a json object representing the data class with namespaces to match sigmf-spec
          * @return
          */
-        json to_json(bool include_defaults=false) const {
+        json to_json() const {
             constexpr auto tuple_size = std::tuple_size<sigmftypes>::value;
             constexpr auto at_the_end = ReachedEnd<0, tuple_size>::value;
-            json r = TupleIterator<0, sigmftypes, at_the_end>::to_json(sigmf_namespaces, include_defaults);
+            json r = TupleIterator<0, sigmftypes, at_the_end>::to_json(sigmf_namespaces);
             return r;
         }
 
@@ -141,7 +141,7 @@ namespace sigmf {
              * @param tp
              * @return
              */
-            static json to_json(const Tuple &tp, bool include_defaults) {
+            static json to_json(const Tuple &tp) {
                 typename std::tuple_element<Index, sigmftypes>::type::TableType *ttype=nullptr;
                 auto &flatbuffers_type = std::get<Index>(tp);
                 auto reflection_table = ttype->MiniReflectTypeTable();
@@ -153,11 +153,11 @@ namespace sigmf {
 
                 auto bfrptr = fbb.GetBufferPointer();
                 auto rtptr = flatbuffers::GetRoot<uint8_t>(bfrptr);
-                json asjson = FlatBufferToJson(rtptr, reflection_table, namespace_part, include_defaults);
+                json asjson = FlatBufferToJson(rtptr, reflection_table, namespace_part);
 
                 constexpr auto next = Index + 1;
                 constexpr auto size = std::tuple_size<sigmftypes>::value;
-                json existing_vals = TupleIterator<next, Tuple, ReachedEnd<next, size>::value>::to_json(tp, include_defaults);
+                json existing_vals = TupleIterator<next, Tuple, ReachedEnd<next, size>::value>::to_json(tp);
 
                 for (auto &val : asjson.items()) {
                     existing_vals[val.key()] = val.value();
@@ -200,7 +200,7 @@ namespace sigmf {
          */
         template<size_t Index, class Tuple>
         struct TupleIterator<Index, Tuple, true> {
-            static json to_json(const Tuple &tp, bool include_defaults) {
+            static json to_json(const Tuple &tp) {
                 json r;
                 return r;
             }

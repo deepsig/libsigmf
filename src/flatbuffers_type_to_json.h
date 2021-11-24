@@ -25,7 +25,7 @@
 using json = nlohmann::json;
 
 template<typename R>
-static json to_json(const typename R::NativeTableType &obj, bool include_defaults) {
+static json to_json(const typename R::NativeTableType &obj) {
 
     R *ttype;
 
@@ -35,7 +35,7 @@ static json to_json(const typename R::NativeTableType &obj, bool include_default
 
     auto bfrptr = fbb.GetBufferPointer();
     auto rtptr = flatbuffers::GetRoot<uint8_t>(bfrptr);
-    json asjson = FlatBufferToJson(rtptr, ttype->MiniReflectTypeTable(), "", include_defaults);
+    json asjson = FlatBufferToJson(rtptr, ttype->MiniReflectTypeTable(), "");
 
     return asjson;
 }

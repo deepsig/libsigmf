@@ -311,21 +311,25 @@ inline void IterateType(const flatbuffers::TypeTable *type_table, FromSigMFVisit
     visitor->EndSequence();
 }
 
+template<typename T>
+inline json FlatBufferVectorToJson(const flatbuffers::Vector<T> *fbv) {
+    std::vector<T> vec;
+    for (auto i = fbv->begin(); i != fbv->end(); i++) { vec.push_back(*i); }
+    return json(vec);
+}
 
 // forward declare so we can create objects as fields
 inline json
-FlatBufferToJson(const uint8_t *buffer_root, const flatbuffers::TypeTable *typetable, const std::string &ns_prefix,
-                 bool include_defaults = false);
+FlatBufferToJson(const uint8_t *buffer_root, const flatbuffers::TypeTable *typetable, const std::string &ns_prefix);
 
-// TODO: function args are a disaster now... clean this up - its only this way for POC testing
-// of the FBS object API.
+// TODO: function args are redundant since implementation of optional scalars... cleanup
 inline json
 flatbuffer_field_to_json(const uint8_t *buffer_root,
                          const size_t elem,
                          const flatbuffers::TypeTable *typetable = nullptr,
                          const flatbuffers::TypeTable *tt = nullptr,
                          const std::string &ns_prefix = "",
-                         bool include_defaults = false) {
+                         bool is_vector = false) {
 
     const flatbuffers::Table *tbl = reinterpret_cast<const flatbuffers::Table *>(buffer_root);
     auto type_code = typetable->type_codes[elem];
@@ -337,115 +341,132 @@ flatbuffer_field_to_json(const uint8_t *buffer_root,
 
     switch (type) {
         case flatbuffers::ET_UTYPE: {
-            std::optional<uint8_t> tval = tbl->GetOptional<uint8_t,uint8_t>(field_offset);
-            return tval.has_value() ? json(*tval) : json{};
-            break;
+            if (is_vector) {
+                return FlatBufferVectorToJson(tbl->GetPointer<const flatbuffers::Vector<uint8_t> *>(field_offset));
+            } else {
+                std::optional<uint8_t> tval = tbl->GetOptional<uint8_t,uint8_t>(field_offset);
+                return tval.has_value() ? json(*tval) : json{};
+            }
         }
         case flatbuffers::ET_BOOL: {
-            std::optional<uint8_t> tval = tbl->GetOptional<uint8_t,uint8_t>(field_offset);
-            return tval.has_value() ? json(*tval) : json{};
-            break;
+            if (is_vector) {
+                return FlatBufferVectorToJson(tbl->GetPointer<const flatbuffers::Vector<uint8_t> *>(field_offset));
+            } else {
+                std::optional<uint8_t> tval = tbl->GetOptional<uint8_t,uint8_t>(field_offset);
+                return tval.has_value() ? json(*tval) : json{};
+            }
         }
         case flatbuffers::ET_CHAR: {
-            std::optional<int8_t> tval = tbl->GetOptional<int8_t,int8_t>(field_offset);
-            return tval.has_value() ? json(*tval) : json{};
-            break;
+            if (is_vector) {
+                return FlatBufferVectorToJson(tbl->GetPointer<const flatbuffers::Vector<uint8_t> *>(field_offset));
+            } else {
+                std::optional<int8_t> tval = tbl->GetOptional<int8_t,int8_t>(field_offset);
+                return tval.has_value() ? json(*tval) : json{};
+            }
         }
         case flatbuffers::ET_UCHAR: {
-            std::optional<uint8_t> tval = tbl->GetOptional<uint8_t,uint8_t>(field_offset);
-            return tval.has_value() ? json(*tval) : json{};
-            break;
+            if (is_vector) {
+                return FlatBufferVectorToJson(tbl->GetPointer<const flatbuffers::Vector<uint8_t> *>(field_offset));
+            } else {
+                std::optional<uint8_t> tval = tbl->GetOptional<uint8_t,uint8_t>(field_offset);
+                return tval.has_value() ? json(*tval) : json{};
+            }
         }
         case flatbuffers::ET_SHORT: {
-            std::optional<int16_t> tval = tbl->GetOptional<int16_t,int16_t>(field_offset);
-            return tval.has_value() ? json(*tval) : json{};
-            break;
+            if (is_vector) {
+                return FlatBufferVectorToJson(tbl->GetPointer<const flatbuffers::Vector<int16_t> *>(field_offset));
+            } else {
+                std::optional<int16_t> tval = tbl->GetOptional<int16_t,int16_t>(field_offset);
+                return tval.has_value() ? json(*tval) : json{};
+            }
         }
         case flatbuffers::ET_USHORT: {
-            std::optional<uint16_t> tval = tbl->GetOptional<uint16_t,uint16_t>(field_offset);
-            return tval.has_value() ? json(*tval) : json{};
-            break;
+            if (is_vector) {
+                return FlatBufferVectorToJson(tbl->GetPointer<const flatbuffers::Vector<uint16_t> *>(field_offset));
+            } else {
+                std::optional<uint16_t> tval = tbl->GetOptional<uint16_t,uint16_t>(field_offset);
+                return tval.has_value() ? json(*tval) : json{};
+            }
         }
         case flatbuffers::ET_INT: {
-            std::optional<int32_t> tval = tbl->GetOptional<int32_t,int32_t>(field_offset);
-            return tval.has_value() ? json(*tval) : json{};
-            break;
+            if (is_vector) {
+                return FlatBufferVectorToJson(tbl->GetPointer<const flatbuffers::Vector<int32_t> *>(field_offset));
+            } else {
+                std::optional<int32_t> tval = tbl->GetOptional<int32_t,int32_t>(field_offset);
+                return tval.has_value() ? json(*tval) : json{};
+            }
         }
         case flatbuffers::ET_UINT: {
-            std::optional<uint32_t> tval = tbl->GetOptional<uint32_t,uint32_t>(field_offset);
-            return tval.has_value() ? json(*tval) : json{};
-            break;
+            if (is_vector) {
+                return FlatBufferVectorToJson(tbl->GetPointer<const flatbuffers::Vector<uint32_t> *>(field_offset));
+            } else {
+                std::optional<uint32_t> tval = tbl->GetOptional<uint32_t,uint32_t>(field_offset);
+                return tval.has_value() ? json(*tval) : json{};
+            }
         }
         case flatbuffers::ET_LONG: {
-            std::optional<int64_t> tval = tbl->GetOptional<int64_t,int64_t>(field_offset);
-            return tval.has_value() ? json(*tval) : json{};
-            break;
+            if (is_vector) {
+                return FlatBufferVectorToJson(tbl->GetPointer<const flatbuffers::Vector<int64_t> *>(field_offset));
+            } else {
+                std::optional<int64_t> tval = tbl->GetOptional<int64_t,int64_t>(field_offset);
+                return tval.has_value() ? json(*tval) : json{};
+            }
         }
         case flatbuffers::ET_ULONG: {
-            std::optional<uint64_t> tval = tbl->GetOptional<uint64_t,uint64_t>(field_offset);
-            return tval.has_value() ? json(*tval) : json{};
-            break;
+            if (is_vector) {
+                return FlatBufferVectorToJson(tbl->GetPointer<const flatbuffers::Vector<uint64_t> *>(field_offset));
+            } else {
+                std::optional<uint64_t> tval = tbl->GetOptional<uint64_t,uint64_t>(field_offset);
+                return tval.has_value() ? json(*tval) : json{};
+            }
         }
         case flatbuffers::ET_FLOAT: {
-            std::optional<float> tval = tbl->GetOptional<float,float>(field_offset);
-            return tval.has_value() ? json(*tval) : json{};
-            break;
+            if (is_vector) {
+                return FlatBufferVectorToJson(tbl->GetPointer<const flatbuffers::Vector<float> *>(field_offset));
+            } else {
+                std::optional<float> tval = tbl->GetOptional<float,float>(field_offset);
+                return tval.has_value() ? json(*tval) : json{};
+            }
         }
         case flatbuffers::ET_DOUBLE: {
-            std::optional<double> tval = tbl->GetOptional<double,double>(field_offset);
-            return tval.has_value() ? json(*tval) : json{};
-            break;
+            if (is_vector) {
+                return FlatBufferVectorToJson(tbl->GetPointer<const flatbuffers::Vector<double> *>(field_offset));
+            } else {
+                std::optional<double> tval = tbl->GetOptional<double,double>(field_offset);
+                return tval.has_value() ? json(*tval) : json{};
+            }
         }
         case flatbuffers::ET_STRING: {
-            auto tval = tbl->GetPointer<const flatbuffers::String *>(field_offset);
-            return tval ? json(tval->c_str()) : json{};
-            break;
+            if (is_vector) {
+                const flatbuffers::Vector<flatbuffers::Offset<flatbuffers::String>> *fbv =
+                    tbl->GetPointer<const flatbuffers::Vector<flatbuffers::Offset<flatbuffers::String>> *>(field_offset);
+                std::vector<std::string> vec;
+                for (auto i = fbv->begin(); i != fbv->end(); i++) {
+                    std::string s = i->str();
+                    std::cout << s << std::endl;
+                    vec.push_back(s);
+                }
+                return json(vec);
+            } else {
+                auto tval = tbl->GetPointer<const flatbuffers::String *>(field_offset);
+                return tval ? json(tval->c_str()) : json{};
+            }
         }
         case flatbuffers::ET_SEQUENCE: {
             switch (tt->st) {
                 case flatbuffers::ST_TABLE:
                     val += flatbuffers::ReadScalar<flatbuffers::uoffset_t>(val);
-                    return FlatBufferToJson(val, tt, ns_prefix, include_defaults);
-                    // Have not implemented structs, unions, or enums which are all supported by flatbuffers schema
-                    // and would be great to have, but dont make as much sense in json-land. They're on the todo list...
-                    // here is what flatbuffers does internally (see IterateValue in minireflect.h)
+                    return FlatBufferToJson(val, tt, ns_prefix);
                 default:
-                    throw std::runtime_error(
-                            "libsigmf has not implemented flatbuffer struct, union, or enum to json yet");
-//                case flatbuffers::ST_STRUCT: IterateObject(val, type_table, visitor); break;
-//                case flatbuffers::ST_UNION: {
-//                    val += flatbuffers::ReadScalar<flatbuffers::uoffset_t>(val);
-//                            FLATBUFFERS_ASSERT(prev_val);
-//                    auto union_type = *prev_val;  // Always a uint8_t.
-//                    if (vector_index >= 0) {
-//                        auto type_vec = reinterpret_cast<const Vector<uint8_t> *>(prev_val);
-//                        union_type = type_vec->Get(static_cast<flatbuffers::uoffset_t>(vector_index));
-//                    }
-//                    auto type_code_idx =
-//                            flatbuffers::LookupEnum(union_type, type_table->values, type_table->num_elems);
-//                    if (type_code_idx >= 0 &&
-//                        type_code_idx < static_cast<int32_t>(type_table->num_elems)) {
-//                        auto type_code = type_table->type_codes[type_code_idx];
-//                        switch (type_code.base_type) {
-//                            case flatbuffers::ET_SEQUENCE: {
-//                                auto ref = type_table->type_refs[type_code.sequence_ref]();
-//                                IterateObject(val, ref, visitor);
-//                                break;
-//                            }
-//                            case flatbuffers::ET_STRING:
-//                                visitor->String(reinterpret_cast<const flatbuffers::String *>(val));
-//                                break;
-//                            default: visitor->Unknown(val);
-//                        }
-//                    } else {
-//                        visitor->Unknown(val);
-//                    }
-//                    break;
-//                }
-//                case flatbuffers::ST_ENUM: FLATBUFFERS_ASSERT(false); break;
-
+                    // Have not implemented structs, unions, or enums which are all supported by flatbuffers
+                    // schema and would be great to have, but dont make as much sense in json-land. They're
+                    // on the todo list...
+                    break;
             }
         }
+        default:
+            // Nothing else should be here...
+            break;
     }
     return json{};
 }
@@ -463,8 +484,7 @@ flatbuffer_field_to_json(const uint8_t *buffer_root,
  * using the name of the field as the key.
  */
 inline json
-FlatBufferToJson(const uint8_t *buffer_root, const flatbuffers::TypeTable *typetable, const std::string &ns_prefix,
-                 bool include_defaults) {
+FlatBufferToJson(const uint8_t *buffer_root, const flatbuffers::TypeTable *typetable, const std::string &ns_prefix) {
     json json_object;
     const auto obj = reinterpret_cast<const flatbuffers::Table *>(buffer_root);
     for (size_t i = 0; i < typetable->num_elems; i++) {
@@ -496,27 +516,12 @@ FlatBufferToJson(const uint8_t *buffer_root, const flatbuffers::TypeTable *typet
             if (ref_idx >= 0) {
                 ttptr = typetable->type_refs[ref_idx]();
             }
-            if (is_vector) {
-                val += flatbuffers::ReadScalar<flatbuffers::uoffset_t>(val);
-                auto vec = reinterpret_cast<const flatbuffers::Vector<uint8_t> *>(val);
-                auto elem_ptr = vec->Data();
-                for (size_t j = 0; j < vec->size(); j++) {
-                    json_object[ns_prefix + name].push_back(
-                            flatbuffer_field_to_json(buffer_root, i, typetable, ttptr, ns_prefix, include_defaults));
-                    elem_ptr += InlineSize(type, ref);
-                }
-            } else {
-                json lval = flatbuffer_field_to_json(buffer_root, i, typetable, ttptr, ns_prefix, include_defaults);
-                json_object[ns_prefix + name] = lval;
-            }
+            json lval = flatbuffer_field_to_json(buffer_root, i, typetable, ttptr, ns_prefix, is_vector);
+            json_object[ns_prefix + name] = lval;
         } else {
             // There is no value in this field. This is OK except maybe we want to figure out how to enforce
             // required fields. Although maybe flatbuffers schema language and the flatbuffersbuilders have
             // already enforced such things.
-        }
-        if (!is_vector && type < flatbuffers::ET_SEQUENCE && include_defaults) {
-            json lval = flatbuffer_field_to_json(buffer_root, i, typetable, ttptr, ns_prefix, include_defaults);
-            json_object[ns_prefix + name] = lval;
         }
     }
     return json_object;
