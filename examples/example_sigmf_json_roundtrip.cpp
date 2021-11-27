@@ -68,19 +68,32 @@ int main() {
         }
     ],
     "global": {
+        "antenna:mobile": false,
+        "antenna:vertical_gain_pattern": [
+            0.0,
+            1.0,
+            6.0,
+            10.0,
+            6.0,
+            1.0,
+            0.0
+        ],
         "core:author": "DeepSig",
         "core:description": "Round-trip from json -> libsigmf -> back"
     }
 })");
 
     auto as_json = json::parse(starting_str);
-    sigmf::SigMF<sigmf::Global<core::DescrT>,
-            sigmf::Capture<core::DescrT>,
-            sigmf::Annotation<core::DescrT> > roundtripstuff = as_json;
+    sigmf::SigMF<sigmf::Global<core::DescrT, antenna::DescrT>,
+                 sigmf::Capture<core::DescrT, antenna::DescrT>,
+                 sigmf::Annotation<core::DescrT, antenna::DescrT> > roundtripstuff = as_json;
 
 
     auto back_to_json = json(roundtripstuff);
 
     std::cout << back_to_json.dump(4) << std::endl;
     assert(back_to_json.dump(4) == starting_str);
+
+    std::cout << "example_sigmf_json_roundtrip passed" << std::endl;
+    return 0; // assert passed, we're good :+1:
 }

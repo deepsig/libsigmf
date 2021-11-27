@@ -103,6 +103,7 @@ int main() {
   }
 })";
 
+    // std::cout << "JSON Record:\n" << json_output.str() << std::endl;
     assert(expected_output == json_output.str());
 
     std::cout << "expected_record_with_variadic_dataclass passed" << std::endl;

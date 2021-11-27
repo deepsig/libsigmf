@@ -4,25 +4,28 @@ namespace antenna;
 table Global {
     model:string;
     type:string;
-    low_frequency:double;
-    high_frequency:double;
-    gain:double;
-    horizontal_beam_width:double;
-    vertical_beam_width:double;
-    cross_polar_discrimination:double;
-    voltage_standing_wave_ratio:double;
-    cable_loss:double;
-    steerable:bool;
-    mobile:bool;
-    version:string;
+    low_frequency:double=null;
+    high_frequency:double=null;
+    gain:double=null;
+    horizontal_gain_pattern:[double];
+    vertical_gain_pattern:[double];
+    horizontal_beam_width:double=null;
+    vertical_beam_width:double=null;
+    cross_polar_discrimination:double=null;
+    voltage_standing_wave_ratio:double=null;
+    cable_loss:double=null;
+    steerable:bool=null;
+    mobile:bool=null;
+    hagl:double=null;
 }
 
 table Capture {
+    // the `antenna` extension does not extend this object
 }
 
 table Annotation {
-    azimuth_angle:double;
-    elevation_angle:double;
+    azimuth_angle:double=null;
+    elevation_angle:double=null;
     polarization:string;
 }
 

@@ -32,9 +32,11 @@ int main() {
     latest_record.global.access<core::GlobalT>().author = "Nathan";
     latest_record.global.access<core::GlobalT>().description = "Example of creating a new record";
     latest_record.global.access<core::GlobalT>().sample_rate = 1.0;
+    latest_record.global.access<antenna::GlobalT>().mobile = true;
     latest_record.global.access<antenna::GlobalT>().gain = 40.0;
     latest_record.global.access<antenna::GlobalT>().low_frequency = 600e6;
     latest_record.global.access<antenna::GlobalT>().high_frequency = 1200e6;
+    latest_record.global.access<antenna::GlobalT>().vertical_gain_pattern = {-40,-40,-40,0,10,0,-40,-40,-40};
 
     // Add a capture segment
     auto antenna_capture = sigmf::Capture<core::DescrT>();
@@ -105,15 +107,27 @@ int main() {
     "antenna:gain": 40.0,
     "antenna:high_frequency": 1200000000.0,
     "antenna:low_frequency": 600000000.0,
+    "antenna:mobile": true,
+    "antenna:vertical_gain_pattern": [
+      -40.0,
+      -40.0,
+      -40.0,
+      0.0,
+      10.0,
+      0.0,
+      -40.0,
+      -40.0,
+      -40.0
+    ],
     "core:author": "Nathan",
     "core:description": "Example of creating a new record",
     "core:sample_rate": 1.0
   }
 })";
 
+    // std::cout << "JSON Record:\n" << json(latest_record).dump(2) << std::endl;
     assert(expected_json == json(latest_record).dump(2));
 
     std::cout << "example_record_with_multiple_namespaces passed" << std::endl;
     return 0; // assert passed, we're good :+1:
-
 }

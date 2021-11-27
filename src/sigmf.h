@@ -22,6 +22,7 @@
 #include "capture.h"
 #include "annotation.h"
 #include "sigmf_core_generated.h"
+#include "sigmf_antenna_generated.h"
 #include <vector>
 #include <iostream>
 

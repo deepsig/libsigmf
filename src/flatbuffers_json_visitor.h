@@ -73,7 +73,13 @@ struct FromSigMFVisitor : public flatbuffers::IterationVisitor {
 
     void UType(uint8_t x, const char *name) override { Named(x, name); }
 
-    // void Bool(bool x) override { s += x ? "true" : "false"; }
+    void Bool(bool x) override {
+        try {
+            fbb.AddElement(last_offset, narrowest_json.at(p + last_field_name).get<bool>());
+        } catch (nlohmann::detail::out_of_range &e) {
+        }
+    }
+
     void Char(int8_t x, const char *name) override { Named(x, name); }
 
     void UChar(uint8_t x, const char *name) override { Named(x, name); }
@@ -194,16 +200,6 @@ json_vector_to_chararray(flatbuffers::FlatBufferBuilder &fbb, const json &jvec, 
     }
 }
 
-
-inline bool check_type_is_vector(const flatbuffers::TypeCode &tc) {
-#if FLATBUFFERS_VERSION_MAJOR >= 2
-    return tc.is_repeating;
-#else
-    return tc.is_vector;
-#endif
-}
-
-
 /**
  * Iterate through a typetable-- I'll be honest here. This is kind of bullshit. We need to create all of
  * the types like Strings, Lists, Vectors, and other flatbuffer types before we create our table. I'm not
@@ -224,7 +220,7 @@ inline void IterateType(const flatbuffers::TypeTable *type_table, FromSigMFVisit
     for (size_t i = 0; i < type_table->num_elems; i++) {
         auto type_code = type_table->type_codes[i];
         auto type = static_cast<flatbuffers::ElementaryType>(type_code.base_type);
-        auto is_vector = check_type_is_vector(type_code);
+        auto is_vector = type_code.is_repeating;
         auto ref_idx = type_code.sequence_ref;
         const flatbuffers::TypeTable *ref = nullptr;
         if (ref_idx >= 0) { ref = type_table->type_refs[ref_idx](); }
@@ -233,7 +229,7 @@ inline void IterateType(const flatbuffers::TypeTable *type_table, FromSigMFVisit
         // ones that need an offset
         if (type < flatbuffers::ET_STRING) {
             if (is_vector) {
-                auto vector_offset = json_vector_to_chararray(visitor->fbb, original_json[name], type);
+                auto vector_offset = json_vector_to_chararray(visitor->fbb, original_json[visitor->p + name], type);
                 auto void_offset = flatbuffers::Offset<void>(vector_offset.o);
                 comosite_type_offsets[i] = void_offset;
             }
@@ -276,15 +272,15 @@ inline void IterateType(const flatbuffers::TypeTable *type_table, FromSigMFVisit
                 comosite_type_offsets[i] = flatbuffers::Offset<void>(visitor->_stop);
             }
         }
-
     }
+
     // Now make the table and fill in all of our types
     size_t set_idx = 0;
     visitor->StartSequence();
     for (size_t i = 0; i < type_table->num_elems; i++) {
         auto type_code = type_table->type_codes[i];
         auto type = static_cast<flatbuffers::ElementaryType>(type_code.base_type);
-        auto is_vector = check_type_is_vector(type_code);
+        auto is_vector = type_code.is_repeating;
         auto ref_idx = type_code.sequence_ref;
         const flatbuffers::TypeTable *ref = nullptr;
         if (ref_idx >= 0) { ref = type_table->type_refs[ref_idx](); }
@@ -350,9 +346,9 @@ flatbuffer_field_to_json(const uint8_t *buffer_root,
         }
         case flatbuffers::ET_BOOL: {
             if (is_vector) {
-                return FlatBufferVectorToJson(tbl->GetPointer<const flatbuffers::Vector<uint8_t> *>(field_offset));
+                return FlatBufferVectorToJson(tbl->GetPointer<const flatbuffers::Vector<bool> *>(field_offset));
             } else {
-                std::optional<uint8_t> tval = tbl->GetOptional<uint8_t,uint8_t>(field_offset);
+                std::optional<bool> tval = tbl->GetOptional<bool,bool>(field_offset);
                 return tval.has_value() ? json(*tval) : json{};
             }
         }
@@ -491,7 +487,7 @@ FlatBufferToJson(const uint8_t *buffer_root, const flatbuffers::TypeTable *typet
         // Gather all of the underlying info about this element in table
         auto type_code = typetable->type_codes[i];
         auto type = static_cast<flatbuffers::ElementaryType>(type_code.base_type);
-        auto is_vector = check_type_is_vector(type_code);
+        auto is_vector = type_code.is_repeating;
         auto ref_idx = type_code.sequence_ref;
         const flatbuffers::TypeTable *ref = nullptr;
         if (ref_idx >= 0) { ref = typetable->type_refs[ref_idx](); }
