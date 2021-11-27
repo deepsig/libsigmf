@@ -47,7 +47,7 @@ with default values".
 ## Limitations of libsigmf v1.0
 
 - Subtables are not working correctly, thus the `core:extensions` and `core:geolocation` are not supported yet.
-- Only the `antenna` extension fbs schema is included for now.
+- Only the `antenna` and `capture_details` extension schemas are included for now.
 - Collections are not supported yet.
 - Formal test code is still a WIP, examples provide some code coverage.
 

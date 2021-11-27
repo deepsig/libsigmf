@@ -16,6 +16,7 @@
 
 #include "sigmf_core_generated.h"
 #include "sigmf_antenna_generated.h"
+#include "sigmf_capture_details_generated.h"
 #include "sigmf.h"
 #include "testing_protocols_generated.h"
 
@@ -29,7 +30,7 @@ int main() {
      */
     sigmf::SigMF<sigmf::Global<core::DescrT, antenna::DescrT>,
             sigmf::Capture<core::DescrT>,
-            sigmf::Annotation<core::DescrT, antenna::DescrT> > latest_record;
+            sigmf::Annotation<core::DescrT, antenna::DescrT, capture_details::DescrT> > latest_record;
     latest_record.global.access<core::GlobalT>().author = "Nathan";
     latest_record.global.access<core::GlobalT>().description = "Example of creating a new record";
     latest_record.global.access<core::GlobalT>().sample_rate = 1.0;
@@ -53,7 +54,7 @@ int main() {
 
     // Add some annotations (sigmf::core_annotations is typedef of core::AnnotationT, so they're interchangeable)
     // This example uses the core::AnnotationT to access data elements which is more using the VariadicDataClass interface
-    auto anno2 = sigmf::Annotation<core::DescrT, antenna::DescrT>();
+    auto anno2 = sigmf::Annotation<core::DescrT, antenna::DescrT, capture_details::DescrT>();
     anno2.access<core::AnnotationT>().sample_count = 500000;
     anno2.access<core::AnnotationT>().description = "Annotation 1";
     anno2.access<core::AnnotationT>().generator = "libsigmf";
@@ -63,8 +64,7 @@ int main() {
     // This example shows off using the Annotation-specific interface where we know it's an annotation, so we
     // get annotation field from the underlying DescrT... This uses a little bit of syntactic sugar on top of
     // the VariadicDataClass and basically you don't have to repeat "annotation" in your get/access method.
-    auto anno3 = sigmf::Annotation<core::DescrT, antenna::DescrT>();
-    anno3.get<core::DescrT>().sample_count = 600000;
+    auto anno3 = sigmf::Annotation<core::DescrT, antenna::DescrT, capture_details::DescrT>();
     anno3.get<core::DescrT>().sample_count = 600000;
     anno3.get<core::DescrT>().description = "Annotation 2";
     anno3.get<core::DescrT>().generator = "libsigmf";
@@ -74,6 +74,7 @@ int main() {
     // it mixes real calls with macros without it being obvious and doesn't really feel like c++
     anno3.sigmfns(antenna).azimuth_angle = 0.1;
     anno3.get<antenna::DescrT>().polarization = "circular";
+    anno3.get<capture_details::DescrT>().SNRdB = 12.34;
 
     latest_record.annotations.emplace_back(anno3);
 
@@ -89,6 +90,7 @@ int main() {
       "antenna:azimuth_angle": 0.1,
       "antenna:elevation_angle": 4.2,
       "antenna:polarization": "circular",
+      "capture_details:SNRdB": 12.34,
       "core:description": "Pretty easy",
       "core:generator": "libsigmf",
       "core:sample_count": 600000

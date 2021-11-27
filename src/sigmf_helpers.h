@@ -178,16 +178,17 @@ namespace sigmf {
      * @return Pointer to SigMF object
      *
      */
-    static std::unique_ptr<sigmf::SigMF<sigmf::Global<core::DescrT, antenna::DescrT>,
-                                        sigmf::Capture<core::DescrT, antenna::DescrT>,
-                                        sigmf::Annotation<core::DescrT, antenna::DescrT>>>
+    static std::unique_ptr<sigmf::SigMF<sigmf::Global<core::DescrT, antenna::DescrT, capture_details::DescrT>,
+                                        sigmf::Capture<core::DescrT, antenna::DescrT, capture_details::DescrT>,
+                                        sigmf::Annotation<core::DescrT, antenna::DescrT, capture_details::DescrT>>>
             metadata_file_to_json(const std::ifstream &meta_file) {
 
         std::ostringstream meta_buffer;
         meta_buffer << meta_file.rdbuf();
-        auto sigmf_md = std::make_unique<sigmf::SigMF<sigmf::Global<core::DescrT, antenna::DescrT>,
-                                                      sigmf::Capture<core::DescrT, antenna::DescrT>,
-                                                      sigmf::Annotation<core::DescrT, antenna::DescrT>>>();
+        auto sigmf_md = std::make_unique<sigmf::SigMF<
+                            sigmf::Global<core::DescrT, antenna::DescrT, capture_details::DescrT>,
+                            sigmf::Capture<core::DescrT, antenna::DescrT, capture_details::DescrT>,
+                            sigmf::Annotation<core::DescrT, antenna::DescrT, capture_details::DescrT>>>();
 
         *sigmf_md = json::parse(meta_buffer.str());
         return sigmf_md;

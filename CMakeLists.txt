@@ -112,6 +112,10 @@ generate_sigmf_header(generated_antenna_ns
   "${CMAKE_CURRENT_SOURCE_DIR}/sigmf_protocols/sigmf_antenna.fbs"
   "${CMAKE_CURRENT_BINARY_DIR}/include"
 )
+generate_sigmf_header(generated_capture_details_ns
+  "${CMAKE_CURRENT_SOURCE_DIR}/sigmf_protocols/sigmf_capture_details.fbs"
+  "${CMAKE_CURRENT_BINARY_DIR}/include"
+)
 generate_sigmf_header(generated_testing_ns
   "${CMAKE_CURRENT_SOURCE_DIR}/sigmf_protocols/testing_protocols.fbs"
   "${CMAKE_CURRENT_BINARY_DIR}/include"
@@ -159,6 +163,7 @@ add_dependencies(libsigmf libsigmf_genheaders)
 add_custom_target(libsigmf_genheaders DEPENDS
         generate_sigmf_target_generated_core_ns
         generate_sigmf_target_generated_antenna_ns
+        generate_sigmf_target_generated_capture_details_ns
         generate_sigmf_target_generated_testing_ns
 )
 

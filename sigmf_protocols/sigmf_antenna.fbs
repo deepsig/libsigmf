@@ -20,7 +20,7 @@ table Global {
 }
 
 table Capture {
-    // the `antenna` extension does not extend this object
+    // `antenna` does not extend `captures`
 }
 
 table Annotation {
