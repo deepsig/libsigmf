@@ -40,7 +40,7 @@ int main() {
     // Now you can get an object back from the original FlatBufferBuilder using a templated GetRoot...
     const core::Annotation *anno = flatbuffers::GetRoot<core::Annotation>(fbb.GetBufferPointer());
     // And inspect the values you put it
-    std::cout << anno->freq_lower_edge() << std::endl;
+    std::cout << anno->freq_lower_edge().value_or(-1) << std::endl;
 
     //
     // Adding more complex types (strings, composite types,... )
@@ -60,7 +60,7 @@ int main() {
 
     testing_vecsBuilder vecbuilder(composite_fbb);
     vecbuilder.add_myvecfortesting(vecoffset);
-    vecbuilder.add_name(vecofstrings);
+    vecbuilder.add_name(stroffset);
     auto testvecadded = vecbuilder.Finish();
     composite_fbb.Finish(testvecadded);
 
@@ -106,8 +106,8 @@ int main() {
     generic_fbb.Finish(flatbuffers::Offset<core::Annotation>(endoftable));
     const core::AnnotationT::TableType *generic_anno = flatbuffers::GetRoot<core::AnnotationT::TableType>(
             generic_fbb.GetBufferPointer());
-    std::cout << generic_anno->freq_lower_edge() << std::endl;
-    std::cout << generic_anno->freq_upper_edge() << std::endl;
+    std::cout << generic_anno->freq_lower_edge().value_or(-1) << std::endl;
+    std::cout << generic_anno->freq_upper_edge().value_or(-1) << std::endl;
     std::cout << generic_anno->generator()->c_str() << std::endl;
 
 }

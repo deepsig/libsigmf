@@ -28,7 +28,6 @@ add_test(NAME simple_variadic_2ns_sigmf_to_json
 # experiment / understand the libsigmf internals on concrete flatbuffers types outside of the heavily templated
 # VariadicDataClass
 
-
-# add_executable(flatbuffer_patterns flatbuffer_patterns.cpp)
-# target_link_libraries(flatbuffer_patterns libsigmf)
-# target_include_directories(flatbuffer_patterns PRIVATE ${CMAKE_BINARY_DIR})
+add_executable(flatbuffer_patterns flatbuffer_patterns.cpp)
+target_link_libraries(flatbuffer_patterns libsigmf)
+target_include_directories(flatbuffer_patterns PRIVATE ${CMAKE_BINARY_DIR}/include)

@@ -1,5 +1,8 @@
 
-
+table testing_vecs {
+    myvecfortesting: [uint32];
+    name: string;
+}
 
 table one {
     fieldone: float;
@@ -11,6 +14,17 @@ table two {
 
 table three {
     fieldthree: float;
+}
+
+table very_nested_thing {
+    wow: uint64;
+}
+
+table composed_type {
+    name: string;
+    comments: [string];
+    index: int32;
+    nnnnnn: [very_nested_thing];
 }
 
 union myunion {

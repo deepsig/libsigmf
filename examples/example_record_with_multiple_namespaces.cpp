@@ -17,6 +17,7 @@
 #include "sigmf_core_generated.h"
 #include "sigmf_antenna_generated.h"
 #include "sigmf.h"
+#include "testing_protocols_generated.h"
 
 int main() {
 

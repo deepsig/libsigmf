@@ -9,15 +9,19 @@
 namespace antenna {
 
 struct Global;
+struct GlobalBuilder;
 struct GlobalT;
 
 struct Capture;
+struct CaptureBuilder;
 struct CaptureT;
 
 struct Annotation;
+struct AnnotationBuilder;
 struct AnnotationT;
 
 struct Descr;
+struct DescrBuilder;
 struct DescrT;
 
 inline const flatbuffers::TypeTable *GlobalTypeTable();
@@ -30,35 +34,26 @@ inline const flatbuffers::TypeTable *DescrTypeTable();
 
 struct GlobalT : public flatbuffers::NativeTable {
   typedef Global TableType;
-  std::string model;
-  std::string type;
-  float low_frequency;
-  float high_frequency;
-  float gain;
-  float horizontal_beam_width;
-  float vertical_beam_width;
-  float cross_polar_discrimination;
-  float voltage_standing_wave_ratio;
-  float cable_loss;
-  bool steerable;
-  bool mobile;
-  std::string version;
-  GlobalT()
-      : low_frequency(0.0f),
-        high_frequency(0.0f),
-        gain(0.0f),
-        horizontal_beam_width(0.0f),
-        vertical_beam_width(0.0f),
-        cross_polar_discrimination(0.0f),
-        voltage_standing_wave_ratio(0.0f),
-        cable_loss(0.0f),
-        steerable(false),
-        mobile(false) {
-  }
+  std::string model{};
+  std::string type{};
+  flatbuffers::Optional<double> low_frequency = flatbuffers::nullopt;
+  flatbuffers::Optional<double> high_frequency = flatbuffers::nullopt;
+  flatbuffers::Optional<double> gain = flatbuffers::nullopt;
+  std::vector<double> horizontal_gain_pattern{};
+  std::vector<double> vertical_gain_pattern{};
+  flatbuffers::Optional<double> horizontal_beam_width = flatbuffers::nullopt;
+  flatbuffers::Optional<double> vertical_beam_width = flatbuffers::nullopt;
+  flatbuffers::Optional<double> cross_polar_discrimination = flatbuffers::nullopt;
+  flatbuffers::Optional<double> voltage_standing_wave_ratio = flatbuffers::nullopt;
+  flatbuffers::Optional<double> cable_loss = flatbuffers::nullopt;
+  flatbuffers::Optional<bool> steerable = flatbuffers::nullopt;
+  flatbuffers::Optional<bool> mobile = flatbuffers::nullopt;
+  flatbuffers::Optional<double> hagl = flatbuffers::nullopt;
 };
 
 struct Global FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
   typedef GlobalT NativeTableType;
+  typedef GlobalBuilder Builder;
   static const flatbuffers::TypeTable *MiniReflectTypeTable() {
     return GlobalTypeTable();
   }
@@ -68,14 +63,16 @@ struct Global FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
     VT_LOW_FREQUENCY = 8,
     VT_HIGH_FREQUENCY = 10,
     VT_GAIN = 12,
-    VT_HORIZONTAL_BEAM_WIDTH = 14,
-    VT_VERTICAL_BEAM_WIDTH = 16,
-    VT_CROSS_POLAR_DISCRIMINATION = 18,
-    VT_VOLTAGE_STANDING_WAVE_RATIO = 20,
-    VT_CABLE_LOSS = 22,
-    VT_STEERABLE = 24,
-    VT_MOBILE = 26,
-    VT_VERSION = 28
+    VT_HORIZONTAL_GAIN_PATTERN = 14,
+    VT_VERTICAL_GAIN_PATTERN = 16,
+    VT_HORIZONTAL_BEAM_WIDTH = 18,
+    VT_VERTICAL_BEAM_WIDTH = 20,
+    VT_CROSS_POLAR_DISCRIMINATION = 22,
+    VT_VOLTAGE_STANDING_WAVE_RATIO = 24,
+    VT_CABLE_LOSS = 26,
+    VT_STEERABLE = 28,
+    VT_MOBILE = 30,
+    VT_HAGL = 32
   };
   const flatbuffers::String *model() const {
     return GetPointer<const flatbuffers::String *>(VT_MODEL);
@@ -83,38 +80,44 @@ struct Global FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
   const flatbuffers::String *type() const {
     return GetPointer<const flatbuffers::String *>(VT_TYPE);
   }
-  float low_frequency() const {
-    return GetField<float>(VT_LOW_FREQUENCY, 0.0f);
+  flatbuffers::Optional<double> low_frequency() const {
+    return GetOptional<double, double>(VT_LOW_FREQUENCY);
   }
-  float high_frequency() const {
-    return GetField<float>(VT_HIGH_FREQUENCY, 0.0f);
+  flatbuffers::Optional<double> high_frequency() const {
+    return GetOptional<double, double>(VT_HIGH_FREQUENCY);
   }
-  float gain() const {
-    return GetField<float>(VT_GAIN, 0.0f);
+  flatbuffers::Optional<double> gain() const {
+    return GetOptional<double, double>(VT_GAIN);
   }
-  float horizontal_beam_width() const {
-    return GetField<float>(VT_HORIZONTAL_BEAM_WIDTH, 0.0f);
+  const flatbuffers::Vector<double> *horizontal_gain_pattern() const {
+    return GetPointer<const flatbuffers::Vector<double> *>(VT_HORIZONTAL_GAIN_PATTERN);
   }
-  float vertical_beam_width() const {
-    return GetField<float>(VT_VERTICAL_BEAM_WIDTH, 0.0f);
+  const flatbuffers::Vector<double> *vertical_gain_pattern() const {
+    return GetPointer<const flatbuffers::Vector<double> *>(VT_VERTICAL_GAIN_PATTERN);
   }
-  float cross_polar_discrimination() const {
-    return GetField<float>(VT_CROSS_POLAR_DISCRIMINATION, 0.0f);
+  flatbuffers::Optional<double> horizontal_beam_width() const {
+    return GetOptional<double, double>(VT_HORIZONTAL_BEAM_WIDTH);
   }
-  float voltage_standing_wave_ratio() const {
-    return GetField<float>(VT_VOLTAGE_STANDING_WAVE_RATIO, 0.0f);
+  flatbuffers::Optional<double> vertical_beam_width() const {
+    return GetOptional<double, double>(VT_VERTICAL_BEAM_WIDTH);
   }
-  float cable_loss() const {
-    return GetField<float>(VT_CABLE_LOSS, 0.0f);
+  flatbuffers::Optional<double> cross_polar_discrimination() const {
+    return GetOptional<double, double>(VT_CROSS_POLAR_DISCRIMINATION);
   }
-  bool steerable() const {
-    return GetField<uint8_t>(VT_STEERABLE, 0) != 0;
+  flatbuffers::Optional<double> voltage_standing_wave_ratio() const {
+    return GetOptional<double, double>(VT_VOLTAGE_STANDING_WAVE_RATIO);
   }
-  bool mobile() const {
-    return GetField<uint8_t>(VT_MOBILE, 0) != 0;
+  flatbuffers::Optional<double> cable_loss() const {
+    return GetOptional<double, double>(VT_CABLE_LOSS);
   }
-  const flatbuffers::String *version() const {
-    return GetPointer<const flatbuffers::String *>(VT_VERSION);
+  flatbuffers::Optional<bool> steerable() const {
+    return GetOptional<uint8_t, bool>(VT_STEERABLE);
+  }
+  flatbuffers::Optional<bool> mobile() const {
+    return GetOptional<uint8_t, bool>(VT_MOBILE);
+  }
+  flatbuffers::Optional<double> hagl() const {
+    return GetOptional<double, double>(VT_HAGL);
   }
   bool Verify(flatbuffers::Verifier &verifier) const {
     return VerifyTableStart(verifier) &&
@@ -122,18 +125,21 @@ struct Global FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
            verifier.VerifyString(model()) &&
            VerifyOffset(verifier, VT_TYPE) &&
            verifier.VerifyString(type()) &&
-           VerifyField<float>(verifier, VT_LOW_FREQUENCY) &&
-           VerifyField<float>(verifier, VT_HIGH_FREQUENCY) &&
-           VerifyField<float>(verifier, VT_GAIN) &&
-           VerifyField<float>(verifier, VT_HORIZONTAL_BEAM_WIDTH) &&
-           VerifyField<float>(verifier, VT_VERTICAL_BEAM_WIDTH) &&
-           VerifyField<float>(verifier, VT_CROSS_POLAR_DISCRIMINATION) &&
-           VerifyField<float>(verifier, VT_VOLTAGE_STANDING_WAVE_RATIO) &&
-           VerifyField<float>(verifier, VT_CABLE_LOSS) &&
+           VerifyField<double>(verifier, VT_LOW_FREQUENCY) &&
+           VerifyField<double>(verifier, VT_HIGH_FREQUENCY) &&
+           VerifyField<double>(verifier, VT_GAIN) &&
+           VerifyOffset(verifier, VT_HORIZONTAL_GAIN_PATTERN) &&
+           verifier.VerifyVector(horizontal_gain_pattern()) &&
+           VerifyOffset(verifier, VT_VERTICAL_GAIN_PATTERN) &&
+           verifier.VerifyVector(vertical_gain_pattern()) &&
+           VerifyField<double>(verifier, VT_HORIZONTAL_BEAM_WIDTH) &&
+           VerifyField<double>(verifier, VT_VERTICAL_BEAM_WIDTH) &&
+           VerifyField<double>(verifier, VT_CROSS_POLAR_DISCRIMINATION) &&
+           VerifyField<double>(verifier, VT_VOLTAGE_STANDING_WAVE_RATIO) &&
+           VerifyField<double>(verifier, VT_CABLE_LOSS) &&
            VerifyField<uint8_t>(verifier, VT_STEERABLE) &&
            VerifyField<uint8_t>(verifier, VT_MOBILE) &&
-           VerifyOffset(verifier, VT_VERSION) &&
-           verifier.VerifyString(version()) &&
+           VerifyField<double>(verifier, VT_HAGL) &&
            verifier.EndTable();
   }
   GlobalT *UnPack(const flatbuffers::resolver_function_t *_resolver = nullptr) const;
@@ -142,6 +148,7 @@ struct Global FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
 };
 
 struct GlobalBuilder {
+  typedef Global Table;
   flatbuffers::FlatBufferBuilder &fbb_;
   flatbuffers::uoffset_t start_;
   void add_model(flatbuffers::Offset<flatbuffers::String> model) {
@@ -150,44 +157,49 @@ struct GlobalBuilder {
   void add_type(flatbuffers::Offset<flatbuffers::String> type) {
     fbb_.AddOffset(Global::VT_TYPE, type);
   }
-  void add_low_frequency(float low_frequency) {
-    fbb_.AddElement<float>(Global::VT_LOW_FREQUENCY, low_frequency, 0.0f);
+  void add_low_frequency(double low_frequency) {
+    fbb_.AddElement<double>(Global::VT_LOW_FREQUENCY, low_frequency);
   }
-  void add_high_frequency(float high_frequency) {
-    fbb_.AddElement<float>(Global::VT_HIGH_FREQUENCY, high_frequency, 0.0f);
+  void add_high_frequency(double high_frequency) {
+    fbb_.AddElement<double>(Global::VT_HIGH_FREQUENCY, high_frequency);
   }
-  void add_gain(float gain) {
-    fbb_.AddElement<float>(Global::VT_GAIN, gain, 0.0f);
+  void add_gain(double gain) {
+    fbb_.AddElement<double>(Global::VT_GAIN, gain);
   }
-  void add_horizontal_beam_width(float horizontal_beam_width) {
-    fbb_.AddElement<float>(Global::VT_HORIZONTAL_BEAM_WIDTH, horizontal_beam_width, 0.0f);
+  void add_horizontal_gain_pattern(flatbuffers::Offset<flatbuffers::Vector<double>> horizontal_gain_pattern) {
+    fbb_.AddOffset(Global::VT_HORIZONTAL_GAIN_PATTERN, horizontal_gain_pattern);
   }
-  void add_vertical_beam_width(float vertical_beam_width) {
-    fbb_.AddElement<float>(Global::VT_VERTICAL_BEAM_WIDTH, vertical_beam_width, 0.0f);
+  void add_vertical_gain_pattern(flatbuffers::Offset<flatbuffers::Vector<double>> vertical_gain_pattern) {
+    fbb_.AddOffset(Global::VT_VERTICAL_GAIN_PATTERN, vertical_gain_pattern);
   }
-  void add_cross_polar_discrimination(float cross_polar_discrimination) {
-    fbb_.AddElement<float>(Global::VT_CROSS_POLAR_DISCRIMINATION, cross_polar_discrimination, 0.0f);
+  void add_horizontal_beam_width(double horizontal_beam_width) {
+    fbb_.AddElement<double>(Global::VT_HORIZONTAL_BEAM_WIDTH, horizontal_beam_width);
   }
-  void add_voltage_standing_wave_ratio(float voltage_standing_wave_ratio) {
-    fbb_.AddElement<float>(Global::VT_VOLTAGE_STANDING_WAVE_RATIO, voltage_standing_wave_ratio, 0.0f);
+  void add_vertical_beam_width(double vertical_beam_width) {
+    fbb_.AddElement<double>(Global::VT_VERTICAL_BEAM_WIDTH, vertical_beam_width);
   }
-  void add_cable_loss(float cable_loss) {
-    fbb_.AddElement<float>(Global::VT_CABLE_LOSS, cable_loss, 0.0f);
+  void add_cross_polar_discrimination(double cross_polar_discrimination) {
+    fbb_.AddElement<double>(Global::VT_CROSS_POLAR_DISCRIMINATION, cross_polar_discrimination);
+  }
+  void add_voltage_standing_wave_ratio(double voltage_standing_wave_ratio) {
+    fbb_.AddElement<double>(Global::VT_VOLTAGE_STANDING_WAVE_RATIO, voltage_standing_wave_ratio);
+  }
+  void add_cable_loss(double cable_loss) {
+    fbb_.AddElement<double>(Global::VT_CABLE_LOSS, cable_loss);
   }
   void add_steerable(bool steerable) {
-    fbb_.AddElement<uint8_t>(Global::VT_STEERABLE, static_cast<uint8_t>(steerable), 0);
+    fbb_.AddElement<uint8_t>(Global::VT_STEERABLE, static_cast<uint8_t>(steerable));
   }
   void add_mobile(bool mobile) {
-    fbb_.AddElement<uint8_t>(Global::VT_MOBILE, static_cast<uint8_t>(mobile), 0);
+    fbb_.AddElement<uint8_t>(Global::VT_MOBILE, static_cast<uint8_t>(mobile));
   }
-  void add_version(flatbuffers::Offset<flatbuffers::String> version) {
-    fbb_.AddOffset(Global::VT_VERSION, version);
+  void add_hagl(double hagl) {
+    fbb_.AddElement<double>(Global::VT_HAGL, hagl);
   }
   explicit GlobalBuilder(flatbuffers::FlatBufferBuilder &_fbb)
         : fbb_(_fbb) {
     start_ = fbb_.StartTable();
   }
-  GlobalBuilder &operator=(const GlobalBuilder &);
   flatbuffers::Offset<Global> Finish() {
     const auto end = fbb_.EndTable(start_);
     auto o = flatbuffers::Offset<Global>(end);
@@ -199,31 +211,35 @@ inline flatbuffers::Offset<Global> CreateGlobal(
     flatbuffers::FlatBufferBuilder &_fbb,
     flatbuffers::Offset<flatbuffers::String> model = 0,
     flatbuffers::Offset<flatbuffers::String> type = 0,
-    float low_frequency = 0.0f,
-    float high_frequency = 0.0f,
-    float gain = 0.0f,
-    float horizontal_beam_width = 0.0f,
-    float vertical_beam_width = 0.0f,
-    float cross_polar_discrimination = 0.0f,
-    float voltage_standing_wave_ratio = 0.0f,
-    float cable_loss = 0.0f,
-    bool steerable = false,
-    bool mobile = false,
-    flatbuffers::Offset<flatbuffers::String> version = 0) {
+    flatbuffers::Optional<double> low_frequency = flatbuffers::nullopt,
+    flatbuffers::Optional<double> high_frequency = flatbuffers::nullopt,
+    flatbuffers::Optional<double> gain = flatbuffers::nullopt,
+    flatbuffers::Offset<flatbuffers::Vector<double>> horizontal_gain_pattern = 0,
+    flatbuffers::Offset<flatbuffers::Vector<double>> vertical_gain_pattern = 0,
+    flatbuffers::Optional<double> horizontal_beam_width = flatbuffers::nullopt,
+    flatbuffers::Optional<double> vertical_beam_width = flatbuffers::nullopt,
+    flatbuffers::Optional<double> cross_polar_discrimination = flatbuffers::nullopt,
+    flatbuffers::Optional<double> voltage_standing_wave_ratio = flatbuffers::nullopt,
+    flatbuffers::Optional<double> cable_loss = flatbuffers::nullopt,
+    flatbuffers::Optional<bool> steerable = flatbuffers::nullopt,
+    flatbuffers::Optional<bool> mobile = flatbuffers::nullopt,
+    flatbuffers::Optional<double> hagl = flatbuffers::nullopt) {
   GlobalBuilder builder_(_fbb);
-  builder_.add_version(version);
-  builder_.add_cable_loss(cable_loss);
-  builder_.add_voltage_standing_wave_ratio(voltage_standing_wave_ratio);
-  builder_.add_cross_polar_discrimination(cross_polar_discrimination);
-  builder_.add_vertical_beam_width(vertical_beam_width);
-  builder_.add_horizontal_beam_width(horizontal_beam_width);
-  builder_.add_gain(gain);
-  builder_.add_high_frequency(high_frequency);
-  builder_.add_low_frequency(low_frequency);
+  if(hagl) { builder_.add_hagl(*hagl); }
+  if(cable_loss) { builder_.add_cable_loss(*cable_loss); }
+  if(voltage_standing_wave_ratio) { builder_.add_voltage_standing_wave_ratio(*voltage_standing_wave_ratio); }
+  if(cross_polar_discrimination) { builder_.add_cross_polar_discrimination(*cross_polar_discrimination); }
+  if(vertical_beam_width) { builder_.add_vertical_beam_width(*vertical_beam_width); }
+  if(horizontal_beam_width) { builder_.add_horizontal_beam_width(*horizontal_beam_width); }
+  if(gain) { builder_.add_gain(*gain); }
+  if(high_frequency) { builder_.add_high_frequency(*high_frequency); }
+  if(low_frequency) { builder_.add_low_frequency(*low_frequency); }
+  builder_.add_vertical_gain_pattern(vertical_gain_pattern);
+  builder_.add_horizontal_gain_pattern(horizontal_gain_pattern);
   builder_.add_type(type);
   builder_.add_model(model);
-  builder_.add_mobile(mobile);
-  builder_.add_steerable(steerable);
+  if(mobile) { builder_.add_mobile(*mobile); }
+  if(steerable) { builder_.add_steerable(*steerable); }
   return builder_.Finish();
 }
 
@@ -231,20 +247,23 @@ inline flatbuffers::Offset<Global> CreateGlobalDirect(
     flatbuffers::FlatBufferBuilder &_fbb,
     const char *model = nullptr,
     const char *type = nullptr,
-    float low_frequency = 0.0f,
-    float high_frequency = 0.0f,
-    float gain = 0.0f,
-    float horizontal_beam_width = 0.0f,
-    float vertical_beam_width = 0.0f,
-    float cross_polar_discrimination = 0.0f,
-    float voltage_standing_wave_ratio = 0.0f,
-    float cable_loss = 0.0f,
-    bool steerable = false,
-    bool mobile = false,
-    const char *version = nullptr) {
+    flatbuffers::Optional<double> low_frequency = flatbuffers::nullopt,
+    flatbuffers::Optional<double> high_frequency = flatbuffers::nullopt,
+    flatbuffers::Optional<double> gain = flatbuffers::nullopt,
+    const std::vector<double> *horizontal_gain_pattern = nullptr,
+    const std::vector<double> *vertical_gain_pattern = nullptr,
+    flatbuffers::Optional<double> horizontal_beam_width = flatbuffers::nullopt,
+    flatbuffers::Optional<double> vertical_beam_width = flatbuffers::nullopt,
+    flatbuffers::Optional<double> cross_polar_discrimination = flatbuffers::nullopt,
+    flatbuffers::Optional<double> voltage_standing_wave_ratio = flatbuffers::nullopt,
+    flatbuffers::Optional<double> cable_loss = flatbuffers::nullopt,
+    flatbuffers::Optional<bool> steerable = flatbuffers::nullopt,
+    flatbuffers::Optional<bool> mobile = flatbuffers::nullopt,
+    flatbuffers::Optional<double> hagl = flatbuffers::nullopt) {
   auto model__ = model ? _fbb.CreateString(model) : 0;
   auto type__ = type ? _fbb.CreateString(type) : 0;
-  auto version__ = version ? _fbb.CreateString(version) : 0;
+  auto horizontal_gain_pattern__ = horizontal_gain_pattern ? _fbb.CreateVector<double>(*horizontal_gain_pattern) : 0;
+  auto vertical_gain_pattern__ = vertical_gain_pattern ? _fbb.CreateVector<double>(*vertical_gain_pattern) : 0;
   return antenna::CreateGlobal(
       _fbb,
       model__,
@@ -252,6 +271,8 @@ inline flatbuffers::Offset<Global> CreateGlobalDirect(
       low_frequency,
       high_frequency,
       gain,
+      horizontal_gain_pattern__,
+      vertical_gain_pattern__,
       horizontal_beam_width,
       vertical_beam_width,
       cross_polar_discrimination,
@@ -259,19 +280,18 @@ inline flatbuffers::Offset<Global> CreateGlobalDirect(
       cable_loss,
       steerable,
       mobile,
-      version__);
+      hagl);
 }
 
 flatbuffers::Offset<Global> CreateGlobal(flatbuffers::FlatBufferBuilder &_fbb, const GlobalT *_o, const flatbuffers::rehasher_function_t *_rehasher = nullptr);
 
 struct CaptureT : public flatbuffers::NativeTable {
   typedef Capture TableType;
-  CaptureT() {
-  }
 };
 
 struct Capture FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
   typedef CaptureT NativeTableType;
+  typedef CaptureBuilder Builder;
   static const flatbuffers::TypeTable *MiniReflectTypeTable() {
     return CaptureTypeTable();
   }
@@ -285,13 +305,13 @@ struct Capture FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
 };
 
 struct CaptureBuilder {
+  typedef Capture Table;
   flatbuffers::FlatBufferBuilder &fbb_;
   flatbuffers::uoffset_t start_;
   explicit CaptureBuilder(flatbuffers::FlatBufferBuilder &_fbb)
         : fbb_(_fbb) {
     start_ = fbb_.StartTable();
   }
-  CaptureBuilder &operator=(const CaptureBuilder &);
   flatbuffers::Offset<Capture> Finish() {
     const auto end = fbb_.EndTable(start_);
     auto o = flatbuffers::Offset<Capture>(end);
@@ -309,17 +329,14 @@ flatbuffers::Offset<Capture> CreateCapture(flatbuffers::FlatBufferBuilder &_fbb,
 
 struct AnnotationT : public flatbuffers::NativeTable {
   typedef Annotation TableType;
-  double azimuth_angle;
-  double elevation_angle;
-  std::string polarization;
-  AnnotationT()
-      : azimuth_angle(0.0),
-        elevation_angle(0.0) {
-  }
+  flatbuffers::Optional<double> azimuth_angle = flatbuffers::nullopt;
+  flatbuffers::Optional<double> elevation_angle = flatbuffers::nullopt;
+  std::string polarization{};
 };
 
 struct Annotation FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
   typedef AnnotationT NativeTableType;
+  typedef AnnotationBuilder Builder;
   static const flatbuffers::TypeTable *MiniReflectTypeTable() {
     return AnnotationTypeTable();
   }
@@ -328,11 +345,11 @@ struct Annotation FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
     VT_ELEVATION_ANGLE = 6,
     VT_POLARIZATION = 8
   };
-  double azimuth_angle() const {
-    return GetField<double>(VT_AZIMUTH_ANGLE, 0.0);
+  flatbuffers::Optional<double> azimuth_angle() const {
+    return GetOptional<double, double>(VT_AZIMUTH_ANGLE);
   }
-  double elevation_angle() const {
-    return GetField<double>(VT_ELEVATION_ANGLE, 0.0);
+  flatbuffers::Optional<double> elevation_angle() const {
+    return GetOptional<double, double>(VT_ELEVATION_ANGLE);
   }
   const flatbuffers::String *polarization() const {
     return GetPointer<const flatbuffers::String *>(VT_POLARIZATION);
@@ -351,13 +368,14 @@ struct Annotation FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
 };
 
 struct AnnotationBuilder {
+  typedef Annotation Table;
   flatbuffers::FlatBufferBuilder &fbb_;
   flatbuffers::uoffset_t start_;
   void add_azimuth_angle(double azimuth_angle) {
-    fbb_.AddElement<double>(Annotation::VT_AZIMUTH_ANGLE, azimuth_angle, 0.0);
+    fbb_.AddElement<double>(Annotation::VT_AZIMUTH_ANGLE, azimuth_angle);
   }
   void add_elevation_angle(double elevation_angle) {
-    fbb_.AddElement<double>(Annotation::VT_ELEVATION_ANGLE, elevation_angle, 0.0);
+    fbb_.AddElement<double>(Annotation::VT_ELEVATION_ANGLE, elevation_angle);
   }
   void add_polarization(flatbuffers::Offset<flatbuffers::String> polarization) {
     fbb_.AddOffset(Annotation::VT_POLARIZATION, polarization);
@@ -366,7 +384,6 @@ struct AnnotationBuilder {
         : fbb_(_fbb) {
     start_ = fbb_.StartTable();
   }
-  AnnotationBuilder &operator=(const AnnotationBuilder &);
   flatbuffers::Offset<Annotation> Finish() {
     const auto end = fbb_.EndTable(start_);
     auto o = flatbuffers::Offset<Annotation>(end);
@@ -376,20 +393,20 @@ struct AnnotationBuilder {
 
 inline flatbuffers::Offset<Annotation> CreateAnnotation(
     flatbuffers::FlatBufferBuilder &_fbb,
-    double azimuth_angle = 0.0,
-    double elevation_angle = 0.0,
+    flatbuffers::Optional<double> azimuth_angle = flatbuffers::nullopt,
+    flatbuffers::Optional<double> elevation_angle = flatbuffers::nullopt,
     flatbuffers::Offset<flatbuffers::String> polarization = 0) {
   AnnotationBuilder builder_(_fbb);
-  builder_.add_elevation_angle(elevation_angle);
-  builder_.add_azimuth_angle(azimuth_angle);
+  if(elevation_angle) { builder_.add_elevation_angle(*elevation_angle); }
+  if(azimuth_angle) { builder_.add_azimuth_angle(*azimuth_angle); }
   builder_.add_polarization(polarization);
   return builder_.Finish();
 }
 
 inline flatbuffers::Offset<Annotation> CreateAnnotationDirect(
     flatbuffers::FlatBufferBuilder &_fbb,
-    double azimuth_angle = 0.0,
-    double elevation_angle = 0.0,
+    flatbuffers::Optional<double> azimuth_angle = flatbuffers::nullopt,
+    flatbuffers::Optional<double> elevation_angle = flatbuffers::nullopt,
     const char *polarization = nullptr) {
   auto polarization__ = polarization ? _fbb.CreateString(polarization) : 0;
   return antenna::CreateAnnotation(
@@ -403,15 +420,14 @@ flatbuffers::Offset<Annotation> CreateAnnotation(flatbuffers::FlatBufferBuilder 
 
 struct DescrT : public flatbuffers::NativeTable {
   typedef Descr TableType;
-  std::unique_ptr<GlobalT> global;
-  std::unique_ptr<AnnotationT> annotation;
-  std::unique_ptr<CaptureT> capture;
-  DescrT() {
-  }
+  std::unique_ptr<antenna::GlobalT> global{};
+  std::unique_ptr<antenna::AnnotationT> annotation{};
+  std::unique_ptr<antenna::CaptureT> capture{};
 };
 
 struct Descr FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
   typedef DescrT NativeTableType;
+  typedef DescrBuilder Builder;
   static const flatbuffers::TypeTable *MiniReflectTypeTable() {
     return DescrTypeTable();
   }
@@ -420,14 +436,14 @@ struct Descr FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
     VT_ANNOTATION = 6,
     VT_CAPTURE = 8
   };
-  const Global *global() const {
-    return GetPointer<const Global *>(VT_GLOBAL);
+  const antenna::Global *global() const {
+    return GetPointer<const antenna::Global *>(VT_GLOBAL);
   }
-  const Annotation *annotation() const {
-    return GetPointer<const Annotation *>(VT_ANNOTATION);
+  const antenna::Annotation *annotation() const {
+    return GetPointer<const antenna::Annotation *>(VT_ANNOTATION);
   }
-  const Capture *capture() const {
-    return GetPointer<const Capture *>(VT_CAPTURE);
+  const antenna::Capture *capture() const {
+    return GetPointer<const antenna::Capture *>(VT_CAPTURE);
   }
   bool Verify(flatbuffers::Verifier &verifier) const {
     return VerifyTableStart(verifier) &&
@@ -445,22 +461,22 @@ struct Descr FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
 };
 
 struct DescrBuilder {
+  typedef Descr Table;
   flatbuffers::FlatBufferBuilder &fbb_;
   flatbuffers::uoffset_t start_;
-  void add_global(flatbuffers::Offset<Global> global) {
+  void add_global(flatbuffers::Offset<antenna::Global> global) {
     fbb_.AddOffset(Descr::VT_GLOBAL, global);
   }
-  void add_annotation(flatbuffers::Offset<Annotation> annotation) {
+  void add_annotation(flatbuffers::Offset<antenna::Annotation> annotation) {
     fbb_.AddOffset(Descr::VT_ANNOTATION, annotation);
   }
-  void add_capture(flatbuffers::Offset<Capture> capture) {
+  void add_capture(flatbuffers::Offset<antenna::Capture> capture) {
     fbb_.AddOffset(Descr::VT_CAPTURE, capture);
   }
   explicit DescrBuilder(flatbuffers::FlatBufferBuilder &_fbb)
         : fbb_(_fbb) {
     start_ = fbb_.StartTable();
   }
-  DescrBuilder &operator=(const DescrBuilder &);
   flatbuffers::Offset<Descr> Finish() {
     const auto end = fbb_.EndTable(start_);
     auto o = flatbuffers::Offset<Descr>(end);
@@ -470,9 +486,9 @@ struct DescrBuilder {
 
 inline flatbuffers::Offset<Descr> CreateDescr(
     flatbuffers::FlatBufferBuilder &_fbb,
-    flatbuffers::Offset<Global> global = 0,
-    flatbuffers::Offset<Annotation> annotation = 0,
-    flatbuffers::Offset<Capture> capture = 0) {
+    flatbuffers::Offset<antenna::Global> global = 0,
+    flatbuffers::Offset<antenna::Annotation> annotation = 0,
+    flatbuffers::Offset<antenna::Capture> capture = 0) {
   DescrBuilder builder_(_fbb);
   builder_.add_capture(capture);
   builder_.add_annotation(annotation);
@@ -483,27 +499,29 @@ inline flatbuffers::Offset<Descr> CreateDescr(
 flatbuffers::Offset<Descr> CreateDescr(flatbuffers::FlatBufferBuilder &_fbb, const DescrT *_o, const flatbuffers::rehasher_function_t *_rehasher = nullptr);
 
 inline GlobalT *Global::UnPack(const flatbuffers::resolver_function_t *_resolver) const {
-  auto _o = new GlobalT();
-  UnPackTo(_o, _resolver);
-  return _o;
+  auto _o = std::unique_ptr<GlobalT>(new GlobalT());
+  UnPackTo(_o.get(), _resolver);
+  return _o.release();
 }
 
 inline void Global::UnPackTo(GlobalT *_o, const flatbuffers::resolver_function_t *_resolver) const {
   (void)_o;
   (void)_resolver;
-  { auto _e = model(); if (_e) _o->model = _e->str(); };
-  { auto _e = type(); if (_e) _o->type = _e->str(); };
-  { auto _e = low_frequency(); _o->low_frequency = _e; };
-  { auto _e = high_frequency(); _o->high_frequency = _e; };
-  { auto _e = gain(); _o->gain = _e; };
-  { auto _e = horizontal_beam_width(); _o->horizontal_beam_width = _e; };
-  { auto _e = vertical_beam_width(); _o->vertical_beam_width = _e; };
-  { auto _e = cross_polar_discrimination(); _o->cross_polar_discrimination = _e; };
-  { auto _e = voltage_standing_wave_ratio(); _o->voltage_standing_wave_ratio = _e; };
-  { auto _e = cable_loss(); _o->cable_loss = _e; };
-  { auto _e = steerable(); _o->steerable = _e; };
-  { auto _e = mobile(); _o->mobile = _e; };
-  { auto _e = version(); if (_e) _o->version = _e->str(); };
+  { auto _e = model(); if (_e) _o->model = _e->str(); }
+  { auto _e = type(); if (_e) _o->type = _e->str(); }
+  { auto _e = low_frequency(); _o->low_frequency = _e; }
+  { auto _e = high_frequency(); _o->high_frequency = _e; }
+  { auto _e = gain(); _o->gain = _e; }
+  { auto _e = horizontal_gain_pattern(); if (_e) { _o->horizontal_gain_pattern.resize(_e->size()); for (flatbuffers::uoffset_t _i = 0; _i < _e->size(); _i++) { _o->horizontal_gain_pattern[_i] = _e->Get(_i); } } }
+  { auto _e = vertical_gain_pattern(); if (_e) { _o->vertical_gain_pattern.resize(_e->size()); for (flatbuffers::uoffset_t _i = 0; _i < _e->size(); _i++) { _o->vertical_gain_pattern[_i] = _e->Get(_i); } } }
+  { auto _e = horizontal_beam_width(); _o->horizontal_beam_width = _e; }
+  { auto _e = vertical_beam_width(); _o->vertical_beam_width = _e; }
+  { auto _e = cross_polar_discrimination(); _o->cross_polar_discrimination = _e; }
+  { auto _e = voltage_standing_wave_ratio(); _o->voltage_standing_wave_ratio = _e; }
+  { auto _e = cable_loss(); _o->cable_loss = _e; }
+  { auto _e = steerable(); _o->steerable = _e; }
+  { auto _e = mobile(); _o->mobile = _e; }
+  { auto _e = hagl(); _o->hagl = _e; }
 }
 
 inline flatbuffers::Offset<Global> Global::Pack(flatbuffers::FlatBufferBuilder &_fbb, const GlobalT* _o, const flatbuffers::rehasher_function_t *_rehasher) {
@@ -519,6 +537,8 @@ inline flatbuffers::Offset<Global> CreateGlobal(flatbuffers::FlatBufferBuilder &
   auto _low_frequency = _o->low_frequency;
   auto _high_frequency = _o->high_frequency;
   auto _gain = _o->gain;
+  auto _horizontal_gain_pattern = _o->horizontal_gain_pattern.size() ? _fbb.CreateVector(_o->horizontal_gain_pattern) : 0;
+  auto _vertical_gain_pattern = _o->vertical_gain_pattern.size() ? _fbb.CreateVector(_o->vertical_gain_pattern) : 0;
   auto _horizontal_beam_width = _o->horizontal_beam_width;
   auto _vertical_beam_width = _o->vertical_beam_width;
   auto _cross_polar_discrimination = _o->cross_polar_discrimination;
@@ -526,7 +546,7 @@ inline flatbuffers::Offset<Global> CreateGlobal(flatbuffers::FlatBufferBuilder &
   auto _cable_loss = _o->cable_loss;
   auto _steerable = _o->steerable;
   auto _mobile = _o->mobile;
-  auto _version = _o->version.empty() ? 0 : _fbb.CreateString(_o->version);
+  auto _hagl = _o->hagl;
   return antenna::CreateGlobal(
       _fbb,
       _model,
@@ -534,6 +554,8 @@ inline flatbuffers::Offset<Global> CreateGlobal(flatbuffers::FlatBufferBuilder &
       _low_frequency,
       _high_frequency,
       _gain,
+      _horizontal_gain_pattern,
+      _vertical_gain_pattern,
       _horizontal_beam_width,
       _vertical_beam_width,
       _cross_polar_discrimination,
@@ -541,13 +563,13 @@ inline flatbuffers::Offset<Global> CreateGlobal(flatbuffers::FlatBufferBuilder &
       _cable_loss,
       _steerable,
       _mobile,
-      _version);
+      _hagl);
 }
 
 inline CaptureT *Capture::UnPack(const flatbuffers::resolver_function_t *_resolver) const {
-  auto _o = new CaptureT();
-  UnPackTo(_o, _resolver);
-  return _o;
+  auto _o = std::unique_ptr<CaptureT>(new CaptureT());
+  UnPackTo(_o.get(), _resolver);
+  return _o.release();
 }
 
 inline void Capture::UnPackTo(CaptureT *_o, const flatbuffers::resolver_function_t *_resolver) const {
@@ -568,17 +590,17 @@ inline flatbuffers::Offset<Capture> CreateCapture(flatbuffers::FlatBufferBuilder
 }
 
 inline AnnotationT *Annotation::UnPack(const flatbuffers::resolver_function_t *_resolver) const {
-  auto _o = new AnnotationT();
-  UnPackTo(_o, _resolver);
-  return _o;
+  auto _o = std::unique_ptr<AnnotationT>(new AnnotationT());
+  UnPackTo(_o.get(), _resolver);
+  return _o.release();
 }
 
 inline void Annotation::UnPackTo(AnnotationT *_o, const flatbuffers::resolver_function_t *_resolver) const {
   (void)_o;
   (void)_resolver;
-  { auto _e = azimuth_angle(); _o->azimuth_angle = _e; };
-  { auto _e = elevation_angle(); _o->elevation_angle = _e; };
-  { auto _e = polarization(); if (_e) _o->polarization = _e->str(); };
+  { auto _e = azimuth_angle(); _o->azimuth_angle = _e; }
+  { auto _e = elevation_angle(); _o->elevation_angle = _e; }
+  { auto _e = polarization(); if (_e) _o->polarization = _e->str(); }
 }
 
 inline flatbuffers::Offset<Annotation> Annotation::Pack(flatbuffers::FlatBufferBuilder &_fbb, const AnnotationT* _o, const flatbuffers::rehasher_function_t *_rehasher) {
@@ -600,17 +622,17 @@ inline flatbuffers::Offset<Annotation> CreateAnnotation(flatbuffers::FlatBufferB
 }
 
 inline DescrT *Descr::UnPack(const flatbuffers::resolver_function_t *_resolver) const {
-  auto _o = new DescrT();
-  UnPackTo(_o, _resolver);
-  return _o;
+  auto _o = std::unique_ptr<DescrT>(new DescrT());
+  UnPackTo(_o.get(), _resolver);
+  return _o.release();
 }
 
 inline void Descr::UnPackTo(DescrT *_o, const flatbuffers::resolver_function_t *_resolver) const {
   (void)_o;
   (void)_resolver;
-  { auto _e = global(); if (_e) _o->global = std::unique_ptr<GlobalT>(_e->UnPack(_resolver)); };
-  { auto _e = annotation(); if (_e) _o->annotation = std::unique_ptr<AnnotationT>(_e->UnPack(_resolver)); };
-  { auto _e = capture(); if (_e) _o->capture = std::unique_ptr<CaptureT>(_e->UnPack(_resolver)); };
+  { auto _e = global(); if (_e) _o->global = std::unique_ptr<antenna::GlobalT>(_e->UnPack(_resolver)); }
+  { auto _e = annotation(); if (_e) _o->annotation = std::unique_ptr<antenna::AnnotationT>(_e->UnPack(_resolver)); }
+  { auto _e = capture(); if (_e) _o->capture = std::unique_ptr<antenna::CaptureT>(_e->UnPack(_resolver)); }
 }
 
 inline flatbuffers::Offset<Descr> Descr::Pack(flatbuffers::FlatBufferBuilder &_fbb, const DescrT* _o, const flatbuffers::rehasher_function_t *_rehasher) {
@@ -635,17 +657,19 @@ inline const flatbuffers::TypeTable *GlobalTypeTable() {
   static const flatbuffers::TypeCode type_codes[] = {
     { flatbuffers::ET_STRING, 0, -1 },
     { flatbuffers::ET_STRING, 0, -1 },
-    { flatbuffers::ET_FLOAT, 0, -1 },
-    { flatbuffers::ET_FLOAT, 0, -1 },
-    { flatbuffers::ET_FLOAT, 0, -1 },
-    { flatbuffers::ET_FLOAT, 0, -1 },
-    { flatbuffers::ET_FLOAT, 0, -1 },
-    { flatbuffers::ET_FLOAT, 0, -1 },
-    { flatbuffers::ET_FLOAT, 0, -1 },
-    { flatbuffers::ET_FLOAT, 0, -1 },
+    { flatbuffers::ET_DOUBLE, 0, -1 },
+    { flatbuffers::ET_DOUBLE, 0, -1 },
+    { flatbuffers::ET_DOUBLE, 0, -1 },
+    { flatbuffers::ET_DOUBLE, 1, -1 },
+    { flatbuffers::ET_DOUBLE, 1, -1 },
+    { flatbuffers::ET_DOUBLE, 0, -1 },
+    { flatbuffers::ET_DOUBLE, 0, -1 },
+    { flatbuffers::ET_DOUBLE, 0, -1 },
+    { flatbuffers::ET_DOUBLE, 0, -1 },
+    { flatbuffers::ET_DOUBLE, 0, -1 },
     { flatbuffers::ET_BOOL, 0, -1 },
     { flatbuffers::ET_BOOL, 0, -1 },
-    { flatbuffers::ET_STRING, 0, -1 }
+    { flatbuffers::ET_DOUBLE, 0, -1 }
   };
   static const char * const names[] = {
     "model",
@@ -653,6 +677,8 @@ inline const flatbuffers::TypeTable *GlobalTypeTable() {
     "low_frequency",
     "high_frequency",
     "gain",
+    "horizontal_gain_pattern",
+    "vertical_gain_pattern",
     "horizontal_beam_width",
     "vertical_beam_width",
     "cross_polar_discrimination",
@@ -660,17 +686,17 @@ inline const flatbuffers::TypeTable *GlobalTypeTable() {
     "cable_loss",
     "steerable",
     "mobile",
-    "version"
+    "hagl"
   };
   static const flatbuffers::TypeTable tt = {
-    flatbuffers::ST_TABLE, 13, type_codes, nullptr, nullptr, names
+    flatbuffers::ST_TABLE, 15, type_codes, nullptr, nullptr, nullptr, names
   };
   return &tt;
 }
 
 inline const flatbuffers::TypeTable *CaptureTypeTable() {
   static const flatbuffers::TypeTable tt = {
-    flatbuffers::ST_TABLE, 0, nullptr, nullptr, nullptr, nullptr
+    flatbuffers::ST_TABLE, 0, nullptr, nullptr, nullptr, nullptr, nullptr
   };
   return &tt;
 }
@@ -687,7 +713,7 @@ inline const flatbuffers::TypeTable *AnnotationTypeTable() {
     "polarization"
   };
   static const flatbuffers::TypeTable tt = {
-    flatbuffers::ST_TABLE, 3, type_codes, nullptr, nullptr, names
+    flatbuffers::ST_TABLE, 3, type_codes, nullptr, nullptr, nullptr, names
   };
   return &tt;
 }
@@ -699,9 +725,9 @@ inline const flatbuffers::TypeTable *DescrTypeTable() {
     { flatbuffers::ET_SEQUENCE, 0, 2 }
   };
   static const flatbuffers::TypeFunction type_refs[] = {
-    GlobalTypeTable,
-    AnnotationTypeTable,
-    CaptureTypeTable
+    antenna::GlobalTypeTable,
+    antenna::AnnotationTypeTable,
+    antenna::CaptureTypeTable
   };
   static const char * const names[] = {
     "global",
@@ -709,7 +735,7 @@ inline const flatbuffers::TypeTable *DescrTypeTable() {
     "capture"
   };
   static const flatbuffers::TypeTable tt = {
-    flatbuffers::ST_TABLE, 3, type_codes, type_refs, nullptr, names
+    flatbuffers::ST_TABLE, 3, type_codes, type_refs, nullptr, nullptr, names
   };
   return &tt;
 }

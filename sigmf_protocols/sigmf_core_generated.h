@@ -8,17 +8,37 @@
 
 namespace core {
 
+struct sigmf_extension;
+struct sigmf_extensionBuilder;
+struct sigmf_extensionT;
+
+struct geojson_point;
+struct geojson_pointBuilder;
+struct geojson_pointT;
+
 struct Global;
+struct GlobalBuilder;
 struct GlobalT;
 
 struct Capture;
+struct CaptureBuilder;
 struct CaptureT;
 
 struct Annotation;
+struct AnnotationBuilder;
 struct AnnotationT;
 
+struct Collection;
+struct CollectionBuilder;
+struct CollectionT;
+
 struct Descr;
+struct DescrBuilder;
 struct DescrT;
+
+inline const flatbuffers::TypeTable *sigmf_extensionTypeTable();
+
+inline const flatbuffers::TypeTable *geojson_pointTypeTable();
 
 inline const flatbuffers::TypeTable *GlobalTypeTable();
 
@@ -26,30 +46,204 @@ inline const flatbuffers::TypeTable *CaptureTypeTable();
 
 inline const flatbuffers::TypeTable *AnnotationTypeTable();
 
+inline const flatbuffers::TypeTable *CollectionTypeTable();
+
 inline const flatbuffers::TypeTable *DescrTypeTable();
+
+struct sigmf_extensionT : public flatbuffers::NativeTable {
+  typedef sigmf_extension TableType;
+  std::string name{};
+  std::string version{};
+  flatbuffers::Optional<bool> optional = flatbuffers::nullopt;
+};
+
+struct sigmf_extension FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
+  typedef sigmf_extensionT NativeTableType;
+  typedef sigmf_extensionBuilder Builder;
+  static const flatbuffers::TypeTable *MiniReflectTypeTable() {
+    return sigmf_extensionTypeTable();
+  }
+  enum FlatBuffersVTableOffset FLATBUFFERS_VTABLE_UNDERLYING_TYPE {
+    VT_NAME = 4,
+    VT_VERSION = 6,
+    VT_OPTIONAL = 8
+  };
+  const flatbuffers::String *name() const {
+    return GetPointer<const flatbuffers::String *>(VT_NAME);
+  }
+  const flatbuffers::String *version() const {
+    return GetPointer<const flatbuffers::String *>(VT_VERSION);
+  }
+  flatbuffers::Optional<bool> optional() const {
+    return GetOptional<uint8_t, bool>(VT_OPTIONAL);
+  }
+  bool Verify(flatbuffers::Verifier &verifier) const {
+    return VerifyTableStart(verifier) &&
+           VerifyOffset(verifier, VT_NAME) &&
+           verifier.VerifyString(name()) &&
+           VerifyOffset(verifier, VT_VERSION) &&
+           verifier.VerifyString(version()) &&
+           VerifyField<uint8_t>(verifier, VT_OPTIONAL) &&
+           verifier.EndTable();
+  }
+  sigmf_extensionT *UnPack(const flatbuffers::resolver_function_t *_resolver = nullptr) const;
+  void UnPackTo(sigmf_extensionT *_o, const flatbuffers::resolver_function_t *_resolver = nullptr) const;
+  static flatbuffers::Offset<sigmf_extension> Pack(flatbuffers::FlatBufferBuilder &_fbb, const sigmf_extensionT* _o, const flatbuffers::rehasher_function_t *_rehasher = nullptr);
+};
+
+struct sigmf_extensionBuilder {
+  typedef sigmf_extension Table;
+  flatbuffers::FlatBufferBuilder &fbb_;
+  flatbuffers::uoffset_t start_;
+  void add_name(flatbuffers::Offset<flatbuffers::String> name) {
+    fbb_.AddOffset(sigmf_extension::VT_NAME, name);
+  }
+  void add_version(flatbuffers::Offset<flatbuffers::String> version) {
+    fbb_.AddOffset(sigmf_extension::VT_VERSION, version);
+  }
+  void add_optional(bool optional) {
+    fbb_.AddElement<uint8_t>(sigmf_extension::VT_OPTIONAL, static_cast<uint8_t>(optional));
+  }
+  explicit sigmf_extensionBuilder(flatbuffers::FlatBufferBuilder &_fbb)
+        : fbb_(_fbb) {
+    start_ = fbb_.StartTable();
+  }
+  flatbuffers::Offset<sigmf_extension> Finish() {
+    const auto end = fbb_.EndTable(start_);
+    auto o = flatbuffers::Offset<sigmf_extension>(end);
+    return o;
+  }
+};
+
+inline flatbuffers::Offset<sigmf_extension> Createsigmf_extension(
+    flatbuffers::FlatBufferBuilder &_fbb,
+    flatbuffers::Offset<flatbuffers::String> name = 0,
+    flatbuffers::Offset<flatbuffers::String> version = 0,
+    flatbuffers::Optional<bool> optional = flatbuffers::nullopt) {
+  sigmf_extensionBuilder builder_(_fbb);
+  builder_.add_version(version);
+  builder_.add_name(name);
+  if(optional) { builder_.add_optional(*optional); }
+  return builder_.Finish();
+}
+
+inline flatbuffers::Offset<sigmf_extension> Createsigmf_extensionDirect(
+    flatbuffers::FlatBufferBuilder &_fbb,
+    const char *name = nullptr,
+    const char *version = nullptr,
+    flatbuffers::Optional<bool> optional = flatbuffers::nullopt) {
+  auto name__ = name ? _fbb.CreateString(name) : 0;
+  auto version__ = version ? _fbb.CreateString(version) : 0;
+  return core::Createsigmf_extension(
+      _fbb,
+      name__,
+      version__,
+      optional);
+}
+
+flatbuffers::Offset<sigmf_extension> Createsigmf_extension(flatbuffers::FlatBufferBuilder &_fbb, const sigmf_extensionT *_o, const flatbuffers::rehasher_function_t *_rehasher = nullptr);
+
+struct geojson_pointT : public flatbuffers::NativeTable {
+  typedef geojson_point TableType;
+  std::string type{};
+  std::vector<double> coordinates{};
+};
+
+struct geojson_point FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
+  typedef geojson_pointT NativeTableType;
+  typedef geojson_pointBuilder Builder;
+  static const flatbuffers::TypeTable *MiniReflectTypeTable() {
+    return geojson_pointTypeTable();
+  }
+  enum FlatBuffersVTableOffset FLATBUFFERS_VTABLE_UNDERLYING_TYPE {
+    VT_TYPE = 4,
+    VT_COORDINATES = 6
+  };
+  const flatbuffers::String *type() const {
+    return GetPointer<const flatbuffers::String *>(VT_TYPE);
+  }
+  const flatbuffers::Vector<double> *coordinates() const {
+    return GetPointer<const flatbuffers::Vector<double> *>(VT_COORDINATES);
+  }
+  bool Verify(flatbuffers::Verifier &verifier) const {
+    return VerifyTableStart(verifier) &&
+           VerifyOffset(verifier, VT_TYPE) &&
+           verifier.VerifyString(type()) &&
+           VerifyOffset(verifier, VT_COORDINATES) &&
+           verifier.VerifyVector(coordinates()) &&
+           verifier.EndTable();
+  }
+  geojson_pointT *UnPack(const flatbuffers::resolver_function_t *_resolver = nullptr) const;
+  void UnPackTo(geojson_pointT *_o, const flatbuffers::resolver_function_t *_resolver = nullptr) const;
+  static flatbuffers::Offset<geojson_point> Pack(flatbuffers::FlatBufferBuilder &_fbb, const geojson_pointT* _o, const flatbuffers::rehasher_function_t *_rehasher = nullptr);
+};
+
+struct geojson_pointBuilder {
+  typedef geojson_point Table;
+  flatbuffers::FlatBufferBuilder &fbb_;
+  flatbuffers::uoffset_t start_;
+  void add_type(flatbuffers::Offset<flatbuffers::String> type) {
+    fbb_.AddOffset(geojson_point::VT_TYPE, type);
+  }
+  void add_coordinates(flatbuffers::Offset<flatbuffers::Vector<double>> coordinates) {
+    fbb_.AddOffset(geojson_point::VT_COORDINATES, coordinates);
+  }
+  explicit geojson_pointBuilder(flatbuffers::FlatBufferBuilder &_fbb)
+        : fbb_(_fbb) {
+    start_ = fbb_.StartTable();
+  }
+  flatbuffers::Offset<geojson_point> Finish() {
+    const auto end = fbb_.EndTable(start_);
+    auto o = flatbuffers::Offset<geojson_point>(end);
+    return o;
+  }
+};
+
+inline flatbuffers::Offset<geojson_point> Creategeojson_point(
+    flatbuffers::FlatBufferBuilder &_fbb,
+    flatbuffers::Offset<flatbuffers::String> type = 0,
+    flatbuffers::Offset<flatbuffers::Vector<double>> coordinates = 0) {
+  geojson_pointBuilder builder_(_fbb);
+  builder_.add_coordinates(coordinates);
+  builder_.add_type(type);
+  return builder_.Finish();
+}
+
+inline flatbuffers::Offset<geojson_point> Creategeojson_pointDirect(
+    flatbuffers::FlatBufferBuilder &_fbb,
+    const char *type = nullptr,
+    const std::vector<double> *coordinates = nullptr) {
+  auto type__ = type ? _fbb.CreateString(type) : 0;
+  auto coordinates__ = coordinates ? _fbb.CreateVector<double>(*coordinates) : 0;
+  return core::Creategeojson_point(
+      _fbb,
+      type__,
+      coordinates__);
+}
+
+flatbuffers::Offset<geojson_point> Creategeojson_point(flatbuffers::FlatBufferBuilder &_fbb, const geojson_pointT *_o, const flatbuffers::rehasher_function_t *_rehasher = nullptr);
 
 struct GlobalT : public flatbuffers::NativeTable {
   typedef Global TableType;
-  std::string datatype;
-  double sample_rate;
-  std::string version;
-  std::string sha512;
-  uint32_t offset;
-  std::string description;
-  std::string author;
-  std::string meta_doi;
-  std::string data_doi;
-  std::string recorder;
-  std::string license;
-  std::string hw;
-  GlobalT()
-      : sample_rate(0.0),
-        offset(0) {
-  }
+  std::string datatype{};
+  flatbuffers::Optional<double> sample_rate = flatbuffers::nullopt;
+  std::string version{};
+  flatbuffers::Optional<uint64_t> num_channels = flatbuffers::nullopt;
+  std::string sha512{};
+  flatbuffers::Optional<uint64_t> offset = flatbuffers::nullopt;
+  std::string description{};
+  std::string author{};
+  std::string meta_doi{};
+  std::string data_doi{};
+  std::string recorder{};
+  std::string license{};
+  std::string hw{};
+  std::string collection{};
 };
 
 struct Global FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
   typedef GlobalT NativeTableType;
+  typedef GlobalBuilder Builder;
   static const flatbuffers::TypeTable *MiniReflectTypeTable() {
     return GlobalTypeTable();
   }
@@ -57,30 +251,35 @@ struct Global FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
     VT_DATATYPE = 4,
     VT_SAMPLE_RATE = 6,
     VT_VERSION = 8,
-    VT_SHA512 = 10,
-    VT_OFFSET = 12,
-    VT_DESCRIPTION = 14,
-    VT_AUTHOR = 16,
-    VT_META_DOI = 18,
-    VT_DATA_DOI = 20,
-    VT_RECORDER = 22,
-    VT_LICENSE = 24,
-    VT_HW = 26
+    VT_NUM_CHANNELS = 10,
+    VT_SHA512 = 12,
+    VT_OFFSET = 14,
+    VT_DESCRIPTION = 16,
+    VT_AUTHOR = 18,
+    VT_META_DOI = 20,
+    VT_DATA_DOI = 22,
+    VT_RECORDER = 24,
+    VT_LICENSE = 26,
+    VT_HW = 28,
+    VT_COLLECTION = 30
   };
   const flatbuffers::String *datatype() const {
     return GetPointer<const flatbuffers::String *>(VT_DATATYPE);
   }
-  double sample_rate() const {
-    return GetField<double>(VT_SAMPLE_RATE, 0.0);
+  flatbuffers::Optional<double> sample_rate() const {
+    return GetOptional<double, double>(VT_SAMPLE_RATE);
   }
   const flatbuffers::String *version() const {
     return GetPointer<const flatbuffers::String *>(VT_VERSION);
   }
+  flatbuffers::Optional<uint64_t> num_channels() const {
+    return GetOptional<uint64_t, uint64_t>(VT_NUM_CHANNELS);
+  }
   const flatbuffers::String *sha512() const {
     return GetPointer<const flatbuffers::String *>(VT_SHA512);
   }
-  uint32_t offset() const {
-    return GetField<uint32_t>(VT_OFFSET, 0);
+  flatbuffers::Optional<uint64_t> offset() const {
+    return GetOptional<uint64_t, uint64_t>(VT_OFFSET);
   }
   const flatbuffers::String *description() const {
     return GetPointer<const flatbuffers::String *>(VT_DESCRIPTION);
@@ -103,6 +302,9 @@ struct Global FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
   const flatbuffers::String *hw() const {
     return GetPointer<const flatbuffers::String *>(VT_HW);
   }
+  const flatbuffers::String *collection() const {
+    return GetPointer<const flatbuffers::String *>(VT_COLLECTION);
+  }
   bool Verify(flatbuffers::Verifier &verifier) const {
     return VerifyTableStart(verifier) &&
            VerifyOffset(verifier, VT_DATATYPE) &&
@@ -110,9 +312,10 @@ struct Global FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
            VerifyField<double>(verifier, VT_SAMPLE_RATE) &&
            VerifyOffset(verifier, VT_VERSION) &&
            verifier.VerifyString(version()) &&
+           VerifyField<uint64_t>(verifier, VT_NUM_CHANNELS) &&
            VerifyOffset(verifier, VT_SHA512) &&
            verifier.VerifyString(sha512()) &&
-           VerifyField<uint32_t>(verifier, VT_OFFSET) &&
+           VerifyField<uint64_t>(verifier, VT_OFFSET) &&
            VerifyOffset(verifier, VT_DESCRIPTION) &&
            verifier.VerifyString(description()) &&
            VerifyOffset(verifier, VT_AUTHOR) &&
@@ -127,6 +330,8 @@ struct Global FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
            verifier.VerifyString(license()) &&
            VerifyOffset(verifier, VT_HW) &&
            verifier.VerifyString(hw()) &&
+           VerifyOffset(verifier, VT_COLLECTION) &&
+           verifier.VerifyString(collection()) &&
            verifier.EndTable();
   }
   GlobalT *UnPack(const flatbuffers::resolver_function_t *_resolver = nullptr) const;
@@ -135,22 +340,26 @@ struct Global FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
 };
 
 struct GlobalBuilder {
+  typedef Global Table;
   flatbuffers::FlatBufferBuilder &fbb_;
   flatbuffers::uoffset_t start_;
   void add_datatype(flatbuffers::Offset<flatbuffers::String> datatype) {
     fbb_.AddOffset(Global::VT_DATATYPE, datatype);
   }
   void add_sample_rate(double sample_rate) {
-    fbb_.AddElement<double>(Global::VT_SAMPLE_RATE, sample_rate, 0.0);
+    fbb_.AddElement<double>(Global::VT_SAMPLE_RATE, sample_rate);
   }
   void add_version(flatbuffers::Offset<flatbuffers::String> version) {
     fbb_.AddOffset(Global::VT_VERSION, version);
   }
+  void add_num_channels(uint64_t num_channels) {
+    fbb_.AddElement<uint64_t>(Global::VT_NUM_CHANNELS, num_channels);
+  }
   void add_sha512(flatbuffers::Offset<flatbuffers::String> sha512) {
     fbb_.AddOffset(Global::VT_SHA512, sha512);
   }
-  void add_offset(uint32_t offset) {
-    fbb_.AddElement<uint32_t>(Global::VT_OFFSET, offset, 0);
+  void add_offset(uint64_t offset) {
+    fbb_.AddElement<uint64_t>(Global::VT_OFFSET, offset);
   }
   void add_description(flatbuffers::Offset<flatbuffers::String> description) {
     fbb_.AddOffset(Global::VT_DESCRIPTION, description);
@@ -173,11 +382,13 @@ struct GlobalBuilder {
   void add_hw(flatbuffers::Offset<flatbuffers::String> hw) {
     fbb_.AddOffset(Global::VT_HW, hw);
   }
+  void add_collection(flatbuffers::Offset<flatbuffers::String> collection) {
+    fbb_.AddOffset(Global::VT_COLLECTION, collection);
+  }
   explicit GlobalBuilder(flatbuffers::FlatBufferBuilder &_fbb)
         : fbb_(_fbb) {
     start_ = fbb_.StartTable();
   }
-  GlobalBuilder &operator=(const GlobalBuilder &);
   flatbuffers::Offset<Global> Finish() {
     const auto end = fbb_.EndTable(start_);
     auto o = flatbuffers::Offset<Global>(end);
@@ -188,19 +399,24 @@ struct GlobalBuilder {
 inline flatbuffers::Offset<Global> CreateGlobal(
     flatbuffers::FlatBufferBuilder &_fbb,
     flatbuffers::Offset<flatbuffers::String> datatype = 0,
-    double sample_rate = 0.0,
+    flatbuffers::Optional<double> sample_rate = flatbuffers::nullopt,
     flatbuffers::Offset<flatbuffers::String> version = 0,
+    flatbuffers::Optional<uint64_t> num_channels = flatbuffers::nullopt,
     flatbuffers::Offset<flatbuffers::String> sha512 = 0,
-    uint32_t offset = 0,
+    flatbuffers::Optional<uint64_t> offset = flatbuffers::nullopt,
     flatbuffers::Offset<flatbuffers::String> description = 0,
     flatbuffers::Offset<flatbuffers::String> author = 0,
     flatbuffers::Offset<flatbuffers::String> meta_doi = 0,
     flatbuffers::Offset<flatbuffers::String> data_doi = 0,
     flatbuffers::Offset<flatbuffers::String> recorder = 0,
     flatbuffers::Offset<flatbuffers::String> license = 0,
-    flatbuffers::Offset<flatbuffers::String> hw = 0) {
+    flatbuffers::Offset<flatbuffers::String> hw = 0,
+    flatbuffers::Offset<flatbuffers::String> collection = 0) {
   GlobalBuilder builder_(_fbb);
-  builder_.add_sample_rate(sample_rate);
+  if(offset) { builder_.add_offset(*offset); }
+  if(num_channels) { builder_.add_num_channels(*num_channels); }
+  if(sample_rate) { builder_.add_sample_rate(*sample_rate); }
+  builder_.add_collection(collection);
   builder_.add_hw(hw);
   builder_.add_license(license);
   builder_.add_recorder(recorder);
@@ -208,7 +424,6 @@ inline flatbuffers::Offset<Global> CreateGlobal(
   builder_.add_meta_doi(meta_doi);
   builder_.add_author(author);
   builder_.add_description(description);
-  builder_.add_offset(offset);
   builder_.add_sha512(sha512);
   builder_.add_version(version);
   builder_.add_datatype(datatype);
@@ -218,17 +433,19 @@ inline flatbuffers::Offset<Global> CreateGlobal(
 inline flatbuffers::Offset<Global> CreateGlobalDirect(
     flatbuffers::FlatBufferBuilder &_fbb,
     const char *datatype = nullptr,
-    double sample_rate = 0.0,
+    flatbuffers::Optional<double> sample_rate = flatbuffers::nullopt,
     const char *version = nullptr,
+    flatbuffers::Optional<uint64_t> num_channels = flatbuffers::nullopt,
     const char *sha512 = nullptr,
-    uint32_t offset = 0,
+    flatbuffers::Optional<uint64_t> offset = flatbuffers::nullopt,
     const char *description = nullptr,
     const char *author = nullptr,
     const char *meta_doi = nullptr,
     const char *data_doi = nullptr,
     const char *recorder = nullptr,
     const char *license = nullptr,
-    const char *hw = nullptr) {
+    const char *hw = nullptr,
+    const char *collection = nullptr) {
   auto datatype__ = datatype ? _fbb.CreateString(datatype) : 0;
   auto version__ = version ? _fbb.CreateString(version) : 0;
   auto sha512__ = sha512 ? _fbb.CreateString(sha512) : 0;
@@ -239,11 +456,13 @@ inline flatbuffers::Offset<Global> CreateGlobalDirect(
   auto recorder__ = recorder ? _fbb.CreateString(recorder) : 0;
   auto license__ = license ? _fbb.CreateString(license) : 0;
   auto hw__ = hw ? _fbb.CreateString(hw) : 0;
+  auto collection__ = collection ? _fbb.CreateString(collection) : 0;
   return core::CreateGlobal(
       _fbb,
       datatype__,
       sample_rate,
       version__,
+      num_channels,
       sha512__,
       offset,
       description__,
@@ -252,26 +471,23 @@ inline flatbuffers::Offset<Global> CreateGlobalDirect(
       data_doi__,
       recorder__,
       license__,
-      hw__);
+      hw__,
+      collection__);
 }
 
 flatbuffers::Offset<Global> CreateGlobal(flatbuffers::FlatBufferBuilder &_fbb, const GlobalT *_o, const flatbuffers::rehasher_function_t *_rehasher = nullptr);
 
 struct CaptureT : public flatbuffers::NativeTable {
   typedef Capture TableType;
-  uint64_t sample_start;
-  uint64_t global_index;
-  double frequency;
-  std::string datetime;
-  CaptureT()
-      : sample_start(0),
-        global_index(0),
-        frequency(0.0) {
-  }
+  flatbuffers::Optional<uint64_t> sample_start = flatbuffers::nullopt;
+  flatbuffers::Optional<uint64_t> global_index = flatbuffers::nullopt;
+  flatbuffers::Optional<double> frequency = flatbuffers::nullopt;
+  std::string datetime{};
 };
 
 struct Capture FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
   typedef CaptureT NativeTableType;
+  typedef CaptureBuilder Builder;
   static const flatbuffers::TypeTable *MiniReflectTypeTable() {
     return CaptureTypeTable();
   }
@@ -281,14 +497,14 @@ struct Capture FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
     VT_FREQUENCY = 8,
     VT_DATETIME = 10
   };
-  uint64_t sample_start() const {
-    return GetField<uint64_t>(VT_SAMPLE_START, 0);
+  flatbuffers::Optional<uint64_t> sample_start() const {
+    return GetOptional<uint64_t, uint64_t>(VT_SAMPLE_START);
   }
-  uint64_t global_index() const {
-    return GetField<uint64_t>(VT_GLOBAL_INDEX, 0);
+  flatbuffers::Optional<uint64_t> global_index() const {
+    return GetOptional<uint64_t, uint64_t>(VT_GLOBAL_INDEX);
   }
-  double frequency() const {
-    return GetField<double>(VT_FREQUENCY, 0.0);
+  flatbuffers::Optional<double> frequency() const {
+    return GetOptional<double, double>(VT_FREQUENCY);
   }
   const flatbuffers::String *datetime() const {
     return GetPointer<const flatbuffers::String *>(VT_DATETIME);
@@ -308,16 +524,17 @@ struct Capture FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
 };
 
 struct CaptureBuilder {
+  typedef Capture Table;
   flatbuffers::FlatBufferBuilder &fbb_;
   flatbuffers::uoffset_t start_;
   void add_sample_start(uint64_t sample_start) {
-    fbb_.AddElement<uint64_t>(Capture::VT_SAMPLE_START, sample_start, 0);
+    fbb_.AddElement<uint64_t>(Capture::VT_SAMPLE_START, sample_start);
   }
   void add_global_index(uint64_t global_index) {
-    fbb_.AddElement<uint64_t>(Capture::VT_GLOBAL_INDEX, global_index, 0);
+    fbb_.AddElement<uint64_t>(Capture::VT_GLOBAL_INDEX, global_index);
   }
   void add_frequency(double frequency) {
-    fbb_.AddElement<double>(Capture::VT_FREQUENCY, frequency, 0.0);
+    fbb_.AddElement<double>(Capture::VT_FREQUENCY, frequency);
   }
   void add_datetime(flatbuffers::Offset<flatbuffers::String> datetime) {
     fbb_.AddOffset(Capture::VT_DATETIME, datetime);
@@ -326,7 +543,6 @@ struct CaptureBuilder {
         : fbb_(_fbb) {
     start_ = fbb_.StartTable();
   }
-  CaptureBuilder &operator=(const CaptureBuilder &);
   flatbuffers::Offset<Capture> Finish() {
     const auto end = fbb_.EndTable(start_);
     auto o = flatbuffers::Offset<Capture>(end);
@@ -336,23 +552,23 @@ struct CaptureBuilder {
 
 inline flatbuffers::Offset<Capture> CreateCapture(
     flatbuffers::FlatBufferBuilder &_fbb,
-    uint64_t sample_start = 0,
-    uint64_t global_index = 0,
-    double frequency = 0.0,
+    flatbuffers::Optional<uint64_t> sample_start = flatbuffers::nullopt,
+    flatbuffers::Optional<uint64_t> global_index = flatbuffers::nullopt,
+    flatbuffers::Optional<double> frequency = flatbuffers::nullopt,
     flatbuffers::Offset<flatbuffers::String> datetime = 0) {
   CaptureBuilder builder_(_fbb);
-  builder_.add_frequency(frequency);
-  builder_.add_global_index(global_index);
-  builder_.add_sample_start(sample_start);
+  if(frequency) { builder_.add_frequency(*frequency); }
+  if(global_index) { builder_.add_global_index(*global_index); }
+  if(sample_start) { builder_.add_sample_start(*sample_start); }
   builder_.add_datetime(datetime);
   return builder_.Finish();
 }
 
 inline flatbuffers::Offset<Capture> CreateCaptureDirect(
     flatbuffers::FlatBufferBuilder &_fbb,
-    uint64_t sample_start = 0,
-    uint64_t global_index = 0,
-    double frequency = 0.0,
+    flatbuffers::Optional<uint64_t> sample_start = flatbuffers::nullopt,
+    flatbuffers::Optional<uint64_t> global_index = flatbuffers::nullopt,
+    flatbuffers::Optional<double> frequency = flatbuffers::nullopt,
     const char *datetime = nullptr) {
   auto datetime__ = datetime ? _fbb.CreateString(datetime) : 0;
   return core::CreateCapture(
@@ -367,68 +583,82 @@ flatbuffers::Offset<Capture> CreateCapture(flatbuffers::FlatBufferBuilder &_fbb,
 
 struct AnnotationT : public flatbuffers::NativeTable {
   typedef Annotation TableType;
-  double freq_lower_edge;
-  double freq_upper_edge;
-  uint64_t sample_start;
-  uint64_t sample_count;
-  std::string description;
-  std::string generator;
-  std::string comment;
-  AnnotationT()
-      : freq_lower_edge(0.0),
-        freq_upper_edge(0.0),
-        sample_start(0),
-        sample_count(0) {
-  }
+  flatbuffers::Optional<uint64_t> sample_start = flatbuffers::nullopt;
+  flatbuffers::Optional<uint64_t> sample_count = flatbuffers::nullopt;
+  std::string generator{};
+  std::string description{};
+  std::string label{};
+  std::string comment{};
+  flatbuffers::Optional<double> freq_lower_edge = flatbuffers::nullopt;
+  flatbuffers::Optional<double> freq_upper_edge = flatbuffers::nullopt;
+  flatbuffers::Optional<double> latitude = flatbuffers::nullopt;
+  flatbuffers::Optional<double> longitude = flatbuffers::nullopt;
 };
 
 struct Annotation FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
   typedef AnnotationT NativeTableType;
+  typedef AnnotationBuilder Builder;
   static const flatbuffers::TypeTable *MiniReflectTypeTable() {
     return AnnotationTypeTable();
   }
   enum FlatBuffersVTableOffset FLATBUFFERS_VTABLE_UNDERLYING_TYPE {
-    VT_FREQ_LOWER_EDGE = 4,
-    VT_FREQ_UPPER_EDGE = 6,
-    VT_SAMPLE_START = 8,
-    VT_SAMPLE_COUNT = 10,
-    VT_DESCRIPTION = 12,
-    VT_GENERATOR = 14,
-    VT_COMMENT = 16
+    VT_SAMPLE_START = 4,
+    VT_SAMPLE_COUNT = 6,
+    VT_GENERATOR = 8,
+    VT_DESCRIPTION = 10,
+    VT_LABEL = 12,
+    VT_COMMENT = 14,
+    VT_FREQ_LOWER_EDGE = 16,
+    VT_FREQ_UPPER_EDGE = 18,
+    VT_LATITUDE = 20,
+    VT_LONGITUDE = 22
   };
-  double freq_lower_edge() const {
-    return GetField<double>(VT_FREQ_LOWER_EDGE, 0.0);
+  flatbuffers::Optional<uint64_t> sample_start() const {
+    return GetOptional<uint64_t, uint64_t>(VT_SAMPLE_START);
   }
-  double freq_upper_edge() const {
-    return GetField<double>(VT_FREQ_UPPER_EDGE, 0.0);
-  }
-  uint64_t sample_start() const {
-    return GetField<uint64_t>(VT_SAMPLE_START, 0);
-  }
-  uint64_t sample_count() const {
-    return GetField<uint64_t>(VT_SAMPLE_COUNT, 0);
-  }
-  const flatbuffers::String *description() const {
-    return GetPointer<const flatbuffers::String *>(VT_DESCRIPTION);
+  flatbuffers::Optional<uint64_t> sample_count() const {
+    return GetOptional<uint64_t, uint64_t>(VT_SAMPLE_COUNT);
   }
   const flatbuffers::String *generator() const {
     return GetPointer<const flatbuffers::String *>(VT_GENERATOR);
   }
+  const flatbuffers::String *description() const {
+    return GetPointer<const flatbuffers::String *>(VT_DESCRIPTION);
+  }
+  const flatbuffers::String *label() const {
+    return GetPointer<const flatbuffers::String *>(VT_LABEL);
+  }
   const flatbuffers::String *comment() const {
     return GetPointer<const flatbuffers::String *>(VT_COMMENT);
   }
+  flatbuffers::Optional<double> freq_lower_edge() const {
+    return GetOptional<double, double>(VT_FREQ_LOWER_EDGE);
+  }
+  flatbuffers::Optional<double> freq_upper_edge() const {
+    return GetOptional<double, double>(VT_FREQ_UPPER_EDGE);
+  }
+  flatbuffers::Optional<double> latitude() const {
+    return GetOptional<double, double>(VT_LATITUDE);
+  }
+  flatbuffers::Optional<double> longitude() const {
+    return GetOptional<double, double>(VT_LONGITUDE);
+  }
   bool Verify(flatbuffers::Verifier &verifier) const {
     return VerifyTableStart(verifier) &&
-           VerifyField<double>(verifier, VT_FREQ_LOWER_EDGE) &&
-           VerifyField<double>(verifier, VT_FREQ_UPPER_EDGE) &&
            VerifyField<uint64_t>(verifier, VT_SAMPLE_START) &&
            VerifyField<uint64_t>(verifier, VT_SAMPLE_COUNT) &&
-           VerifyOffset(verifier, VT_DESCRIPTION) &&
-           verifier.VerifyString(description()) &&
            VerifyOffset(verifier, VT_GENERATOR) &&
            verifier.VerifyString(generator()) &&
+           VerifyOffset(verifier, VT_DESCRIPTION) &&
+           verifier.VerifyString(description()) &&
+           VerifyOffset(verifier, VT_LABEL) &&
+           verifier.VerifyString(label()) &&
            VerifyOffset(verifier, VT_COMMENT) &&
            verifier.VerifyString(comment()) &&
+           VerifyField<double>(verifier, VT_FREQ_LOWER_EDGE) &&
+           VerifyField<double>(verifier, VT_FREQ_UPPER_EDGE) &&
+           VerifyField<double>(verifier, VT_LATITUDE) &&
+           VerifyField<double>(verifier, VT_LONGITUDE) &&
            verifier.EndTable();
   }
   AnnotationT *UnPack(const flatbuffers::resolver_function_t *_resolver = nullptr) const;
@@ -437,34 +667,43 @@ struct Annotation FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
 };
 
 struct AnnotationBuilder {
+  typedef Annotation Table;
   flatbuffers::FlatBufferBuilder &fbb_;
   flatbuffers::uoffset_t start_;
-  void add_freq_lower_edge(double freq_lower_edge) {
-    fbb_.AddElement<double>(Annotation::VT_FREQ_LOWER_EDGE, freq_lower_edge, 0.0);
-  }
-  void add_freq_upper_edge(double freq_upper_edge) {
-    fbb_.AddElement<double>(Annotation::VT_FREQ_UPPER_EDGE, freq_upper_edge, 0.0);
-  }
   void add_sample_start(uint64_t sample_start) {
-    fbb_.AddElement<uint64_t>(Annotation::VT_SAMPLE_START, sample_start, 0);
+    fbb_.AddElement<uint64_t>(Annotation::VT_SAMPLE_START, sample_start);
   }
   void add_sample_count(uint64_t sample_count) {
-    fbb_.AddElement<uint64_t>(Annotation::VT_SAMPLE_COUNT, sample_count, 0);
-  }
-  void add_description(flatbuffers::Offset<flatbuffers::String> description) {
-    fbb_.AddOffset(Annotation::VT_DESCRIPTION, description);
+    fbb_.AddElement<uint64_t>(Annotation::VT_SAMPLE_COUNT, sample_count);
   }
   void add_generator(flatbuffers::Offset<flatbuffers::String> generator) {
     fbb_.AddOffset(Annotation::VT_GENERATOR, generator);
   }
+  void add_description(flatbuffers::Offset<flatbuffers::String> description) {
+    fbb_.AddOffset(Annotation::VT_DESCRIPTION, description);
+  }
+  void add_label(flatbuffers::Offset<flatbuffers::String> label) {
+    fbb_.AddOffset(Annotation::VT_LABEL, label);
+  }
   void add_comment(flatbuffers::Offset<flatbuffers::String> comment) {
     fbb_.AddOffset(Annotation::VT_COMMENT, comment);
+  }
+  void add_freq_lower_edge(double freq_lower_edge) {
+    fbb_.AddElement<double>(Annotation::VT_FREQ_LOWER_EDGE, freq_lower_edge);
+  }
+  void add_freq_upper_edge(double freq_upper_edge) {
+    fbb_.AddElement<double>(Annotation::VT_FREQ_UPPER_EDGE, freq_upper_edge);
+  }
+  void add_latitude(double latitude) {
+    fbb_.AddElement<double>(Annotation::VT_LATITUDE, latitude);
+  }
+  void add_longitude(double longitude) {
+    fbb_.AddElement<double>(Annotation::VT_LONGITUDE, longitude);
   }
   explicit AnnotationBuilder(flatbuffers::FlatBufferBuilder &_fbb)
         : fbb_(_fbb) {
     start_ = fbb_.StartTable();
   }
-  AnnotationBuilder &operator=(const AnnotationBuilder &);
   flatbuffers::Offset<Annotation> Finish() {
     const auto end = fbb_.EndTable(start_);
     auto o = flatbuffers::Offset<Annotation>(end);
@@ -474,60 +713,213 @@ struct AnnotationBuilder {
 
 inline flatbuffers::Offset<Annotation> CreateAnnotation(
     flatbuffers::FlatBufferBuilder &_fbb,
-    double freq_lower_edge = 0.0,
-    double freq_upper_edge = 0.0,
-    uint64_t sample_start = 0,
-    uint64_t sample_count = 0,
-    flatbuffers::Offset<flatbuffers::String> description = 0,
+    flatbuffers::Optional<uint64_t> sample_start = flatbuffers::nullopt,
+    flatbuffers::Optional<uint64_t> sample_count = flatbuffers::nullopt,
     flatbuffers::Offset<flatbuffers::String> generator = 0,
-    flatbuffers::Offset<flatbuffers::String> comment = 0) {
+    flatbuffers::Offset<flatbuffers::String> description = 0,
+    flatbuffers::Offset<flatbuffers::String> label = 0,
+    flatbuffers::Offset<flatbuffers::String> comment = 0,
+    flatbuffers::Optional<double> freq_lower_edge = flatbuffers::nullopt,
+    flatbuffers::Optional<double> freq_upper_edge = flatbuffers::nullopt,
+    flatbuffers::Optional<double> latitude = flatbuffers::nullopt,
+    flatbuffers::Optional<double> longitude = flatbuffers::nullopt) {
   AnnotationBuilder builder_(_fbb);
-  builder_.add_sample_count(sample_count);
-  builder_.add_sample_start(sample_start);
-  builder_.add_freq_upper_edge(freq_upper_edge);
-  builder_.add_freq_lower_edge(freq_lower_edge);
+  if(longitude) { builder_.add_longitude(*longitude); }
+  if(latitude) { builder_.add_latitude(*latitude); }
+  if(freq_upper_edge) { builder_.add_freq_upper_edge(*freq_upper_edge); }
+  if(freq_lower_edge) { builder_.add_freq_lower_edge(*freq_lower_edge); }
+  if(sample_count) { builder_.add_sample_count(*sample_count); }
+  if(sample_start) { builder_.add_sample_start(*sample_start); }
   builder_.add_comment(comment);
-  builder_.add_generator(generator);
+  builder_.add_label(label);
   builder_.add_description(description);
+  builder_.add_generator(generator);
   return builder_.Finish();
 }
 
 inline flatbuffers::Offset<Annotation> CreateAnnotationDirect(
     flatbuffers::FlatBufferBuilder &_fbb,
-    double freq_lower_edge = 0.0,
-    double freq_upper_edge = 0.0,
-    uint64_t sample_start = 0,
-    uint64_t sample_count = 0,
-    const char *description = nullptr,
+    flatbuffers::Optional<uint64_t> sample_start = flatbuffers::nullopt,
+    flatbuffers::Optional<uint64_t> sample_count = flatbuffers::nullopt,
     const char *generator = nullptr,
-    const char *comment = nullptr) {
-  auto description__ = description ? _fbb.CreateString(description) : 0;
+    const char *description = nullptr,
+    const char *label = nullptr,
+    const char *comment = nullptr,
+    flatbuffers::Optional<double> freq_lower_edge = flatbuffers::nullopt,
+    flatbuffers::Optional<double> freq_upper_edge = flatbuffers::nullopt,
+    flatbuffers::Optional<double> latitude = flatbuffers::nullopt,
+    flatbuffers::Optional<double> longitude = flatbuffers::nullopt) {
   auto generator__ = generator ? _fbb.CreateString(generator) : 0;
+  auto description__ = description ? _fbb.CreateString(description) : 0;
+  auto label__ = label ? _fbb.CreateString(label) : 0;
   auto comment__ = comment ? _fbb.CreateString(comment) : 0;
   return core::CreateAnnotation(
       _fbb,
-      freq_lower_edge,
-      freq_upper_edge,
       sample_start,
       sample_count,
-      description__,
       generator__,
-      comment__);
+      description__,
+      label__,
+      comment__,
+      freq_lower_edge,
+      freq_upper_edge,
+      latitude,
+      longitude);
 }
 
 flatbuffers::Offset<Annotation> CreateAnnotation(flatbuffers::FlatBufferBuilder &_fbb, const AnnotationT *_o, const flatbuffers::rehasher_function_t *_rehasher = nullptr);
 
+struct CollectionT : public flatbuffers::NativeTable {
+  typedef Collection TableType;
+  std::string version{};
+  std::string description{};
+  std::string author{};
+  std::string collection_doi{};
+  std::string license{};
+  std::vector<std::string> streams{};
+};
+
+struct Collection FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
+  typedef CollectionT NativeTableType;
+  typedef CollectionBuilder Builder;
+  static const flatbuffers::TypeTable *MiniReflectTypeTable() {
+    return CollectionTypeTable();
+  }
+  enum FlatBuffersVTableOffset FLATBUFFERS_VTABLE_UNDERLYING_TYPE {
+    VT_VERSION = 4,
+    VT_DESCRIPTION = 6,
+    VT_AUTHOR = 8,
+    VT_COLLECTION_DOI = 10,
+    VT_LICENSE = 12,
+    VT_STREAMS = 14
+  };
+  const flatbuffers::String *version() const {
+    return GetPointer<const flatbuffers::String *>(VT_VERSION);
+  }
+  const flatbuffers::String *description() const {
+    return GetPointer<const flatbuffers::String *>(VT_DESCRIPTION);
+  }
+  const flatbuffers::String *author() const {
+    return GetPointer<const flatbuffers::String *>(VT_AUTHOR);
+  }
+  const flatbuffers::String *collection_doi() const {
+    return GetPointer<const flatbuffers::String *>(VT_COLLECTION_DOI);
+  }
+  const flatbuffers::String *license() const {
+    return GetPointer<const flatbuffers::String *>(VT_LICENSE);
+  }
+  const flatbuffers::Vector<flatbuffers::Offset<flatbuffers::String>> *streams() const {
+    return GetPointer<const flatbuffers::Vector<flatbuffers::Offset<flatbuffers::String>> *>(VT_STREAMS);
+  }
+  bool Verify(flatbuffers::Verifier &verifier) const {
+    return VerifyTableStart(verifier) &&
+           VerifyOffset(verifier, VT_VERSION) &&
+           verifier.VerifyString(version()) &&
+           VerifyOffset(verifier, VT_DESCRIPTION) &&
+           verifier.VerifyString(description()) &&
+           VerifyOffset(verifier, VT_AUTHOR) &&
+           verifier.VerifyString(author()) &&
+           VerifyOffset(verifier, VT_COLLECTION_DOI) &&
+           verifier.VerifyString(collection_doi()) &&
+           VerifyOffset(verifier, VT_LICENSE) &&
+           verifier.VerifyString(license()) &&
+           VerifyOffset(verifier, VT_STREAMS) &&
+           verifier.VerifyVector(streams()) &&
+           verifier.VerifyVectorOfStrings(streams()) &&
+           verifier.EndTable();
+  }
+  CollectionT *UnPack(const flatbuffers::resolver_function_t *_resolver = nullptr) const;
+  void UnPackTo(CollectionT *_o, const flatbuffers::resolver_function_t *_resolver = nullptr) const;
+  static flatbuffers::Offset<Collection> Pack(flatbuffers::FlatBufferBuilder &_fbb, const CollectionT* _o, const flatbuffers::rehasher_function_t *_rehasher = nullptr);
+};
+
+struct CollectionBuilder {
+  typedef Collection Table;
+  flatbuffers::FlatBufferBuilder &fbb_;
+  flatbuffers::uoffset_t start_;
+  void add_version(flatbuffers::Offset<flatbuffers::String> version) {
+    fbb_.AddOffset(Collection::VT_VERSION, version);
+  }
+  void add_description(flatbuffers::Offset<flatbuffers::String> description) {
+    fbb_.AddOffset(Collection::VT_DESCRIPTION, description);
+  }
+  void add_author(flatbuffers::Offset<flatbuffers::String> author) {
+    fbb_.AddOffset(Collection::VT_AUTHOR, author);
+  }
+  void add_collection_doi(flatbuffers::Offset<flatbuffers::String> collection_doi) {
+    fbb_.AddOffset(Collection::VT_COLLECTION_DOI, collection_doi);
+  }
+  void add_license(flatbuffers::Offset<flatbuffers::String> license) {
+    fbb_.AddOffset(Collection::VT_LICENSE, license);
+  }
+  void add_streams(flatbuffers::Offset<flatbuffers::Vector<flatbuffers::Offset<flatbuffers::String>>> streams) {
+    fbb_.AddOffset(Collection::VT_STREAMS, streams);
+  }
+  explicit CollectionBuilder(flatbuffers::FlatBufferBuilder &_fbb)
+        : fbb_(_fbb) {
+    start_ = fbb_.StartTable();
+  }
+  flatbuffers::Offset<Collection> Finish() {
+    const auto end = fbb_.EndTable(start_);
+    auto o = flatbuffers::Offset<Collection>(end);
+    return o;
+  }
+};
+
+inline flatbuffers::Offset<Collection> CreateCollection(
+    flatbuffers::FlatBufferBuilder &_fbb,
+    flatbuffers::Offset<flatbuffers::String> version = 0,
+    flatbuffers::Offset<flatbuffers::String> description = 0,
+    flatbuffers::Offset<flatbuffers::String> author = 0,
+    flatbuffers::Offset<flatbuffers::String> collection_doi = 0,
+    flatbuffers::Offset<flatbuffers::String> license = 0,
+    flatbuffers::Offset<flatbuffers::Vector<flatbuffers::Offset<flatbuffers::String>>> streams = 0) {
+  CollectionBuilder builder_(_fbb);
+  builder_.add_streams(streams);
+  builder_.add_license(license);
+  builder_.add_collection_doi(collection_doi);
+  builder_.add_author(author);
+  builder_.add_description(description);
+  builder_.add_version(version);
+  return builder_.Finish();
+}
+
+inline flatbuffers::Offset<Collection> CreateCollectionDirect(
+    flatbuffers::FlatBufferBuilder &_fbb,
+    const char *version = nullptr,
+    const char *description = nullptr,
+    const char *author = nullptr,
+    const char *collection_doi = nullptr,
+    const char *license = nullptr,
+    const std::vector<flatbuffers::Offset<flatbuffers::String>> *streams = nullptr) {
+  auto version__ = version ? _fbb.CreateString(version) : 0;
+  auto description__ = description ? _fbb.CreateString(description) : 0;
+  auto author__ = author ? _fbb.CreateString(author) : 0;
+  auto collection_doi__ = collection_doi ? _fbb.CreateString(collection_doi) : 0;
+  auto license__ = license ? _fbb.CreateString(license) : 0;
+  auto streams__ = streams ? _fbb.CreateVector<flatbuffers::Offset<flatbuffers::String>>(*streams) : 0;
+  return core::CreateCollection(
+      _fbb,
+      version__,
+      description__,
+      author__,
+      collection_doi__,
+      license__,
+      streams__);
+}
+
+flatbuffers::Offset<Collection> CreateCollection(flatbuffers::FlatBufferBuilder &_fbb, const CollectionT *_o, const flatbuffers::rehasher_function_t *_rehasher = nullptr);
+
 struct DescrT : public flatbuffers::NativeTable {
   typedef Descr TableType;
-  std::unique_ptr<GlobalT> global;
-  std::unique_ptr<AnnotationT> annotation;
-  std::unique_ptr<CaptureT> capture;
-  DescrT() {
-  }
+  std::unique_ptr<core::GlobalT> global{};
+  std::unique_ptr<core::AnnotationT> annotation{};
+  std::unique_ptr<core::CaptureT> capture{};
 };
 
 struct Descr FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
   typedef DescrT NativeTableType;
+  typedef DescrBuilder Builder;
   static const flatbuffers::TypeTable *MiniReflectTypeTable() {
     return DescrTypeTable();
   }
@@ -536,14 +928,14 @@ struct Descr FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
     VT_ANNOTATION = 6,
     VT_CAPTURE = 8
   };
-  const Global *global() const {
-    return GetPointer<const Global *>(VT_GLOBAL);
+  const core::Global *global() const {
+    return GetPointer<const core::Global *>(VT_GLOBAL);
   }
-  const Annotation *annotation() const {
-    return GetPointer<const Annotation *>(VT_ANNOTATION);
+  const core::Annotation *annotation() const {
+    return GetPointer<const core::Annotation *>(VT_ANNOTATION);
   }
-  const Capture *capture() const {
-    return GetPointer<const Capture *>(VT_CAPTURE);
+  const core::Capture *capture() const {
+    return GetPointer<const core::Capture *>(VT_CAPTURE);
   }
   bool Verify(flatbuffers::Verifier &verifier) const {
     return VerifyTableStart(verifier) &&
@@ -561,22 +953,22 @@ struct Descr FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
 };
 
 struct DescrBuilder {
+  typedef Descr Table;
   flatbuffers::FlatBufferBuilder &fbb_;
   flatbuffers::uoffset_t start_;
-  void add_global(flatbuffers::Offset<Global> global) {
+  void add_global(flatbuffers::Offset<core::Global> global) {
     fbb_.AddOffset(Descr::VT_GLOBAL, global);
   }
-  void add_annotation(flatbuffers::Offset<Annotation> annotation) {
+  void add_annotation(flatbuffers::Offset<core::Annotation> annotation) {
     fbb_.AddOffset(Descr::VT_ANNOTATION, annotation);
   }
-  void add_capture(flatbuffers::Offset<Capture> capture) {
+  void add_capture(flatbuffers::Offset<core::Capture> capture) {
     fbb_.AddOffset(Descr::VT_CAPTURE, capture);
   }
   explicit DescrBuilder(flatbuffers::FlatBufferBuilder &_fbb)
         : fbb_(_fbb) {
     start_ = fbb_.StartTable();
   }
-  DescrBuilder &operator=(const DescrBuilder &);
   flatbuffers::Offset<Descr> Finish() {
     const auto end = fbb_.EndTable(start_);
     auto o = flatbuffers::Offset<Descr>(end);
@@ -586,9 +978,9 @@ struct DescrBuilder {
 
 inline flatbuffers::Offset<Descr> CreateDescr(
     flatbuffers::FlatBufferBuilder &_fbb,
-    flatbuffers::Offset<Global> global = 0,
-    flatbuffers::Offset<Annotation> annotation = 0,
-    flatbuffers::Offset<Capture> capture = 0) {
+    flatbuffers::Offset<core::Global> global = 0,
+    flatbuffers::Offset<core::Annotation> annotation = 0,
+    flatbuffers::Offset<core::Capture> capture = 0) {
   DescrBuilder builder_(_fbb);
   builder_.add_capture(capture);
   builder_.add_annotation(annotation);
@@ -598,27 +990,90 @@ inline flatbuffers::Offset<Descr> CreateDescr(
 
 flatbuffers::Offset<Descr> CreateDescr(flatbuffers::FlatBufferBuilder &_fbb, const DescrT *_o, const flatbuffers::rehasher_function_t *_rehasher = nullptr);
 
+inline sigmf_extensionT *sigmf_extension::UnPack(const flatbuffers::resolver_function_t *_resolver) const {
+  auto _o = std::unique_ptr<sigmf_extensionT>(new sigmf_extensionT());
+  UnPackTo(_o.get(), _resolver);
+  return _o.release();
+}
+
+inline void sigmf_extension::UnPackTo(sigmf_extensionT *_o, const flatbuffers::resolver_function_t *_resolver) const {
+  (void)_o;
+  (void)_resolver;
+  { auto _e = name(); if (_e) _o->name = _e->str(); }
+  { auto _e = version(); if (_e) _o->version = _e->str(); }
+  { auto _e = optional(); _o->optional = _e; }
+}
+
+inline flatbuffers::Offset<sigmf_extension> sigmf_extension::Pack(flatbuffers::FlatBufferBuilder &_fbb, const sigmf_extensionT* _o, const flatbuffers::rehasher_function_t *_rehasher) {
+  return Createsigmf_extension(_fbb, _o, _rehasher);
+}
+
+inline flatbuffers::Offset<sigmf_extension> Createsigmf_extension(flatbuffers::FlatBufferBuilder &_fbb, const sigmf_extensionT *_o, const flatbuffers::rehasher_function_t *_rehasher) {
+  (void)_rehasher;
+  (void)_o;
+  struct _VectorArgs { flatbuffers::FlatBufferBuilder *__fbb; const sigmf_extensionT* __o; const flatbuffers::rehasher_function_t *__rehasher; } _va = { &_fbb, _o, _rehasher}; (void)_va;
+  auto _name = _o->name.empty() ? 0 : _fbb.CreateString(_o->name);
+  auto _version = _o->version.empty() ? 0 : _fbb.CreateString(_o->version);
+  auto _optional = _o->optional;
+  return core::Createsigmf_extension(
+      _fbb,
+      _name,
+      _version,
+      _optional);
+}
+
+inline geojson_pointT *geojson_point::UnPack(const flatbuffers::resolver_function_t *_resolver) const {
+  auto _o = std::unique_ptr<geojson_pointT>(new geojson_pointT());
+  UnPackTo(_o.get(), _resolver);
+  return _o.release();
+}
+
+inline void geojson_point::UnPackTo(geojson_pointT *_o, const flatbuffers::resolver_function_t *_resolver) const {
+  (void)_o;
+  (void)_resolver;
+  { auto _e = type(); if (_e) _o->type = _e->str(); }
+  { auto _e = coordinates(); if (_e) { _o->coordinates.resize(_e->size()); for (flatbuffers::uoffset_t _i = 0; _i < _e->size(); _i++) { _o->coordinates[_i] = _e->Get(_i); } } }
+}
+
+inline flatbuffers::Offset<geojson_point> geojson_point::Pack(flatbuffers::FlatBufferBuilder &_fbb, const geojson_pointT* _o, const flatbuffers::rehasher_function_t *_rehasher) {
+  return Creategeojson_point(_fbb, _o, _rehasher);
+}
+
+inline flatbuffers::Offset<geojson_point> Creategeojson_point(flatbuffers::FlatBufferBuilder &_fbb, const geojson_pointT *_o, const flatbuffers::rehasher_function_t *_rehasher) {
+  (void)_rehasher;
+  (void)_o;
+  struct _VectorArgs { flatbuffers::FlatBufferBuilder *__fbb; const geojson_pointT* __o; const flatbuffers::rehasher_function_t *__rehasher; } _va = { &_fbb, _o, _rehasher}; (void)_va;
+  auto _type = _o->type.empty() ? 0 : _fbb.CreateString(_o->type);
+  auto _coordinates = _o->coordinates.size() ? _fbb.CreateVector(_o->coordinates) : 0;
+  return core::Creategeojson_point(
+      _fbb,
+      _type,
+      _coordinates);
+}
+
 inline GlobalT *Global::UnPack(const flatbuffers::resolver_function_t *_resolver) const {
-  auto _o = new GlobalT();
-  UnPackTo(_o, _resolver);
-  return _o;
+  auto _o = std::unique_ptr<GlobalT>(new GlobalT());
+  UnPackTo(_o.get(), _resolver);
+  return _o.release();
 }
 
 inline void Global::UnPackTo(GlobalT *_o, const flatbuffers::resolver_function_t *_resolver) const {
   (void)_o;
   (void)_resolver;
-  { auto _e = datatype(); if (_e) _o->datatype = _e->str(); };
-  { auto _e = sample_rate(); _o->sample_rate = _e; };
-  { auto _e = version(); if (_e) _o->version = _e->str(); };
-  { auto _e = sha512(); if (_e) _o->sha512 = _e->str(); };
-  { auto _e = offset(); _o->offset = _e; };
-  { auto _e = description(); if (_e) _o->description = _e->str(); };
-  { auto _e = author(); if (_e) _o->author = _e->str(); };
-  { auto _e = meta_doi(); if (_e) _o->meta_doi = _e->str(); };
-  { auto _e = data_doi(); if (_e) _o->data_doi = _e->str(); };
-  { auto _e = recorder(); if (_e) _o->recorder = _e->str(); };
-  { auto _e = license(); if (_e) _o->license = _e->str(); };
-  { auto _e = hw(); if (_e) _o->hw = _e->str(); };
+  { auto _e = datatype(); if (_e) _o->datatype = _e->str(); }
+  { auto _e = sample_rate(); _o->sample_rate = _e; }
+  { auto _e = version(); if (_e) _o->version = _e->str(); }
+  { auto _e = num_channels(); _o->num_channels = _e; }
+  { auto _e = sha512(); if (_e) _o->sha512 = _e->str(); }
+  { auto _e = offset(); _o->offset = _e; }
+  { auto _e = description(); if (_e) _o->description = _e->str(); }
+  { auto _e = author(); if (_e) _o->author = _e->str(); }
+  { auto _e = meta_doi(); if (_e) _o->meta_doi = _e->str(); }
+  { auto _e = data_doi(); if (_e) _o->data_doi = _e->str(); }
+  { auto _e = recorder(); if (_e) _o->recorder = _e->str(); }
+  { auto _e = license(); if (_e) _o->license = _e->str(); }
+  { auto _e = hw(); if (_e) _o->hw = _e->str(); }
+  { auto _e = collection(); if (_e) _o->collection = _e->str(); }
 }
 
 inline flatbuffers::Offset<Global> Global::Pack(flatbuffers::FlatBufferBuilder &_fbb, const GlobalT* _o, const flatbuffers::rehasher_function_t *_rehasher) {
@@ -632,6 +1087,7 @@ inline flatbuffers::Offset<Global> CreateGlobal(flatbuffers::FlatBufferBuilder &
   auto _datatype = _o->datatype.empty() ? 0 : _fbb.CreateString(_o->datatype);
   auto _sample_rate = _o->sample_rate;
   auto _version = _o->version.empty() ? 0 : _fbb.CreateString(_o->version);
+  auto _num_channels = _o->num_channels;
   auto _sha512 = _o->sha512.empty() ? 0 : _fbb.CreateString(_o->sha512);
   auto _offset = _o->offset;
   auto _description = _o->description.empty() ? 0 : _fbb.CreateString(_o->description);
@@ -641,11 +1097,13 @@ inline flatbuffers::Offset<Global> CreateGlobal(flatbuffers::FlatBufferBuilder &
   auto _recorder = _o->recorder.empty() ? 0 : _fbb.CreateString(_o->recorder);
   auto _license = _o->license.empty() ? 0 : _fbb.CreateString(_o->license);
   auto _hw = _o->hw.empty() ? 0 : _fbb.CreateString(_o->hw);
+  auto _collection = _o->collection.empty() ? 0 : _fbb.CreateString(_o->collection);
   return core::CreateGlobal(
       _fbb,
       _datatype,
       _sample_rate,
       _version,
+      _num_channels,
       _sha512,
       _offset,
       _description,
@@ -654,22 +1112,23 @@ inline flatbuffers::Offset<Global> CreateGlobal(flatbuffers::FlatBufferBuilder &
       _data_doi,
       _recorder,
       _license,
-      _hw);
+      _hw,
+      _collection);
 }
 
 inline CaptureT *Capture::UnPack(const flatbuffers::resolver_function_t *_resolver) const {
-  auto _o = new CaptureT();
-  UnPackTo(_o, _resolver);
-  return _o;
+  auto _o = std::unique_ptr<CaptureT>(new CaptureT());
+  UnPackTo(_o.get(), _resolver);
+  return _o.release();
 }
 
 inline void Capture::UnPackTo(CaptureT *_o, const flatbuffers::resolver_function_t *_resolver) const {
   (void)_o;
   (void)_resolver;
-  { auto _e = sample_start(); _o->sample_start = _e; };
-  { auto _e = global_index(); _o->global_index = _e; };
-  { auto _e = frequency(); _o->frequency = _e; };
-  { auto _e = datetime(); if (_e) _o->datetime = _e->str(); };
+  { auto _e = sample_start(); _o->sample_start = _e; }
+  { auto _e = global_index(); _o->global_index = _e; }
+  { auto _e = frequency(); _o->frequency = _e; }
+  { auto _e = datetime(); if (_e) _o->datetime = _e->str(); }
 }
 
 inline flatbuffers::Offset<Capture> Capture::Pack(flatbuffers::FlatBufferBuilder &_fbb, const CaptureT* _o, const flatbuffers::rehasher_function_t *_rehasher) {
@@ -693,21 +1152,24 @@ inline flatbuffers::Offset<Capture> CreateCapture(flatbuffers::FlatBufferBuilder
 }
 
 inline AnnotationT *Annotation::UnPack(const flatbuffers::resolver_function_t *_resolver) const {
-  auto _o = new AnnotationT();
-  UnPackTo(_o, _resolver);
-  return _o;
+  auto _o = std::unique_ptr<AnnotationT>(new AnnotationT());
+  UnPackTo(_o.get(), _resolver);
+  return _o.release();
 }
 
 inline void Annotation::UnPackTo(AnnotationT *_o, const flatbuffers::resolver_function_t *_resolver) const {
   (void)_o;
   (void)_resolver;
-  { auto _e = freq_lower_edge(); _o->freq_lower_edge = _e; };
-  { auto _e = freq_upper_edge(); _o->freq_upper_edge = _e; };
-  { auto _e = sample_start(); _o->sample_start = _e; };
-  { auto _e = sample_count(); _o->sample_count = _e; };
-  { auto _e = description(); if (_e) _o->description = _e->str(); };
-  { auto _e = generator(); if (_e) _o->generator = _e->str(); };
-  { auto _e = comment(); if (_e) _o->comment = _e->str(); };
+  { auto _e = sample_start(); _o->sample_start = _e; }
+  { auto _e = sample_count(); _o->sample_count = _e; }
+  { auto _e = generator(); if (_e) _o->generator = _e->str(); }
+  { auto _e = description(); if (_e) _o->description = _e->str(); }
+  { auto _e = label(); if (_e) _o->label = _e->str(); }
+  { auto _e = comment(); if (_e) _o->comment = _e->str(); }
+  { auto _e = freq_lower_edge(); _o->freq_lower_edge = _e; }
+  { auto _e = freq_upper_edge(); _o->freq_upper_edge = _e; }
+  { auto _e = latitude(); _o->latitude = _e; }
+  { auto _e = longitude(); _o->longitude = _e; }
 }
 
 inline flatbuffers::Offset<Annotation> Annotation::Pack(flatbuffers::FlatBufferBuilder &_fbb, const AnnotationT* _o, const flatbuffers::rehasher_function_t *_rehasher) {
@@ -718,36 +1180,83 @@ inline flatbuffers::Offset<Annotation> CreateAnnotation(flatbuffers::FlatBufferB
   (void)_rehasher;
   (void)_o;
   struct _VectorArgs { flatbuffers::FlatBufferBuilder *__fbb; const AnnotationT* __o; const flatbuffers::rehasher_function_t *__rehasher; } _va = { &_fbb, _o, _rehasher}; (void)_va;
-  auto _freq_lower_edge = _o->freq_lower_edge;
-  auto _freq_upper_edge = _o->freq_upper_edge;
   auto _sample_start = _o->sample_start;
   auto _sample_count = _o->sample_count;
-  auto _description = _o->description.empty() ? 0 : _fbb.CreateString(_o->description);
   auto _generator = _o->generator.empty() ? 0 : _fbb.CreateString(_o->generator);
+  auto _description = _o->description.empty() ? 0 : _fbb.CreateString(_o->description);
+  auto _label = _o->label.empty() ? 0 : _fbb.CreateString(_o->label);
   auto _comment = _o->comment.empty() ? 0 : _fbb.CreateString(_o->comment);
+  auto _freq_lower_edge = _o->freq_lower_edge;
+  auto _freq_upper_edge = _o->freq_upper_edge;
+  auto _latitude = _o->latitude;
+  auto _longitude = _o->longitude;
   return core::CreateAnnotation(
       _fbb,
-      _freq_lower_edge,
-      _freq_upper_edge,
       _sample_start,
       _sample_count,
-      _description,
       _generator,
-      _comment);
+      _description,
+      _label,
+      _comment,
+      _freq_lower_edge,
+      _freq_upper_edge,
+      _latitude,
+      _longitude);
+}
+
+inline CollectionT *Collection::UnPack(const flatbuffers::resolver_function_t *_resolver) const {
+  auto _o = std::unique_ptr<CollectionT>(new CollectionT());
+  UnPackTo(_o.get(), _resolver);
+  return _o.release();
+}
+
+inline void Collection::UnPackTo(CollectionT *_o, const flatbuffers::resolver_function_t *_resolver) const {
+  (void)_o;
+  (void)_resolver;
+  { auto _e = version(); if (_e) _o->version = _e->str(); }
+  { auto _e = description(); if (_e) _o->description = _e->str(); }
+  { auto _e = author(); if (_e) _o->author = _e->str(); }
+  { auto _e = collection_doi(); if (_e) _o->collection_doi = _e->str(); }
+  { auto _e = license(); if (_e) _o->license = _e->str(); }
+  { auto _e = streams(); if (_e) { _o->streams.resize(_e->size()); for (flatbuffers::uoffset_t _i = 0; _i < _e->size(); _i++) { _o->streams[_i] = _e->Get(_i)->str(); } } }
+}
+
+inline flatbuffers::Offset<Collection> Collection::Pack(flatbuffers::FlatBufferBuilder &_fbb, const CollectionT* _o, const flatbuffers::rehasher_function_t *_rehasher) {
+  return CreateCollection(_fbb, _o, _rehasher);
+}
+
+inline flatbuffers::Offset<Collection> CreateCollection(flatbuffers::FlatBufferBuilder &_fbb, const CollectionT *_o, const flatbuffers::rehasher_function_t *_rehasher) {
+  (void)_rehasher;
+  (void)_o;
+  struct _VectorArgs { flatbuffers::FlatBufferBuilder *__fbb; const CollectionT* __o; const flatbuffers::rehasher_function_t *__rehasher; } _va = { &_fbb, _o, _rehasher}; (void)_va;
+  auto _version = _o->version.empty() ? 0 : _fbb.CreateString(_o->version);
+  auto _description = _o->description.empty() ? 0 : _fbb.CreateString(_o->description);
+  auto _author = _o->author.empty() ? 0 : _fbb.CreateString(_o->author);
+  auto _collection_doi = _o->collection_doi.empty() ? 0 : _fbb.CreateString(_o->collection_doi);
+  auto _license = _o->license.empty() ? 0 : _fbb.CreateString(_o->license);
+  auto _streams = _o->streams.size() ? _fbb.CreateVectorOfStrings(_o->streams) : 0;
+  return core::CreateCollection(
+      _fbb,
+      _version,
+      _description,
+      _author,
+      _collection_doi,
+      _license,
+      _streams);
 }
 
 inline DescrT *Descr::UnPack(const flatbuffers::resolver_function_t *_resolver) const {
-  auto _o = new DescrT();
-  UnPackTo(_o, _resolver);
-  return _o;
+  auto _o = std::unique_ptr<DescrT>(new DescrT());
+  UnPackTo(_o.get(), _resolver);
+  return _o.release();
 }
 
 inline void Descr::UnPackTo(DescrT *_o, const flatbuffers::resolver_function_t *_resolver) const {
   (void)_o;
   (void)_resolver;
-  { auto _e = global(); if (_e) _o->global = std::unique_ptr<GlobalT>(_e->UnPack(_resolver)); };
-  { auto _e = annotation(); if (_e) _o->annotation = std::unique_ptr<AnnotationT>(_e->UnPack(_resolver)); };
-  { auto _e = capture(); if (_e) _o->capture = std::unique_ptr<CaptureT>(_e->UnPack(_resolver)); };
+  { auto _e = global(); if (_e) _o->global = std::unique_ptr<core::GlobalT>(_e->UnPack(_resolver)); }
+  { auto _e = annotation(); if (_e) _o->annotation = std::unique_ptr<core::AnnotationT>(_e->UnPack(_resolver)); }
+  { auto _e = capture(); if (_e) _o->capture = std::unique_ptr<core::CaptureT>(_e->UnPack(_resolver)); }
 }
 
 inline flatbuffers::Offset<Descr> Descr::Pack(flatbuffers::FlatBufferBuilder &_fbb, const DescrT* _o, const flatbuffers::rehasher_function_t *_rehasher) {
@@ -768,13 +1277,47 @@ inline flatbuffers::Offset<Descr> CreateDescr(flatbuffers::FlatBufferBuilder &_f
       _capture);
 }
 
+inline const flatbuffers::TypeTable *sigmf_extensionTypeTable() {
+  static const flatbuffers::TypeCode type_codes[] = {
+    { flatbuffers::ET_STRING, 0, -1 },
+    { flatbuffers::ET_STRING, 0, -1 },
+    { flatbuffers::ET_BOOL, 0, -1 }
+  };
+  static const char * const names[] = {
+    "name",
+    "version",
+    "optional"
+  };
+  static const flatbuffers::TypeTable tt = {
+    flatbuffers::ST_TABLE, 3, type_codes, nullptr, nullptr, nullptr, names
+  };
+  return &tt;
+}
+
+inline const flatbuffers::TypeTable *geojson_pointTypeTable() {
+  static const flatbuffers::TypeCode type_codes[] = {
+    { flatbuffers::ET_STRING, 0, -1 },
+    { flatbuffers::ET_DOUBLE, 1, -1 }
+  };
+  static const char * const names[] = {
+    "type",
+    "coordinates"
+  };
+  static const flatbuffers::TypeTable tt = {
+    flatbuffers::ST_TABLE, 2, type_codes, nullptr, nullptr, nullptr, names
+  };
+  return &tt;
+}
+
 inline const flatbuffers::TypeTable *GlobalTypeTable() {
   static const flatbuffers::TypeCode type_codes[] = {
     { flatbuffers::ET_STRING, 0, -1 },
     { flatbuffers::ET_DOUBLE, 0, -1 },
     { flatbuffers::ET_STRING, 0, -1 },
+    { flatbuffers::ET_ULONG, 0, -1 },
     { flatbuffers::ET_STRING, 0, -1 },
-    { flatbuffers::ET_UINT, 0, -1 },
+    { flatbuffers::ET_ULONG, 0, -1 },
+    { flatbuffers::ET_STRING, 0, -1 },
     { flatbuffers::ET_STRING, 0, -1 },
     { flatbuffers::ET_STRING, 0, -1 },
     { flatbuffers::ET_STRING, 0, -1 },
@@ -787,6 +1330,7 @@ inline const flatbuffers::TypeTable *GlobalTypeTable() {
     "datatype",
     "sample_rate",
     "version",
+    "num_channels",
     "sha512",
     "offset",
     "description",
@@ -795,10 +1339,11 @@ inline const flatbuffers::TypeTable *GlobalTypeTable() {
     "data_doi",
     "recorder",
     "license",
-    "hw"
+    "hw",
+    "collection"
   };
   static const flatbuffers::TypeTable tt = {
-    flatbuffers::ST_TABLE, 12, type_codes, nullptr, nullptr, names
+    flatbuffers::ST_TABLE, 14, type_codes, nullptr, nullptr, nullptr, names
   };
   return &tt;
 }
@@ -817,32 +1362,61 @@ inline const flatbuffers::TypeTable *CaptureTypeTable() {
     "datetime"
   };
   static const flatbuffers::TypeTable tt = {
-    flatbuffers::ST_TABLE, 4, type_codes, nullptr, nullptr, names
+    flatbuffers::ST_TABLE, 4, type_codes, nullptr, nullptr, nullptr, names
   };
   return &tt;
 }
 
 inline const flatbuffers::TypeTable *AnnotationTypeTable() {
   static const flatbuffers::TypeCode type_codes[] = {
-    { flatbuffers::ET_DOUBLE, 0, -1 },
-    { flatbuffers::ET_DOUBLE, 0, -1 },
     { flatbuffers::ET_ULONG, 0, -1 },
     { flatbuffers::ET_ULONG, 0, -1 },
     { flatbuffers::ET_STRING, 0, -1 },
     { flatbuffers::ET_STRING, 0, -1 },
-    { flatbuffers::ET_STRING, 0, -1 }
+    { flatbuffers::ET_STRING, 0, -1 },
+    { flatbuffers::ET_STRING, 0, -1 },
+    { flatbuffers::ET_DOUBLE, 0, -1 },
+    { flatbuffers::ET_DOUBLE, 0, -1 },
+    { flatbuffers::ET_DOUBLE, 0, -1 },
+    { flatbuffers::ET_DOUBLE, 0, -1 }
   };
   static const char * const names[] = {
-    "freq_lower_edge",
-    "freq_upper_edge",
     "sample_start",
     "sample_count",
-    "description",
     "generator",
-    "comment"
+    "description",
+    "label",
+    "comment",
+    "freq_lower_edge",
+    "freq_upper_edge",
+    "latitude",
+    "longitude"
   };
   static const flatbuffers::TypeTable tt = {
-    flatbuffers::ST_TABLE, 7, type_codes, nullptr, nullptr, names
+    flatbuffers::ST_TABLE, 10, type_codes, nullptr, nullptr, nullptr, names
+  };
+  return &tt;
+}
+
+inline const flatbuffers::TypeTable *CollectionTypeTable() {
+  static const flatbuffers::TypeCode type_codes[] = {
+    { flatbuffers::ET_STRING, 0, -1 },
+    { flatbuffers::ET_STRING, 0, -1 },
+    { flatbuffers::ET_STRING, 0, -1 },
+    { flatbuffers::ET_STRING, 0, -1 },
+    { flatbuffers::ET_STRING, 0, -1 },
+    { flatbuffers::ET_STRING, 1, -1 }
+  };
+  static const char * const names[] = {
+    "version",
+    "description",
+    "author",
+    "collection_doi",
+    "license",
+    "streams"
+  };
+  static const flatbuffers::TypeTable tt = {
+    flatbuffers::ST_TABLE, 6, type_codes, nullptr, nullptr, nullptr, names
   };
   return &tt;
 }
@@ -854,9 +1428,9 @@ inline const flatbuffers::TypeTable *DescrTypeTable() {
     { flatbuffers::ET_SEQUENCE, 0, 2 }
   };
   static const flatbuffers::TypeFunction type_refs[] = {
-    GlobalTypeTable,
-    AnnotationTypeTable,
-    CaptureTypeTable
+    core::GlobalTypeTable,
+    core::AnnotationTypeTable,
+    core::CaptureTypeTable
   };
   static const char * const names[] = {
     "global",
@@ -864,7 +1438,7 @@ inline const flatbuffers::TypeTable *DescrTypeTable() {
     "capture"
   };
   static const flatbuffers::TypeTable tt = {
-    flatbuffers::ST_TABLE, 3, type_codes, type_refs, nullptr, names
+    flatbuffers::ST_TABLE, 3, type_codes, type_refs, nullptr, nullptr, names
   };
   return &tt;
 }
