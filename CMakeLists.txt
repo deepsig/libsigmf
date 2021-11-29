@@ -79,20 +79,26 @@ endif(NOT ${USE_SYSTEM_JSON})
 # Use flatbuffers to generate SigMF headers
 ########################################################################
 function(generate_sigmf_header generate_sigmf_target FBS_FILE OUTPUT_LOCATION)
-get_filename_component(generated_output_name ${FBS_FILE} NAME_WE)
-message(STATUS "Flatbuffers generated ${generated_output_name}")
-add_custom_command(OUTPUT ${OUTPUT_LOCATION}/${generated_output_name}_generated.h
-        COMMAND flatc -c --reflect-types --reflect-names --gen-object-api -o "${OUTPUT_LOCATION}/" "${FBS_FILE}"
-        COMMENT "Building C++ header for flatbuffers definition ${FBS_FILE}"
-        WORKING_DIRECTORY .
-        DEPENDS "${FBS_FILE}"
-)
-add_custom_target(generate_sigmf_target_${generate_sigmf_target}
-        DEPENDS ${OUTPUT_LOCATION}/${generated_output_name}_generated.h
-        )
-add_library(${generate_sigmf_target} INTERFACE)
-add_dependencies(${generate_sigmf_target} generate_sigmf_target_${generate_sigmf_target} flatc)
-target_include_directories(${generate_sigmf_target} INTERFACE "${OUTPUT_LOCATION}/")
+    get_filename_component(generated_output_name ${FBS_FILE} NAME_WE)
+    message(STATUS "Flatbuffers generated ${generated_output_name}")
+    if( ${ARGC} GREATER 3)
+        set(FLATC_EXTRA_ARGS ${ARGN})
+        string(REPLACE " " ";" FLATC_EXTRA_ARGS ${FLATC_EXTRA_ARGS})
+    else()
+        set(FLATC_EXTRA_ARGS "")
+    endif()
+    add_custom_command(OUTPUT ${OUTPUT_LOCATION}/${generated_output_name}_generated.h
+            COMMAND flatc ${FLATC_EXTRA_ARGS} -c --reflect-types --reflect-names --gen-object-api -o "${OUTPUT_LOCATION}/" "${FBS_FILE}"
+            COMMENT "Building C++ header for flatbuffers definition ${FBS_FILE} ${ARGC} ${ARGN}"
+            WORKING_DIRECTORY .
+            DEPENDS "${FBS_FILE}"
+    )
+    add_custom_target(generate_sigmf_target_${generate_sigmf_target}
+            DEPENDS ${OUTPUT_LOCATION}/${generated_output_name}_generated.h
+            )
+    add_library(${generate_sigmf_target} INTERFACE)
+    add_dependencies(${generate_sigmf_target} generate_sigmf_target_${generate_sigmf_target} flatc)
+    target_include_directories(${generate_sigmf_target} INTERFACE "${OUTPUT_LOCATION}/")
 endfunction(generate_sigmf_header)
 
 ########################################################################
@@ -112,7 +118,7 @@ generate_sigmf_header(generated_testing_ns
   )
 
 # We also carry around pre-generated headers so downstream doesn't need to build flatc
-set(LIBSIGMF_GEN_HEADERS "${CMAKE_CURRENT_SOURCE_DIR}/sigmf_protocols")
+set(LIBSIGMF_PREGEN_HEADERS "${CMAKE_CURRENT_SOURCE_DIR}/sigmf_protocols")
 
 ########################################################################
 # Our interface target that downstream have to use
@@ -122,7 +128,7 @@ target_include_directories(libsigmf INTERFACE
   $<INSTALL_INTERFACE:include>
   $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/src>
   $<INSTALL_INTERFACE:include/sigmf/fbs>
-  $<BUILD_INTERFACE:${LIBSIGMF_GEN_HEADERS}>
+  $<BUILD_INTERFACE:${LIBSIGMF_PREGEN_HEADERS}>
 )
 
 if (${Flatbuffers_FOUND})
@@ -175,11 +181,15 @@ configure_file(
 # Install SigMF headers
 ########################################################################
 install(  # install flatbuf proto defs
-  DIRECTORY ${LIBSIGMF_GEN_HEADERS}/
+  DIRECTORY ${LIBSIGMF_PREGEN_HEADERS}/
   DESTINATION include/sigmf/fbs
   FILES_MATCHING PATTERN "*.fbs")
-install(  # install generated headers
-  DIRECTORY ${LIBSIGMF_GEN_HEADERS}/
+install(  # install pregenerated headers
+  DIRECTORY ${LIBSIGMF_PREGEN_HEADERS}/
+  DESTINATION include/sigmf
+  FILES_MATCHING PATTERN "*.h")
+install(  # if headers were built, replace pregenerated headers with those
+  DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/include/
   DESTINATION include/sigmf
   FILES_MATCHING PATTERN "*.h")
 install(  # install original headers
