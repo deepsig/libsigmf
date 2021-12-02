@@ -137,9 +137,6 @@ target_include_directories(libsigmf INTERFACE
 
 if (${Flatbuffers_FOUND})
   # System flatbuffers can import this target
-  target_link_libraries(libsigmf INTERFACE
-    flatbuffers::flatbuffers_shared
-  )
 else()
   target_include_directories(libsigmf INTERFACE
     $<BUILD_INTERFACE:${FLATBUFFERS_INCLUDE_DIR}>
