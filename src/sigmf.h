@@ -82,7 +82,7 @@ namespace sigmf {
      */
 
     template<typename GlobalType, typename CaptureType, typename AnnotationType>
-    void to_json(json &j, const SigMF<GlobalType, CaptureType, AnnotationType> t) {
+    void to_json(json &j, const SigMF<GlobalType, CaptureType, AnnotationType> &t) {
         j = t.to_json();
     }
 

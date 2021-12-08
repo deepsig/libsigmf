@@ -79,7 +79,8 @@ int main() {
             0.0
         ],
         "core:author": "DeepSig",
-        "core:description": "Round-trip from json -> libsigmf -> back"
+        "core:description": "Round-trip from json -> libsigmf -> back",
+        "core:sample_rate": 1000000.0
     }
 })");
 

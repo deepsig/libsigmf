@@ -26,9 +26,9 @@ table Global {
     recorder:string;
     license:string;
     hw:string;
-// FIXME: subtables are not working right now...
-    // geolocation:geojson_point;
-    // extensions:[sigmf_extension];
+    geolocation:geojson_point;
+// FIXME: vectors of tables are not working properly for now...
+    extensions:[sigmf_extension];
     collection:string;
 }
 
@@ -49,7 +49,7 @@ table Annotation {
     comment:string;
     freq_lower_edge:double=null;
     freq_upper_edge:double=null;
-    // latitude and longitude are deprecated, use the `global` `geolocation` field
+// latitude and longitude are deprecated, use the `global` `geolocation` field
     latitude:double=null;
     longitude:double=null;
 }
@@ -61,8 +61,8 @@ table Collection {
     author:string;
     collection_doi:string;
     license:string;
-// FIXME: subtables are not working right now...
-    // extensions:[sigmf_extension];
+// FIXME: vectors of tables are not working properly for now...
+    extensions:[sigmf_extension];
     streams:[string];
 }
 

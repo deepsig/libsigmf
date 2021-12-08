@@ -133,6 +133,7 @@ struct FromSigMFVisitor : public flatbuffers::IterationVisitor {
 
     void StartVector() override {
         std::cout << "the visitor was called on startvector... not implemented" << std::endl;
+
     }
 
     void EndVector() override {
@@ -217,6 +218,8 @@ inline void IterateType(const flatbuffers::TypeTable *type_table, FromSigMFVisit
     const uint8_t *prev_val = nullptr;
     const uint8_t val[8] = {};
     auto comosite_type_offsets = std::map<size_t, flatbuffers::Offset<void> >();
+    std::cout << "Operating on table with keys:\n";
+    for (size_t i = 0; i < type_table->num_elems; i++) std::cout << "\t- " << type_table->names[i] << "\n";
     // Generate the strings up front (because they must be created before our Table in the flatbuffer)
     for (size_t i = 0; i < type_table->num_elems; i++) {
         auto type_code = type_table->type_codes[i];
@@ -232,6 +235,7 @@ inline void IterateType(const flatbuffers::TypeTable *type_table, FromSigMFVisit
         auto field_name = subtable ? name : visitor->p + name;
         if (type < flatbuffers::ET_STRING) {
             if (is_vector) {
+                std::cout << "VECTOR! " << name << " = " << original_json[field_name] << std::endl;
                 auto vector_offset = json_vector_to_chararray(visitor->fbb, original_json[field_name], type);
                 auto void_offset = flatbuffers::Offset<void>(vector_offset.o);
                 comosite_type_offsets[i] = void_offset;
@@ -249,20 +253,32 @@ inline void IterateType(const flatbuffers::TypeTable *type_table, FromSigMFVisit
                 auto vecoffset = flatbuffers::Offset<void>(visitor->fbb.CreateVector(vecofstrings).o);
                 comosite_type_offsets[i] = vecoffset;
             } else {
+                std::cout << "STRING! " << name << " = " << original_json[field_name] << std::endl;
                 if (!original_json[field_name].is_null()) {
+                    std::cout << "\t*\n";
                     visitor->Field(i, 0, type, is_vector, ref, name, val, original_json);
                     IterateValue(type, val, ref, prev_val, -1, visitor);
                     comosite_type_offsets[i] = visitor->last_fb_offset;
                 }
             }
         } else if (type == flatbuffers::ET_SEQUENCE) {
-            if (is_vector) {
-                std::vector<flatbuffers::Offset<void> > vecoftables;
-                for (const auto &item : original_json[field_name]) {
-                    auto seq_typetable = type_table->type_refs[ref_idx]();
+                std::cout << "ET_SEQUENCE: " << name << " " << original_json[field_name] << "\n";
 
+            if (is_vector) {
+                std::cout << "SEQVECTOR! " << name << " = " << original_json[field_name] << std::endl;
+                std::vector<flatbuffers::Offset<void> > vecoftables;
+
+                for (const auto &item : original_json[field_name]) {
+
+                    std::cout << "\t\t\t" << item << "\n";
+                    auto seq_typetable = type_table->type_refs[ref_idx]();
+                    for (size_t i = 0; i < seq_typetable->num_elems; i++) {
+                        std::cout << " \t\t\t\t\t name: " << seq_typetable->names[i] << std::endl;
+
+                    }
                     IterateType(seq_typetable, visitor, item, true);
                     auto vecelement = flatbuffers::Offset<void>(visitor->_stop);
+
                     vecoftables.emplace_back(vecelement);
                 }
                 auto vecoffset = flatbuffers::Offset<void>(visitor->fbb.CreateVector(vecoftables).o);
@@ -288,6 +304,7 @@ inline void IterateType(const flatbuffers::TypeTable *type_table, FromSigMFVisit
         if (ref_idx >= 0) { ref = type_table->type_refs[ref_idx](); }
         auto name = type_table->names ? type_table->names[i] : nullptr;
         if (is_vector) {
+            std::cout << " storing vector " << name << "\n";
             auto this_voffset = flatbuffers::FieldIndexToOffset(static_cast<flatbuffers::voffset_t >(i));
             visitor->fbb.AddOffset(this_voffset, comosite_type_offsets.at(i));
         } else if (type == flatbuffers::ET_STRING) {
@@ -298,6 +315,7 @@ inline void IterateType(const flatbuffers::TypeTable *type_table, FromSigMFVisit
                 // It's ok... this is just because a field wasn't present in json so we never had to deserialize
             }
         } else if (type == flatbuffers::ET_SEQUENCE) {
+            std::cout << " storing sequence " << name << "\n";
             auto this_voffset = flatbuffers::FieldIndexToOffset(static_cast<flatbuffers::voffset_t>(i));
             visitor->fbb.AddOffset(this_voffset, comosite_type_offsets.at(i));
         } else {
@@ -426,6 +444,7 @@ flatbuffer_field_to_json(const uint8_t *buffer_root,
         }
         case flatbuffers::ET_DOUBLE: {
             if (is_vector) {
+                std::cout << "dubvector! " << typetable->names[elem] << std::endl;
                 return FlatBufferVectorToJson(tbl->GetPointer<const flatbuffers::Vector<double> *>(field_offset));
             } else {
                 std::optional<double> tval = tbl->GetOptional<double,double>(field_offset);
@@ -439,18 +458,24 @@ flatbuffer_field_to_json(const uint8_t *buffer_root,
                 std::vector<std::string> vec;
                 for (auto i = fbv->begin(); i != fbv->end(); i++) {
                     std::string s = i->str();
+                    std::cout << s << std::endl;
                     vec.push_back(s);
                 }
                 return json(vec);
             } else {
                 auto tval = tbl->GetPointer<const flatbuffers::String *>(field_offset);
+                std::cout << "string! " << typetable->names[elem] << " " << tval->c_str() << std::endl;
                 return tval ? json(tval->c_str()) : json{};
             }
         }
         case flatbuffers::ET_SEQUENCE: {
             switch (typetable->st) {
                 case flatbuffers::ST_TABLE:
+                    std::cout << "got a flatbuffers subtable " << typetable->names[elem] << " at " << (int )*val;
+                    std::cout << " buf_voffset " << buf_voffset << " field_offset " << field_offset << std::endl;
                     val += flatbuffers::ReadScalar<flatbuffers::uoffset_t>(val);
+                    //const auto obj = reinterpret_cast<const flatbuffers::Table *>(val);
+                    std::cout << "returning " << FlatBufferToJson(val, typetable->type_refs[type_code.sequence_ref]()).dump() << "\n";
                     return FlatBufferToJson(val, typetable->type_refs[type_code.sequence_ref]());
                 default:
                     // Have not implemented structs, unions, or enums which are all supported by flatbuffers
@@ -501,12 +526,14 @@ FlatBufferToJson(const uint8_t *buffer_root, const flatbuffers::TypeTable *typet
                     "libsigmf::FlatBufferToJson was called with a non-table type. Please file an issue with your fbs schema and input data.");
         }
         if (val) {
+            std::cout << "field " << ns_prefix << ":" << name << "\n";
             json lval = flatbuffer_field_to_json(buffer_root, i, typetable, ns_prefix);
-            if (!lval.is_null()) {  // check this since empty subtables will pass `if (val)`
+            if (!lval.is_null()) {  // check this as empty subtables will pass `if (val)`
                 json_object[ns_prefix + name] = lval;
             }
         } else {
-            // There is no value in this field, this is OK as libsigmf does not enforce field presence
+            std::cout << "field " << ns_prefix << ":" << name << " is null..\n";
+            // There is no value in this field, this is OK as libsigmf does not enforce field presense
         }
     }
     return json_object;
