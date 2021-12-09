@@ -7,14 +7,15 @@ provided under the Apache License 2.0 and the copyright notice can be found in N
 ## Updates in libsigmf v1.0
 
 Version 1.0 has several changes from earlier versions, most notably is the requirement to use optional (nullable)
-scalar fields which became supported in flatbuffers since the library was originally published (v0.1). This means
+scalar fields which became supported in flatbuffers since the library was originally published (v0.0.2). This means
 scalar values are ALL implemented as std::optional, which is a change for applications using `libsigmf`. This
 change was made to avoid the situation where default values are either not populated or always populated. Now all
 fields will be included in the output if and only if they are set.
 
 Other v1.0 changes include: updating to the latest SigMF metadata fields in the included schemas (including
-redefining all scalar fields as optional via `=null;`), updating to flatbuffers v2.0.0 syntax, cmake updates,
-updates to examples to ensure optional fields are working correctly, update to require c++17 for std::optional.
+redefining all scalar fields as optional via `=null;`), updating to flatbuffers v2.0.0 syntax, using shared_ptr
+for generated headers instead of unique_ptr, cmake updates, updates to examples to ensure optional fields are
+working correctly, update to require c++17 for std::optional.
 
 To update existing code from flatbuffers v0.1 and earlier to v1.0, accessing a field like this:
 
@@ -46,9 +47,8 @@ with default values".
 
 ## Limitations of libsigmf v1.0
 
-- Subtables are not working correctly, thus the `core:extensions` and `core:geolocation` are not supported yet.
 - Only the `antenna` and `capture_details` extension schemas are included for now.
-- Collections are not supported yet.
+- SigMF collections do not have any formal support yet.
 - Formal test code is still a WIP, examples provide some code coverage.
 
 ## Building

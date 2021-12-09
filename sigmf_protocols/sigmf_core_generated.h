@@ -238,8 +238,8 @@ struct GlobalT : public flatbuffers::NativeTable {
   std::string recorder{};
   std::string license{};
   std::string hw{};
-  std::unique_ptr<core::geojson_pointT> geolocation{};
-  std::vector<std::unique_ptr<core::sigmf_extensionT>> extensions{};
+  std::shared_ptr<core::geojson_pointT> geolocation{};
+  std::vector<std::shared_ptr<core::sigmf_extensionT>> extensions{};
   std::string collection{};
 };
 
@@ -806,7 +806,7 @@ struct CollectionT : public flatbuffers::NativeTable {
   std::string author{};
   std::string collection_doi{};
   std::string license{};
-  std::vector<std::unique_ptr<core::sigmf_extensionT>> extensions{};
+  std::vector<std::shared_ptr<core::sigmf_extensionT>> extensions{};
   std::vector<std::string> streams{};
 };
 
@@ -958,9 +958,9 @@ flatbuffers::Offset<Collection> CreateCollection(flatbuffers::FlatBufferBuilder 
 
 struct DescrT : public flatbuffers::NativeTable {
   typedef Descr TableType;
-  std::unique_ptr<core::GlobalT> global{};
-  std::unique_ptr<core::AnnotationT> annotation{};
-  std::unique_ptr<core::CaptureT> capture{};
+  std::shared_ptr<core::GlobalT> global{};
+  std::shared_ptr<core::AnnotationT> annotation{};
+  std::shared_ptr<core::CaptureT> capture{};
 };
 
 struct Descr FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
@@ -1119,8 +1119,8 @@ inline void Global::UnPackTo(GlobalT *_o, const flatbuffers::resolver_function_t
   { auto _e = recorder(); if (_e) _o->recorder = _e->str(); }
   { auto _e = license(); if (_e) _o->license = _e->str(); }
   { auto _e = hw(); if (_e) _o->hw = _e->str(); }
-  { auto _e = geolocation(); if (_e) _o->geolocation = std::unique_ptr<core::geojson_pointT>(_e->UnPack(_resolver)); }
-  { auto _e = extensions(); if (_e) { _o->extensions.resize(_e->size()); for (flatbuffers::uoffset_t _i = 0; _i < _e->size(); _i++) { _o->extensions[_i] = std::unique_ptr<core::sigmf_extensionT>(_e->Get(_i)->UnPack(_resolver)); } } }
+  { auto _e = geolocation(); if (_e) _o->geolocation = std::shared_ptr<core::geojson_pointT>(_e->UnPack(_resolver)); }
+  { auto _e = extensions(); if (_e) { _o->extensions.resize(_e->size()); for (flatbuffers::uoffset_t _i = 0; _i < _e->size(); _i++) { _o->extensions[_i] = std::shared_ptr<core::sigmf_extensionT>(_e->Get(_i)->UnPack(_resolver)); } } }
   { auto _e = collection(); if (_e) _o->collection = _e->str(); }
 }
 
@@ -1270,7 +1270,7 @@ inline void Collection::UnPackTo(CollectionT *_o, const flatbuffers::resolver_fu
   { auto _e = author(); if (_e) _o->author = _e->str(); }
   { auto _e = collection_doi(); if (_e) _o->collection_doi = _e->str(); }
   { auto _e = license(); if (_e) _o->license = _e->str(); }
-  { auto _e = extensions(); if (_e) { _o->extensions.resize(_e->size()); for (flatbuffers::uoffset_t _i = 0; _i < _e->size(); _i++) { _o->extensions[_i] = std::unique_ptr<core::sigmf_extensionT>(_e->Get(_i)->UnPack(_resolver)); } } }
+  { auto _e = extensions(); if (_e) { _o->extensions.resize(_e->size()); for (flatbuffers::uoffset_t _i = 0; _i < _e->size(); _i++) { _o->extensions[_i] = std::shared_ptr<core::sigmf_extensionT>(_e->Get(_i)->UnPack(_resolver)); } } }
   { auto _e = streams(); if (_e) { _o->streams.resize(_e->size()); for (flatbuffers::uoffset_t _i = 0; _i < _e->size(); _i++) { _o->streams[_i] = _e->Get(_i)->str(); } } }
 }
 
@@ -1309,9 +1309,9 @@ inline DescrT *Descr::UnPack(const flatbuffers::resolver_function_t *_resolver) 
 inline void Descr::UnPackTo(DescrT *_o, const flatbuffers::resolver_function_t *_resolver) const {
   (void)_o;
   (void)_resolver;
-  { auto _e = global(); if (_e) _o->global = std::unique_ptr<core::GlobalT>(_e->UnPack(_resolver)); }
-  { auto _e = annotation(); if (_e) _o->annotation = std::unique_ptr<core::AnnotationT>(_e->UnPack(_resolver)); }
-  { auto _e = capture(); if (_e) _o->capture = std::unique_ptr<core::CaptureT>(_e->UnPack(_resolver)); }
+  { auto _e = global(); if (_e) _o->global = std::shared_ptr<core::GlobalT>(_e->UnPack(_resolver)); }
+  { auto _e = annotation(); if (_e) _o->annotation = std::shared_ptr<core::AnnotationT>(_e->UnPack(_resolver)); }
+  { auto _e = capture(); if (_e) _o->capture = std::shared_ptr<core::CaptureT>(_e->UnPack(_resolver)); }
 }
 
 inline flatbuffers::Offset<Descr> Descr::Pack(flatbuffers::FlatBufferBuilder &_fbb, const DescrT* _o, const flatbuffers::rehasher_function_t *_rehasher) {

@@ -466,7 +466,7 @@ struct composed_typeT : public flatbuffers::NativeTable {
   std::string name{};
   std::vector<std::string> comments{};
   int32_t index = 0;
-  std::vector<std::unique_ptr<very_nested_thingT>> nnnnnn{};
+  std::vector<std::shared_ptr<very_nested_thingT>> nnnnnn{};
 };
 
 struct composed_type FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
@@ -815,7 +815,7 @@ inline void composed_type::UnPackTo(composed_typeT *_o, const flatbuffers::resol
   { auto _e = name(); if (_e) _o->name = _e->str(); }
   { auto _e = comments(); if (_e) { _o->comments.resize(_e->size()); for (flatbuffers::uoffset_t _i = 0; _i < _e->size(); _i++) { _o->comments[_i] = _e->Get(_i)->str(); } } }
   { auto _e = index(); _o->index = _e; }
-  { auto _e = nnnnnn(); if (_e) { _o->nnnnnn.resize(_e->size()); for (flatbuffers::uoffset_t _i = 0; _i < _e->size(); _i++) { _o->nnnnnn[_i] = std::unique_ptr<very_nested_thingT>(_e->Get(_i)->UnPack(_resolver)); } } }
+  { auto _e = nnnnnn(); if (_e) { _o->nnnnnn.resize(_e->size()); for (flatbuffers::uoffset_t _i = 0; _i < _e->size(); _i++) { _o->nnnnnn[_i] = std::shared_ptr<very_nested_thingT>(_e->Get(_i)->UnPack(_resolver)); } } }
 }
 
 inline flatbuffers::Offset<composed_type> composed_type::Pack(flatbuffers::FlatBufferBuilder &_fbb, const composed_typeT* _o, const flatbuffers::rehasher_function_t *_rehasher) {

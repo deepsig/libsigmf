@@ -18,6 +18,9 @@
 #define SIGMF_HELPERS_H
 
 #include "sigmf.h"
+#include "sigmf_core_generated.h"
+#include "sigmf_antenna_generated.h"
+#include "sigmf_capture_details_generated.h"
 #include <fstream>
 
 

@@ -214,6 +214,7 @@ json_vector_to_chararray(flatbuffers::FlatBufferBuilder &fbb, const json &jvec, 
  * @param visitor the visitor responsible for creating objects and adding fields to its internal flatbufferbuilder
  */
 inline void IterateType(const flatbuffers::TypeTable *type_table, FromSigMFVisitor *visitor, json original_json, bool subtable=false) {
+    if (original_json.is_null()) return;  // empty table, not a problem
     const uint8_t *prev_val = nullptr;
     const uint8_t val[8] = {};
     auto comosite_type_offsets = std::map<size_t, flatbuffers::Offset<void> >();
@@ -259,19 +260,23 @@ inline void IterateType(const flatbuffers::TypeTable *type_table, FromSigMFVisit
             if (is_vector) {
                 std::vector<flatbuffers::Offset<void> > vecoftables;
                 for (const auto &item : original_json[field_name]) {
-                    auto seq_typetable = type_table->type_refs[ref_idx]();
+                    if (!item.is_null()) {
+                        auto seq_typetable = type_table->type_refs[ref_idx]();
 
-                    IterateType(seq_typetable, visitor, item, true);
-                    auto vecelement = flatbuffers::Offset<void>(visitor->_stop);
-                    vecoftables.emplace_back(vecelement);
+                        IterateType(seq_typetable, visitor, item, true);
+                        auto vecelement = flatbuffers::Offset<void>(visitor->_stop);
+                        vecoftables.emplace_back(vecelement);
+                    }
                 }
                 auto vecoffset = flatbuffers::Offset<void>(visitor->fbb.CreateVector(vecoftables).o);
                 comosite_type_offsets[i] = vecoffset;
             } else {
-                auto seq_typetable = type_table->type_refs[ref_idx]();
+                if (!original_json[field_name].is_null()) {
+                    auto seq_typetable = type_table->type_refs[ref_idx]();
 
-                IterateType(seq_typetable, visitor, original_json[field_name], true);
-                comosite_type_offsets[i] = flatbuffers::Offset<void>(visitor->_stop);
+                    IterateType(seq_typetable, visitor, original_json[field_name], true);
+                    comosite_type_offsets[i] = flatbuffers::Offset<void>(visitor->_stop);
+                }
             }
         }
     }
@@ -294,12 +299,14 @@ inline void IterateType(const flatbuffers::TypeTable *type_table, FromSigMFVisit
             try {
                 auto this_voffset = flatbuffers::FieldIndexToOffset(static_cast<flatbuffers::voffset_t>(i));
                 visitor->fbb.AddOffset(this_voffset, comosite_type_offsets.at(i));
-            } catch (std::out_of_range &e) {
-                // It's ok... this is just because a field wasn't present in json so we never had to deserialize
+            } catch (std::out_of_range &e) { // this is ok... field wasn't present in json, not deserialized
             }
         } else if (type == flatbuffers::ET_SEQUENCE) {
-            auto this_voffset = flatbuffers::FieldIndexToOffset(static_cast<flatbuffers::voffset_t>(i));
-            visitor->fbb.AddOffset(this_voffset, comosite_type_offsets.at(i));
+            try {
+                auto this_voffset = flatbuffers::FieldIndexToOffset(static_cast<flatbuffers::voffset_t>(i));
+                visitor->fbb.AddOffset(this_voffset, comosite_type_offsets.at(i));
+            } catch (std::out_of_range &e) { // this is ok... field wasn't present in json, not deserialized
+            }
         } else {
             visitor->Field(i, set_idx, type, is_vector, ref, name, val, original_json);
             set_idx++;

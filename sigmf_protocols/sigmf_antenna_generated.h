@@ -420,9 +420,9 @@ flatbuffers::Offset<Annotation> CreateAnnotation(flatbuffers::FlatBufferBuilder 
 
 struct DescrT : public flatbuffers::NativeTable {
   typedef Descr TableType;
-  std::unique_ptr<antenna::GlobalT> global{};
-  std::unique_ptr<antenna::AnnotationT> annotation{};
-  std::unique_ptr<antenna::CaptureT> capture{};
+  std::shared_ptr<antenna::GlobalT> global{};
+  std::shared_ptr<antenna::AnnotationT> annotation{};
+  std::shared_ptr<antenna::CaptureT> capture{};
 };
 
 struct Descr FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
@@ -630,9 +630,9 @@ inline DescrT *Descr::UnPack(const flatbuffers::resolver_function_t *_resolver) 
 inline void Descr::UnPackTo(DescrT *_o, const flatbuffers::resolver_function_t *_resolver) const {
   (void)_o;
   (void)_resolver;
-  { auto _e = global(); if (_e) _o->global = std::unique_ptr<antenna::GlobalT>(_e->UnPack(_resolver)); }
-  { auto _e = annotation(); if (_e) _o->annotation = std::unique_ptr<antenna::AnnotationT>(_e->UnPack(_resolver)); }
-  { auto _e = capture(); if (_e) _o->capture = std::unique_ptr<antenna::CaptureT>(_e->UnPack(_resolver)); }
+  { auto _e = global(); if (_e) _o->global = std::shared_ptr<antenna::GlobalT>(_e->UnPack(_resolver)); }
+  { auto _e = annotation(); if (_e) _o->annotation = std::shared_ptr<antenna::AnnotationT>(_e->UnPack(_resolver)); }
+  { auto _e = capture(); if (_e) _o->capture = std::shared_ptr<antenna::CaptureT>(_e->UnPack(_resolver)); }
 }
 
 inline flatbuffers::Offset<Descr> Descr::Pack(flatbuffers::FlatBufferBuilder &_fbb, const DescrT* _o, const flatbuffers::rehasher_function_t *_rehasher) {
