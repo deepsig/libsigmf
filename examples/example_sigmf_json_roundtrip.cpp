@@ -80,6 +80,26 @@ int main() {
         ],
         "core:author": "DeepSig",
         "core:description": "Round-trip from json -> libsigmf -> back",
+        "core:extensions": [
+            {
+                "name": "fake_extension_1",
+                "optional": false,
+                "version": "0.1.2.3.4.5.6"
+            },
+            {
+                "name": "another fake ext",
+                "optional": true,
+                "version": "2"
+            }
+        ],
+        "core:geolocation": {
+            "coordinates": [
+                12.34,
+                5.678,
+                9.0
+            ],
+            "type": "point"
+        },
         "core:sample_rate": 1000000.0
     }
 })");

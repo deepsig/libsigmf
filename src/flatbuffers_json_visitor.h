@@ -450,8 +450,18 @@ flatbuffer_field_to_json(const uint8_t *buffer_root,
         case flatbuffers::ET_SEQUENCE: {
             switch (typetable->st) {
                 case flatbuffers::ST_TABLE:
-                    val += flatbuffers::ReadScalar<flatbuffers::uoffset_t>(val);
-                    return FlatBufferToJson(val, typetable->type_refs[type_code.sequence_ref]());
+                    if (is_vector) {
+                        const flatbuffers::Vector<flatbuffers::Offset<flatbuffers::Table>> *fbv =
+                            tbl->GetPointer<const flatbuffers::Vector<flatbuffers::Offset<flatbuffers::Table>> *>(field_offset);
+                        std::vector<json> vec;
+                        for (auto i = fbv->begin(); i != fbv->end(); i++) {
+                            vec.push_back(FlatBufferToJson(reinterpret_cast<const uint8_t *>(*i), typetable->type_refs[type_code.sequence_ref]()));
+                        }
+                        return json(vec);
+                    } else {
+                        val += flatbuffers::ReadScalar<flatbuffers::uoffset_t>(val);
+                        return FlatBufferToJson(val, typetable->type_refs[type_code.sequence_ref]());
+                    }
                 default:
                     // Have not implemented structs, unions, or enums which are all supported by flatbuffers
                     // schema and would be great to have, but dont make as much sense in json-land. They're
