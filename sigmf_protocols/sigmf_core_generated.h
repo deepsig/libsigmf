@@ -238,6 +238,8 @@ struct GlobalT : public flatbuffers::NativeTable {
   std::string recorder{};
   std::string license{};
   std::string hw{};
+  std::unique_ptr<core::geojson_pointT> geolocation{};
+  std::vector<std::unique_ptr<core::sigmf_extensionT>> extensions{};
   std::string collection{};
 };
 
@@ -261,7 +263,9 @@ struct Global FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
     VT_RECORDER = 24,
     VT_LICENSE = 26,
     VT_HW = 28,
-    VT_COLLECTION = 30
+    VT_GEOLOCATION = 30,
+    VT_EXTENSIONS = 32,
+    VT_COLLECTION = 34
   };
   const flatbuffers::String *datatype() const {
     return GetPointer<const flatbuffers::String *>(VT_DATATYPE);
@@ -302,6 +306,12 @@ struct Global FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
   const flatbuffers::String *hw() const {
     return GetPointer<const flatbuffers::String *>(VT_HW);
   }
+  const core::geojson_point *geolocation() const {
+    return GetPointer<const core::geojson_point *>(VT_GEOLOCATION);
+  }
+  const flatbuffers::Vector<flatbuffers::Offset<core::sigmf_extension>> *extensions() const {
+    return GetPointer<const flatbuffers::Vector<flatbuffers::Offset<core::sigmf_extension>> *>(VT_EXTENSIONS);
+  }
   const flatbuffers::String *collection() const {
     return GetPointer<const flatbuffers::String *>(VT_COLLECTION);
   }
@@ -330,6 +340,11 @@ struct Global FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
            verifier.VerifyString(license()) &&
            VerifyOffset(verifier, VT_HW) &&
            verifier.VerifyString(hw()) &&
+           VerifyOffset(verifier, VT_GEOLOCATION) &&
+           verifier.VerifyTable(geolocation()) &&
+           VerifyOffset(verifier, VT_EXTENSIONS) &&
+           verifier.VerifyVector(extensions()) &&
+           verifier.VerifyVectorOfTables(extensions()) &&
            VerifyOffset(verifier, VT_COLLECTION) &&
            verifier.VerifyString(collection()) &&
            verifier.EndTable();
@@ -382,6 +397,12 @@ struct GlobalBuilder {
   void add_hw(flatbuffers::Offset<flatbuffers::String> hw) {
     fbb_.AddOffset(Global::VT_HW, hw);
   }
+  void add_geolocation(flatbuffers::Offset<core::geojson_point> geolocation) {
+    fbb_.AddOffset(Global::VT_GEOLOCATION, geolocation);
+  }
+  void add_extensions(flatbuffers::Offset<flatbuffers::Vector<flatbuffers::Offset<core::sigmf_extension>>> extensions) {
+    fbb_.AddOffset(Global::VT_EXTENSIONS, extensions);
+  }
   void add_collection(flatbuffers::Offset<flatbuffers::String> collection) {
     fbb_.AddOffset(Global::VT_COLLECTION, collection);
   }
@@ -411,12 +432,16 @@ inline flatbuffers::Offset<Global> CreateGlobal(
     flatbuffers::Offset<flatbuffers::String> recorder = 0,
     flatbuffers::Offset<flatbuffers::String> license = 0,
     flatbuffers::Offset<flatbuffers::String> hw = 0,
+    flatbuffers::Offset<core::geojson_point> geolocation = 0,
+    flatbuffers::Offset<flatbuffers::Vector<flatbuffers::Offset<core::sigmf_extension>>> extensions = 0,
     flatbuffers::Offset<flatbuffers::String> collection = 0) {
   GlobalBuilder builder_(_fbb);
   if(offset) { builder_.add_offset(*offset); }
   if(num_channels) { builder_.add_num_channels(*num_channels); }
   if(sample_rate) { builder_.add_sample_rate(*sample_rate); }
   builder_.add_collection(collection);
+  builder_.add_extensions(extensions);
+  builder_.add_geolocation(geolocation);
   builder_.add_hw(hw);
   builder_.add_license(license);
   builder_.add_recorder(recorder);
@@ -445,6 +470,8 @@ inline flatbuffers::Offset<Global> CreateGlobalDirect(
     const char *recorder = nullptr,
     const char *license = nullptr,
     const char *hw = nullptr,
+    flatbuffers::Offset<core::geojson_point> geolocation = 0,
+    const std::vector<flatbuffers::Offset<core::sigmf_extension>> *extensions = nullptr,
     const char *collection = nullptr) {
   auto datatype__ = datatype ? _fbb.CreateString(datatype) : 0;
   auto version__ = version ? _fbb.CreateString(version) : 0;
@@ -456,6 +483,7 @@ inline flatbuffers::Offset<Global> CreateGlobalDirect(
   auto recorder__ = recorder ? _fbb.CreateString(recorder) : 0;
   auto license__ = license ? _fbb.CreateString(license) : 0;
   auto hw__ = hw ? _fbb.CreateString(hw) : 0;
+  auto extensions__ = extensions ? _fbb.CreateVector<flatbuffers::Offset<core::sigmf_extension>>(*extensions) : 0;
   auto collection__ = collection ? _fbb.CreateString(collection) : 0;
   return core::CreateGlobal(
       _fbb,
@@ -472,6 +500,8 @@ inline flatbuffers::Offset<Global> CreateGlobalDirect(
       recorder__,
       license__,
       hw__,
+      geolocation,
+      extensions__,
       collection__);
 }
 
@@ -776,6 +806,7 @@ struct CollectionT : public flatbuffers::NativeTable {
   std::string author{};
   std::string collection_doi{};
   std::string license{};
+  std::vector<std::unique_ptr<core::sigmf_extensionT>> extensions{};
   std::vector<std::string> streams{};
 };
 
@@ -791,7 +822,8 @@ struct Collection FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
     VT_AUTHOR = 8,
     VT_COLLECTION_DOI = 10,
     VT_LICENSE = 12,
-    VT_STREAMS = 14
+    VT_EXTENSIONS = 14,
+    VT_STREAMS = 16
   };
   const flatbuffers::String *version() const {
     return GetPointer<const flatbuffers::String *>(VT_VERSION);
@@ -808,6 +840,9 @@ struct Collection FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
   const flatbuffers::String *license() const {
     return GetPointer<const flatbuffers::String *>(VT_LICENSE);
   }
+  const flatbuffers::Vector<flatbuffers::Offset<core::sigmf_extension>> *extensions() const {
+    return GetPointer<const flatbuffers::Vector<flatbuffers::Offset<core::sigmf_extension>> *>(VT_EXTENSIONS);
+  }
   const flatbuffers::Vector<flatbuffers::Offset<flatbuffers::String>> *streams() const {
     return GetPointer<const flatbuffers::Vector<flatbuffers::Offset<flatbuffers::String>> *>(VT_STREAMS);
   }
@@ -823,6 +858,9 @@ struct Collection FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
            verifier.VerifyString(collection_doi()) &&
            VerifyOffset(verifier, VT_LICENSE) &&
            verifier.VerifyString(license()) &&
+           VerifyOffset(verifier, VT_EXTENSIONS) &&
+           verifier.VerifyVector(extensions()) &&
+           verifier.VerifyVectorOfTables(extensions()) &&
            VerifyOffset(verifier, VT_STREAMS) &&
            verifier.VerifyVector(streams()) &&
            verifier.VerifyVectorOfStrings(streams()) &&
@@ -852,6 +890,9 @@ struct CollectionBuilder {
   void add_license(flatbuffers::Offset<flatbuffers::String> license) {
     fbb_.AddOffset(Collection::VT_LICENSE, license);
   }
+  void add_extensions(flatbuffers::Offset<flatbuffers::Vector<flatbuffers::Offset<core::sigmf_extension>>> extensions) {
+    fbb_.AddOffset(Collection::VT_EXTENSIONS, extensions);
+  }
   void add_streams(flatbuffers::Offset<flatbuffers::Vector<flatbuffers::Offset<flatbuffers::String>>> streams) {
     fbb_.AddOffset(Collection::VT_STREAMS, streams);
   }
@@ -873,9 +914,11 @@ inline flatbuffers::Offset<Collection> CreateCollection(
     flatbuffers::Offset<flatbuffers::String> author = 0,
     flatbuffers::Offset<flatbuffers::String> collection_doi = 0,
     flatbuffers::Offset<flatbuffers::String> license = 0,
+    flatbuffers::Offset<flatbuffers::Vector<flatbuffers::Offset<core::sigmf_extension>>> extensions = 0,
     flatbuffers::Offset<flatbuffers::Vector<flatbuffers::Offset<flatbuffers::String>>> streams = 0) {
   CollectionBuilder builder_(_fbb);
   builder_.add_streams(streams);
+  builder_.add_extensions(extensions);
   builder_.add_license(license);
   builder_.add_collection_doi(collection_doi);
   builder_.add_author(author);
@@ -891,12 +934,14 @@ inline flatbuffers::Offset<Collection> CreateCollectionDirect(
     const char *author = nullptr,
     const char *collection_doi = nullptr,
     const char *license = nullptr,
+    const std::vector<flatbuffers::Offset<core::sigmf_extension>> *extensions = nullptr,
     const std::vector<flatbuffers::Offset<flatbuffers::String>> *streams = nullptr) {
   auto version__ = version ? _fbb.CreateString(version) : 0;
   auto description__ = description ? _fbb.CreateString(description) : 0;
   auto author__ = author ? _fbb.CreateString(author) : 0;
   auto collection_doi__ = collection_doi ? _fbb.CreateString(collection_doi) : 0;
   auto license__ = license ? _fbb.CreateString(license) : 0;
+  auto extensions__ = extensions ? _fbb.CreateVector<flatbuffers::Offset<core::sigmf_extension>>(*extensions) : 0;
   auto streams__ = streams ? _fbb.CreateVector<flatbuffers::Offset<flatbuffers::String>>(*streams) : 0;
   return core::CreateCollection(
       _fbb,
@@ -905,6 +950,7 @@ inline flatbuffers::Offset<Collection> CreateCollectionDirect(
       author__,
       collection_doi__,
       license__,
+      extensions__,
       streams__);
 }
 
@@ -1073,6 +1119,8 @@ inline void Global::UnPackTo(GlobalT *_o, const flatbuffers::resolver_function_t
   { auto _e = recorder(); if (_e) _o->recorder = _e->str(); }
   { auto _e = license(); if (_e) _o->license = _e->str(); }
   { auto _e = hw(); if (_e) _o->hw = _e->str(); }
+  { auto _e = geolocation(); if (_e) _o->geolocation = std::unique_ptr<core::geojson_pointT>(_e->UnPack(_resolver)); }
+  { auto _e = extensions(); if (_e) { _o->extensions.resize(_e->size()); for (flatbuffers::uoffset_t _i = 0; _i < _e->size(); _i++) { _o->extensions[_i] = std::unique_ptr<core::sigmf_extensionT>(_e->Get(_i)->UnPack(_resolver)); } } }
   { auto _e = collection(); if (_e) _o->collection = _e->str(); }
 }
 
@@ -1097,6 +1145,8 @@ inline flatbuffers::Offset<Global> CreateGlobal(flatbuffers::FlatBufferBuilder &
   auto _recorder = _o->recorder.empty() ? 0 : _fbb.CreateString(_o->recorder);
   auto _license = _o->license.empty() ? 0 : _fbb.CreateString(_o->license);
   auto _hw = _o->hw.empty() ? 0 : _fbb.CreateString(_o->hw);
+  auto _geolocation = _o->geolocation ? Creategeojson_point(_fbb, _o->geolocation.get(), _rehasher) : 0;
+  auto _extensions = _o->extensions.size() ? _fbb.CreateVector<flatbuffers::Offset<core::sigmf_extension>> (_o->extensions.size(), [](size_t i, _VectorArgs *__va) { return Createsigmf_extension(*__va->__fbb, __va->__o->extensions[i].get(), __va->__rehasher); }, &_va ) : 0;
   auto _collection = _o->collection.empty() ? 0 : _fbb.CreateString(_o->collection);
   return core::CreateGlobal(
       _fbb,
@@ -1113,6 +1163,8 @@ inline flatbuffers::Offset<Global> CreateGlobal(flatbuffers::FlatBufferBuilder &
       _recorder,
       _license,
       _hw,
+      _geolocation,
+      _extensions,
       _collection);
 }
 
@@ -1218,6 +1270,7 @@ inline void Collection::UnPackTo(CollectionT *_o, const flatbuffers::resolver_fu
   { auto _e = author(); if (_e) _o->author = _e->str(); }
   { auto _e = collection_doi(); if (_e) _o->collection_doi = _e->str(); }
   { auto _e = license(); if (_e) _o->license = _e->str(); }
+  { auto _e = extensions(); if (_e) { _o->extensions.resize(_e->size()); for (flatbuffers::uoffset_t _i = 0; _i < _e->size(); _i++) { _o->extensions[_i] = std::unique_ptr<core::sigmf_extensionT>(_e->Get(_i)->UnPack(_resolver)); } } }
   { auto _e = streams(); if (_e) { _o->streams.resize(_e->size()); for (flatbuffers::uoffset_t _i = 0; _i < _e->size(); _i++) { _o->streams[_i] = _e->Get(_i)->str(); } } }
 }
 
@@ -1234,6 +1287,7 @@ inline flatbuffers::Offset<Collection> CreateCollection(flatbuffers::FlatBufferB
   auto _author = _o->author.empty() ? 0 : _fbb.CreateString(_o->author);
   auto _collection_doi = _o->collection_doi.empty() ? 0 : _fbb.CreateString(_o->collection_doi);
   auto _license = _o->license.empty() ? 0 : _fbb.CreateString(_o->license);
+  auto _extensions = _o->extensions.size() ? _fbb.CreateVector<flatbuffers::Offset<core::sigmf_extension>> (_o->extensions.size(), [](size_t i, _VectorArgs *__va) { return Createsigmf_extension(*__va->__fbb, __va->__o->extensions[i].get(), __va->__rehasher); }, &_va ) : 0;
   auto _streams = _o->streams.size() ? _fbb.CreateVectorOfStrings(_o->streams) : 0;
   return core::CreateCollection(
       _fbb,
@@ -1242,6 +1296,7 @@ inline flatbuffers::Offset<Collection> CreateCollection(flatbuffers::FlatBufferB
       _author,
       _collection_doi,
       _license,
+      _extensions,
       _streams);
 }
 
@@ -1324,7 +1379,13 @@ inline const flatbuffers::TypeTable *GlobalTypeTable() {
     { flatbuffers::ET_STRING, 0, -1 },
     { flatbuffers::ET_STRING, 0, -1 },
     { flatbuffers::ET_STRING, 0, -1 },
+    { flatbuffers::ET_SEQUENCE, 0, 0 },
+    { flatbuffers::ET_SEQUENCE, 1, 1 },
     { flatbuffers::ET_STRING, 0, -1 }
+  };
+  static const flatbuffers::TypeFunction type_refs[] = {
+    core::geojson_pointTypeTable,
+    core::sigmf_extensionTypeTable
   };
   static const char * const names[] = {
     "datatype",
@@ -1340,10 +1401,12 @@ inline const flatbuffers::TypeTable *GlobalTypeTable() {
     "recorder",
     "license",
     "hw",
+    "geolocation",
+    "extensions",
     "collection"
   };
   static const flatbuffers::TypeTable tt = {
-    flatbuffers::ST_TABLE, 14, type_codes, nullptr, nullptr, nullptr, names
+    flatbuffers::ST_TABLE, 16, type_codes, type_refs, nullptr, nullptr, names
   };
   return &tt;
 }
@@ -1405,7 +1468,11 @@ inline const flatbuffers::TypeTable *CollectionTypeTable() {
     { flatbuffers::ET_STRING, 0, -1 },
     { flatbuffers::ET_STRING, 0, -1 },
     { flatbuffers::ET_STRING, 0, -1 },
+    { flatbuffers::ET_SEQUENCE, 1, 0 },
     { flatbuffers::ET_STRING, 1, -1 }
+  };
+  static const flatbuffers::TypeFunction type_refs[] = {
+    core::sigmf_extensionTypeTable
   };
   static const char * const names[] = {
     "version",
@@ -1413,10 +1480,11 @@ inline const flatbuffers::TypeTable *CollectionTypeTable() {
     "author",
     "collection_doi",
     "license",
+    "extensions",
     "streams"
   };
   static const flatbuffers::TypeTable tt = {
-    flatbuffers::ST_TABLE, 6, type_codes, nullptr, nullptr, nullptr, names
+    flatbuffers::ST_TABLE, 7, type_codes, type_refs, nullptr, nullptr, names
   };
   return &tt;
 }
