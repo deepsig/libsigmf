@@ -1,0 +1,43 @@
+
+include "sigmf_core.fbs";
+
+namespace signal;
+
+table Global { /*`signal` does not extend `global`*/ }
+
+table Capture { /*`signal` does not extend `captures`*/ }
+
+table signal_detail {       // permitted string values:
+    type:string;            // analog, digital
+    mod_class:string;       // am, fm, pm, ssb, dsb, vsb, ask, fsk, psk, qam, ook, cpm, msk
+    standard:string;
+    carrier_variant:string; // with_carrier, suppressed_carrier, reduced_carrier, single_carrier, multi_carrier
+    symbol_variant:string;  // differential, offset
+    order:ulong=null;
+    duplexing:string;       // tdd, fdd
+    multiplexing:string;    // tdm, fdm, cdm, ofdm, sdm, pdm
+    multiple_access:string; // fdma, ofdma, tdma, cdma, sdma, pdma
+    spreading:string;       // fhss, thss, dsss, css
+    channel_bw:double=null;
+    channel:ulong=null;
+    class_variant:string;
+}
+
+table signal_emitter {
+    seid:ulong=null;
+    manufacturer:string;
+    power_tx:double=null;
+    power_eirp:double=null;
+    geolocation:core.geojson_point;
+}
+
+table Annotation {
+    detail:signal_detail;
+    emitter:signal_emitter;
+}
+
+table Descr {
+    global:Global;
+    annotation:Annotation;
+    capture:Capture;
+}

@@ -19,9 +19,7 @@ table Global {
     hagl:double=null;
 }
 
-table Capture {
-    // `antenna` does not extend `captures`
-}
+table Capture { /*`antenna` does not extend `captures`*/ }
 
 table Annotation {
     azimuth_angle:double=null;

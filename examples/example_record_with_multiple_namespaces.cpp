@@ -17,6 +17,7 @@
 #include "sigmf_core_generated.h"
 #include "sigmf_antenna_generated.h"
 #include "sigmf_capture_details_generated.h"
+#include "sigmf_signal_generated.h"
 #include "sigmf.h"
 #include "testing_protocols_generated.h"
 
@@ -30,7 +31,7 @@ int main() {
      */
     sigmf::SigMF<sigmf::Global<core::DescrT, antenna::DescrT>,
             sigmf::Capture<core::DescrT>,
-            sigmf::Annotation<core::DescrT, antenna::DescrT, capture_details::DescrT> > latest_record;
+            sigmf::Annotation<core::DescrT, antenna::DescrT, capture_details::DescrT, signal::DescrT> > latest_record;
     latest_record.global.access<core::GlobalT>().author = "Nathan";
     latest_record.global.access<core::GlobalT>().description = "Example of creating a new record";
     latest_record.global.access<core::GlobalT>().sample_rate = 1.0;
@@ -54,7 +55,7 @@ int main() {
 
     // Add some annotations (sigmf::core_annotations is typedef of core::AnnotationT, so they're interchangeable)
     // This example uses the core::AnnotationT to access data elements which is more using the VariadicDataClass interface
-    auto anno2 = sigmf::Annotation<core::DescrT, antenna::DescrT, capture_details::DescrT>();
+    auto anno2 = sigmf::Annotation<core::DescrT, antenna::DescrT, capture_details::DescrT, signal::DescrT>();
     anno2.access<core::AnnotationT>().sample_count = 500000;
     anno2.access<core::AnnotationT>().description = "Annotation 1";
     anno2.access<core::AnnotationT>().generator = "libsigmf";
@@ -64,12 +65,25 @@ int main() {
     // This example shows off using the Annotation-specific interface where we know it's an annotation, so we
     // get annotation field from the underlying DescrT... This uses a little bit of syntactic sugar on top of
     // the VariadicDataClass and basically you don't have to repeat "annotation" in your get/access method.
-    auto anno3 = sigmf::Annotation<core::DescrT, antenna::DescrT, capture_details::DescrT>();
+    auto anno3 = sigmf::Annotation<core::DescrT, antenna::DescrT, capture_details::DescrT, signal::DescrT>();
     anno3.get<core::DescrT>().sample_count = 600000;
     anno3.get<core::DescrT>().description = "Annotation 2";
     anno3.get<core::DescrT>().generator = "libsigmf";
     anno3.get<core::DescrT>().description = "Pretty easy";
     anno3.get<antenna::DescrT>().elevation_angle = 4.2;
+    // here are some examples of how to initialize subtable fields:
+    signal::signal_detailT detail_obj;
+    detail_obj.type = std::string("analog");
+    detail_obj.duplexing = std::string("fdm");
+    anno3.get<signal::DescrT>().detail = std::make_shared<signal::signal_detailT>(detail_obj);
+    core::geojson_pointT anno3_geo;
+    anno3_geo.type = "point";
+    anno3_geo.coordinates = std::vector<double>( { 98, 123.4, 1e-9} );
+    signal::signal_emitterT emitter_obj;
+    emitter_obj.manufacturer = std::string("deepsig");
+    emitter_obj.power_tx = 27.1;
+    emitter_obj.geolocation = std::make_shared<core::geojson_pointT>(anno3_geo);
+    anno3.get<signal::DescrT>().emitter = std::make_shared<signal::signal_emitterT>(emitter_obj);
     // You can also drop in this syntactic acid using this interface which I personally don't really like because
     // it mixes real calls with macros without it being obvious and doesn't really feel like c++
     anno3.sigmfns(antenna).azimuth_angle = 0.1;
@@ -93,7 +107,23 @@ int main() {
       "capture_details:SNRdB": 12.34,
       "core:description": "Pretty easy",
       "core:generator": "libsigmf",
-      "core:sample_count": 600000
+      "core:sample_count": 600000,
+      "signal:detail": {
+        "duplexing": "fdm",
+        "type": "analog"
+      },
+      "signal:emitter": {
+        "geolocation": {
+          "coordinates": [
+            98.0,
+            123.4,
+            1e-09
+          ],
+          "type": "point"
+        },
+        "manufacturer": "deepsig",
+        "power_tx": 27.1
+      }
     }
   ],
   "captures": [

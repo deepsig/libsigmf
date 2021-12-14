@@ -28,4 +28,10 @@ int main(int argc, char* argv[]) {
 
     std::cout << "The record we read is: \n" << 
         record->to_json().dump(2) << std::endl;
+
+
+    assert(true);   // this is just a smoke test
+
+    std::cout << "example_reading_sigmf_file passed" << std::endl;
+    return 0; // assert passed, we're good :+1:
 }

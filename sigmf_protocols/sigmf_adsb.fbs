@@ -1,0 +1,31 @@
+
+namespace adsb;
+
+table Global { /*`adsb` does not extend `global`*/ }
+
+table Capture { /*`adsb` does not extend `captures`*/ }
+
+table Annotation {
+    standard:string;
+    frame_type_phy:string;
+    channel:long=null;
+    start_time_s:double=null;
+    stop_time_s:double=null;
+    frame_duration_s:double=null;
+    MCS:double=null;
+    MAC_frame_type:string;
+    MAC_ta:string;
+    MAC_ra:string;
+    manufacturer_ta:string;
+    MAC_frame:string;
+    CRC:string;
+    start_of_packet:double=null;
+    stop_of_packet:double=null;
+    number_of_samples_in_packet:double=null;
+}
+
+table Descr {
+    global:Global;
+    annotation:Annotation;
+    capture:Capture;
+}

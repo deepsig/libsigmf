@@ -1,19 +1,56 @@
 {
-    "annotations":[{"core:description":"signal1","core:freq_lower_edge":4.4306225441443962E+8,"core:freq_upper_edge":4.4310625E+8,"core:sample_start":2.497536E+6,"core:sample_count":571392},{"core:description":"signal1","core:freq_lower_edge":4.4415625E+8,"core:freq_upper_edge":4.4419875E+8,"core:sample_start":961536,"core:sample_count":718848}],
-    "captures":[{"core:frequency":4.4E+8,"core:gain":0,"core:global_index":0,"core:sample_start":0}],
-    "global":{
-        "core:datatype":"ci16_le",
-        "core:description":"test",
-        "antenna:horizontal_gain_pattern":[0.1,0.2,0.3],
-        "core:sample_rate":3.072E+7,
-        "core:version":"0.0.1",
-        "core:extensions": [
-          { "name": "antenna", "version": "1.0.0", "optional":false },
-          { "name": "fake extension 2", "version": "999.0.0", "optional":false }
-        ],
-        "core:geolocation": {
-            "type": "point",
-            "coordinates": [12.34, 43.21, 0.99]
+  "annotations": [
+    {
+      "core:description": "signal1",
+      "core:freq_lower_edge": 443062254.4144396,
+      "core:freq_upper_edge": 443106250.0,
+      "core:sample_count": 571392,
+      "core:sample_start": 2497536
+    },
+    {
+      "signal:detail": {
+        "type": "digital",
+        "duplexing": "ofdm"
+      },
+      "signal:emitter": {
+        "seid": 123,
+        "manufacturer": "DeepSig Inc.",
+        "power_tx": 30.0,
+        "power_eirp": 36.1,
+        "geolocation": {
+          "type": "point",
+          "coordinates": [ 0, 0 ]
         }
+      },
+      "core:description": "signal1",
+      "core:freq_lower_edge": 444156250.0,
+      "core:freq_upper_edge": 444198750.0,
+      "core:sample_count": 718848,
+      "core:sample_start": 961536
     }
+  ],
+  "captures": [
+    {
+      "core:frequency": 440000000.0,
+      "core:global_index": 0,
+      "core:sample_start": 0
+    }
+  ],
+  "global": {
+    "antenna:horizontal_gain_pattern": [ 0.1, 0.2, 0.3 ],
+    "antenna:mobile": false,
+    "core:datatype": "ci16_le",
+    "core:description": "test",
+    "core:extensions": [
+      { "name": "antenna", "optional": false, "version": "1.0.0" },
+      { "name": "capture_details", "optional": false, "version": "1.0.0" },
+      { "name": "signal", "optional": false, "version": "1.0.0" }
+    ],
+    "core:geolocation": {
+      "coordinates": [ 12.34, 43.21, 0.99 ],
+      "type": "point"
+    },
+    "core:sample_rate": 30720000.0,
+    "core:version": "0.0.1"
+  }
 }

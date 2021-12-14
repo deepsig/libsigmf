@@ -1,9 +1,7 @@
 
 namespace capture_details;
 
-table Global {
-    // `capture_details` does not extend `global`
-}
+table Global { /*`capture_details` does not extend `global`*/ }
 
 table Capture {
     acq_scale_factor:double=null;

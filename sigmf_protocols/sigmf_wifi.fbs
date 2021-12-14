@@ -1,0 +1,19 @@
+
+namespace wifi;
+
+table Global { /*`wifi` does not extend `global`*/ }
+
+table Capture { /*`wifi` does not extend `captures`*/ }
+
+table Annotation {
+    downlink_format:long=null;
+    message_type:long=null;
+    ICA_address:double=null;
+    binary:string;
+}
+
+table Descr {
+    global:Global;
+    annotation:Annotation;
+    capture:Capture;
+}

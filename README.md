@@ -47,7 +47,6 @@ with default values".
 
 ## Limitations of libsigmf v1.0
 
-- Only the `antenna` and `capture_details` extension schemas are included for now.
 - SigMF collections do not have any formal support yet.
 - Formal test code is still a WIP, examples provide some code coverage.
 
@@ -107,6 +106,13 @@ objects that are all you need to use:
 2) `sigmf::Global`
 3) `sigmf::Capture`
 4) `sigmf::Annotation`
+
+## Extensions
+
+By default, the `antenna`, `capture_details`, and `signal` extensions are included in libsigmf. Users are
+able to add additional extensions by defining *.fbs schema, building with flatc and including these schema
+in their applications. The canonical signal-specific extensions (`adsb`, `wifi`) are included and imported
+into sigmf.h but are not built into the sigmf helpers by default.
 
 ## Contributing
 
