@@ -8,14 +8,14 @@ provided under the Apache License 2.0 and the copyright notice can be found in N
 
 Version 1.0 has several changes from earlier versions, most notably is the requirement to use optional (nullable)
 scalar fields which became supported in flatbuffers since the library was originally published (v0.0.2). This means
-scalar values are ALL implemented as std::optional, which is a change for applications using `libsigmf`. This
+scalar values are ALL implemented as `std::optional`, which is a change for applications using `libsigmf`. This
 change was made to avoid the situation where default values are either not populated or always populated. Now all
 fields will be included in the output if and only if they are set.
 
 Other v1.0 changes include: updating to the latest SigMF metadata fields in the included schemas (including
-redefining all scalar fields as optional via `=null;`), updating to flatbuffers v2.0.0 syntax, using shared_ptr
-for generated headers instead of unique_ptr, cmake updates, updates to examples to ensure optional fields are
-working correctly, update to require c++17 for std::optional.
+redefining all scalar fields as optional via `=null;`), updating to flatbuffers v2.0.0 syntax, using `shared_ptr`
+for generated headers instead of `unique_ptr`, cmake updates, updates to examples to ensure optional fields are
+working correctly, update to require c++17 for `std::optional`.
 
 To update existing code from flatbuffers v0.1 and earlier to v1.0, accessing a field like this:
 
@@ -23,8 +23,8 @@ To update existing code from flatbuffers v0.1 and earlier to v1.0, accessing a f
 annotation_sample_start = annotation.sample_start;
 ```
 
-is no loger a valid as the `annotation.sample_start` field is not a uint64_t, its a std::optional, it must now 
-e checked to see if it has been set, then accessed via a legal means such:
+is no longer valid as the `annotation.sample_start` field is not a `uint64_t`, its a `std::optional` and must now 
+be checked to see if it has been set, then accessed via a legal means such as:
 
 ```c++
 if (annotation.sample_start.has_value()) {
@@ -72,6 +72,10 @@ sudo make install
 ```
 
 ## Usage
+
+It is important to keep in mind that libsigmf does not strictly enforce all aspects of the SigMF
+specification. While types are strictly enforced, fields that are noted as REQUIRED by SigMF will
+not necessarily cause errors if they are missing during schema parsing.
 
 ### Including in your application
 
