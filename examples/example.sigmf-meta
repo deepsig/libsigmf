@@ -39,8 +39,9 @@
   "global": {
     "antenna:horizontal_gain_pattern": [ 0.1, 0.2, 0.3 ],
     "antenna:mobile": false,
+    "core:author": "DeepSig Inc.",
     "core:datatype": "ci16_le",
-    "core:description": "test",
+    "core:description": "example sigmf-meta file with a wide range of fields and extensions",
     "core:extensions": [
       { "name": "antenna", "optional": false, "version": "1.0.0" },
       { "name": "capture_details", "optional": false, "version": "1.0.0" },
@@ -50,6 +51,8 @@
       "coordinates": [ 12.34, 43.21, 0.99 ],
       "type": "point"
     },
+    "core:license": "Apache License, Version 2.0",
+    "core:metadata_only": true,
     "core:sample_rate": 30720000.0,
     "core:version": "0.0.1"
   }

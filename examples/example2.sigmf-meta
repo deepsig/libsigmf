@@ -19,6 +19,9 @@
         }
     ],
     "global":{
-        "core:datatype":"ci16_le"
+        "core:datatype": "ci16_le",
+        "core:description": "minimal sigmf-meta example using only `core` fields",
+        "core:license": "Apache License, Version 2.0",
+        "core:metadata_only": true
     }
 }

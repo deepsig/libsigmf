@@ -26,8 +26,10 @@ table Global {
     recorder:string;
     license:string;
     hw:string;
+    dataset:string;
+    trailing_bytes:ulong=null;
+    metadata_only:bool=null;
     geolocation:geojson_point;
-// FIXME: vectors of tables are not working properly for now...
     extensions:[sigmf_extension];
     collection:string;
 }
@@ -35,6 +37,7 @@ table Global {
 table Capture {
     sample_start:ulong=null;
     global_index:ulong=null;
+    header_bytes:ulong=null;
     frequency:double=null;
     datetime:string;
 }
@@ -43,15 +46,13 @@ table Annotation {
     sample_start:ulong=null;
     sample_count:ulong=null;
     generator:string;
-// 'description' not defined by SigMF, included for compatibility... new work should use `label`
-    description:string;
+    description:string; // not defined by SigMF; included for compatibility - use `label`
     label:string;
     comment:string;
     freq_lower_edge:double=null;
     freq_upper_edge:double=null;
-// latitude and longitude are deprecated, use the `global` `geolocation` field
-    latitude:double=null;
-    longitude:double=null;
+    latitude:double=null;  // deprecated, use the `global` `geolocation` field
+    longitude:double=null; // deprecated, use the `global` `geolocation` field
 }
 
 // TODO: collections are not yet supported
@@ -61,7 +62,6 @@ table Collection {
     author:string;
     collection_doi:string;
     license:string;
-// FIXME: vectors of tables are not working properly for now...
     extensions:[sigmf_extension];
     streams:[string];
 }
