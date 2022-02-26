@@ -1,5 +1,5 @@
 
-namespace wifi;
+namespace sigmf.wifi;
 
 table Global { /*`wifi` does not extend `global`*/ }
 

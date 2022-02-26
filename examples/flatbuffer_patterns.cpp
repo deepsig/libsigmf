@@ -1,5 +1,5 @@
 /*
- *    Copyright 2019 DeepSig Inc.
+ *    Copyright 2019, 2022 DeepSig Inc.
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -19,6 +19,8 @@
 #include "testing_protocols_generated.h"
 #include <iostream>
 #include <stdint.h>
+
+using namespace sigmf;
 
 int main() {
     //

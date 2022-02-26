@@ -1,5 +1,5 @@
 /*
- *    Copyright 2019, 2021 DeepSig Inc.
+ *    Copyright 2019, 2021, 2022 DeepSig Inc.
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -16,6 +16,8 @@
 
 #include "sigmf.h"
 #include <nlohmann/json.hpp>
+
+using namespace sigmf;
 
 int main() {
 

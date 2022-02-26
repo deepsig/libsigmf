@@ -1,5 +1,5 @@
 /*
- *    Copyright 2019, 2021 DeepSig Inc.
+ *    Copyright 2019, 2021, 2022 DeepSig Inc.
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -20,6 +20,8 @@
 #include "sigmf_signal_generated.h"
 #include "sigmf.h"
 #include "testing_protocols_generated.h"
+
+using namespace sigmf;
 
 int main() {
 
@@ -164,3 +166,4 @@ int main() {
     std::cout << "example_record_with_multiple_namespaces passed" << std::endl;
     return 0; // assert passed, we're good :+1:
 }
+

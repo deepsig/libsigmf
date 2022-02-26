@@ -1,5 +1,5 @@
 
-namespace adsb;
+namespace sigmf.adsb;
 
 table Global { /*`adsb` does not extend `global`*/ }
 

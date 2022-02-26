@@ -1,5 +1,5 @@
 /*
- *    Copyright 2019, 2021 DeepSig Inc.
+ *    Copyright 2019, 2021, 2022 DeepSig Inc.
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -31,66 +31,67 @@
 
 namespace sigmf {
 
-    template<typename T>
-    class SigMFVector : public std::vector<T> {
-    public:
-        T &create_new() {
-            T new_element;
-            this->emplace_back(new_element);
-            return this->back();
-        }
-    };
+template<typename T>
+class SigMFVector : public std::vector<T> {
+public:
+    T &create_new() {
+        T new_element;
+        this->emplace_back(new_element);
+        return this->back();
+    }
+};
 
-    template<typename GlobalType, typename CaptureType, typename AnnotationType>
-    struct SigMF {
-        GlobalType global;
-        SigMFVector<CaptureType> captures;
-        SigMFVector<AnnotationType> annotations;
+template<typename GlobalType, typename CaptureType, typename AnnotationType>
+struct SigMF {
+    GlobalType global;
+    SigMFVector<CaptureType> captures;
+    SigMFVector<AnnotationType> annotations;
 
-        /**
-         * Export the record to a JSON object
-         */
-        json to_json() const {
-            json j;
-            j["global"] = global.to_json();
-            j["captures"] = captures;
-            j["annotations"] = annotations;
-            return j;
-        }
-
-        /**
-         * Write over the fields with a new record from a JSON object
-         */
-        void from_json(const json &j) {
-            global.from_json(j["global"]);
-            captures.clear();
-            annotations.clear();
-            for (auto &element : j["annotations"]) {
-                AnnotationType a;
-                a.from_json(element);
-                annotations.emplace_back(a);
-            }
-            for (auto &element : j["captures"]) {
-                CaptureType c;
-                c.from_json(element);
-                captures.emplace_back(c);
-            }
-        }
-    };
-
-    /*
-     * This makes conversion between json types and SigMF types work out of the box
+    /**
+     * Export the record to a JSON object
      */
-
-    template<typename GlobalType, typename CaptureType, typename AnnotationType>
-    void to_json(json &j, const SigMF<GlobalType, CaptureType, AnnotationType> &t) {
-        j = t.to_json();
+    json to_json() const {
+        json j;
+        j["global"] = global.to_json();
+        j["captures"] = captures;
+        j["annotations"] = annotations;
+        return j;
     }
 
-    template<typename GlobalType, typename CaptureType, typename AnnotationType>
-    void from_json(const json &j, SigMF<GlobalType, CaptureType, AnnotationType> &t) {
-        t.from_json(j);
+    /**
+     * Write over the fields with a new record from a JSON object
+     */
+    void from_json(const json &j) {
+        global.from_json(j["global"]);
+        captures.clear();
+        annotations.clear();
+        for (auto &element : j["annotations"]) {
+            AnnotationType a;
+            a.from_json(element);
+            annotations.emplace_back(a);
+        }
+        for (auto &element : j["captures"]) {
+            CaptureType c;
+            c.from_json(element);
+            captures.emplace_back(c);
+        }
     }
+};
+
+/*
+ * This makes conversion between json types and SigMF types work out of the box
+ */
+
+template<typename GlobalType, typename CaptureType, typename AnnotationType>
+void to_json(json &j, const SigMF<GlobalType, CaptureType, AnnotationType> &t) {
+    j = t.to_json();
 }
+
+template<typename GlobalType, typename CaptureType, typename AnnotationType>
+void from_json(const json &j, SigMF<GlobalType, CaptureType, AnnotationType> &t) {
+    t.from_json(j);
+}
+
+} // namespace sigmf
 
 #endif //LIBSIGMF_SIGMF_H

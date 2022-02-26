@@ -1,5 +1,5 @@
 /*
- *    Copyright 2019, 2021 DeepSig Inc.
+ *    Copyright 2019, 2021, 2022 DeepSig Inc.
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -25,6 +25,7 @@
 
 using json = nlohmann::json;
 
+namespace sigmf {
 
 /*
  * Designed to be run by our TypeIterator-- it adds fields to a flatbuffer (fbb) it owns by reading from a json
@@ -529,5 +530,6 @@ FlatBufferToJson(const uint8_t *buffer_root, const flatbuffers::TypeTable *typet
     return json_object;
 }
 
+} // namespace sigmf
 
 #endif //LIBSIGMF_FLATBUFFERS_TO_JSON_VISITOR_H

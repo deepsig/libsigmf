@@ -1,5 +1,5 @@
 
-namespace core;
+namespace sigmf.core;
 
 table sigmf_extension {
     name:string;

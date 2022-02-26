@@ -1,7 +1,7 @@
 
 include "sigmf_core.fbs";
 
-namespace signal;
+namespace sigmf.signal;
 
 table Global { /*`signal` does not extend `global`*/ }
 

@@ -15,16 +15,17 @@ fields will be included in the output if and only if they are set.
 Other v1.0 changes include: updating to the latest SigMF metadata fields in the included schemas (including
 redefining all scalar fields as optional via `=null;`), updating to flatbuffers v2.0.0 syntax, using `shared_ptr`
 for generated headers instead of `unique_ptr`, cmake updates, updates to examples to ensure optional fields are
-working correctly, update to require c++17 for `std::optional`.
+working correctly, update to require c++17 for `std::optional`, and namespacing the entire library and associated
+schema files within the `sigmf::` c++ namespace.
 
-To update existing code from flatbuffers v0.1 and earlier to v1.0, accessing a field like this:
+To update existing code from libsigmf v0.x to v1.x, some changes are required. Accessing a field like this:
 
 ```c++
 annotation_sample_start = annotation.sample_start;
 ```
 
 is no longer valid as the `annotation.sample_start` field is not a `uint64_t`, its a `std::optional` and must now 
-be checked to see if it has been set, then accessed via a legal means such as:
+be checked to see if it has been set, then accessed in a legal way, such as:
 
 ```c++
 if (annotation.sample_start.has_value()) {

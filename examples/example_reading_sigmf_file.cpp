@@ -1,5 +1,5 @@
 /*
- *    Copyright 2019, 2021 DeepSig Inc.
+ *    Copyright 2019, 2021, 2022 DeepSig Inc.
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -16,6 +16,8 @@
 
 #include "sigmf_core_generated.h"
 #include "sigmf_antenna_generated.h"
+#include "sigmf_capture_details_generated.h"
+#include "sigmf_signal_generated.h"
 #include "sigmf.h"
 #include "sigmf_helpers.h"
 #include <iostream>
@@ -29,9 +31,6 @@ int main(int argc, char* argv[]) {
     std::cout << "The record we read is: \n" << 
         record->to_json().dump(2) << std::endl;
 
-
-    assert(true);   // this is just a smoke test
-
-    std::cout << "example_reading_sigmf_file passed" << std::endl;
+    std::cout << "example_reading_sigmf_file passed (just a smoke test, no field validation)" << std::endl;
     return 0; // assert passed, we're good :+1:
 }

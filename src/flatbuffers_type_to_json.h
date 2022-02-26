@@ -1,5 +1,5 @@
 /*
- *    Copyright 2019, 2021 DeepSig Inc.
+ *    Copyright 2019, 2021, 2022 DeepSig Inc.
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -23,6 +23,8 @@
 #define OMNISIG_FLATBUFFERS_TYPE_TO_JSON_H
 
 using json = nlohmann::json;
+
+namespace sigmf {
 
 template<typename R>
 static json to_json(const typename R::NativeTableType &obj) {
@@ -56,5 +58,7 @@ static typename R::NativeTableType from_json(json json_value) {
 
     return return_object;
 }
+
+} // namespace sigmf
 
 #endif //OMNISIG_FLATBUFFERS_TYPE_TO_JSON_H

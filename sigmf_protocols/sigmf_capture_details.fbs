@@ -1,5 +1,5 @@
 
-namespace capture_details;
+namespace sigmf.capture_details;
 
 table Global { /*`capture_details` does not extend `global`*/ }
 
