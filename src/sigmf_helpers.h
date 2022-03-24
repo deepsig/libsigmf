@@ -199,6 +199,64 @@ static std::unique_ptr<sigmf::SigMF<sigmf::Global<core::DescrT, antenna::DescrT,
     return sigmf_md;
 }
 
+/**
+ *
+ * Returns the size of a single data sample in bytes given the datatype string
+ *
+ * @param datatype_string
+ * @return size of a sample in bytes
+ */
+static uint32_t get_sample_size(std::string dtype_str)
+{
+    uint32_t sample_size;
+    // possible bit widths are 64, 32, 16, 8
+    if (dtype_str.find("64") != std::string::npos) {
+        sample_size = 8;
+    } else if (dtype_str.find("32") != std::string::npos) {
+        sample_size = 4;
+    } else if (dtype_str.find("16") != std::string::npos) {
+        sample_size = 2;
+    } else if (dtype_str.find("8") != std::string::npos) {
+        sample_size = 1;
+    } else {
+        throw std::invalid_argument("Invalid datatype string.");
+    }
+
+    if (dtype_str.at(0) == 'c') {
+        sample_size *= 2;
+    }
+    return sample_size;
+}
+
+struct SigMFCaptureBoundary {
+    uint64_t start_byte;
+    uint64_t stop_byte;
+};
+
+/**
+ *
+ * Returns the file byte start offset for a given captures array
+ *
+ * @param captures_vector SigMF captures vector
+ * @param index specific capture to return information for
+ * @param sample_size size of one sample in bytes
+ */
+template<typename CaptureType>
+static SigMFCaptureBoundary get_capture_range(sigmf::SigMFVector<CaptureType> &captures_vector, int index, int sample_size) {
+    if (index >= captures_vector.size()) {
+        // index exceeds captures vector length, no data to read
+        return SigMFCaptureBoundary(0,0);
+    }
+    SigMFCaptureBoundary bounds;
+    bounds.start_byte = captures_vector[0].template get<core::DescrT>().header_bytes.value_or(0);
+    for (auto ii = 1; ii <= index; ii++) {
+        bounds.start_byte += captures_vector[ii].template get<core::DescrT>().header_bytes.value_or(0);
+    }
+    bounds.start_byte += captures_vector[index].template get<core::DescrT>().sample_start * sample_size;
+    bounds.stop_byte = bounds.start_byte + captures_vector[index].template get<core::DescrT>().sample_start * sample_size;
+    return bounds;
+}
+
 } // namespace sigmf
 
 #endif //OMNISIG_SIGMF_HELPERS_H

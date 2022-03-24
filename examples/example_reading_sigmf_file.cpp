@@ -26,7 +26,11 @@
 int main(int argc, char* argv[]) {
     std::cout << "Reading file " << argv[1] << std::endl;;
     auto meta_fstream = std::ifstream(argv[1]);
+
+    // returns a sigmf object
     auto record = sigmf::metadata_file_to_json(meta_fstream);
+
+    std::cout << "The data size is " << sigmf::get_sample_size(record->global.access<sigmf::core::GlobalT>().datatype) << " bytes\n";
 
     std::cout << "The record we read is: \n" << 
         record->to_json().dump(2) << std::endl;
