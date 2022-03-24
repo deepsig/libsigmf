@@ -3,7 +3,7 @@
 # Setup project
 ########################################################################
 cmake_minimum_required(VERSION 3.0)
-project(libsigmf LANGUAGES CXX)
+project(libsigmf VERSION 1.0.0 LANGUAGES CXX)
 
 # c++17 used for supporting flatbuffers optional scalar fields via std::optional<T>
 set(CMAKE_CXX_STANDARD 17)
@@ -23,6 +23,7 @@ set(LIBSIGMF_TARGETS_EXPORT_NAME       "${PROJECT_NAME}Targets")
 set(LIBSIGMF_CMAKE_CONFIG_TEMPLATE     "cmake/config.cmake.in")
 set(LIBSIGMF_CMAKE_CONFIG_DIR          "${CMAKE_CURRENT_BINARY_DIR}")
 set(LIBSIGMF_CMAKE_PROJECT_CONFIG_FILE "${LIBSIGMF_CMAKE_CONFIG_DIR}/${PROJECT_NAME}Config.cmake")
+set(LIBSIGMF_CMAKE_VERSION_CONFIG_FILE "${LIBSIGMF_CMAKE_CONFIG_DIR}/${PROJECT_NAME}ConfigVersion.cmake")
 set(LIBSIGMF_CMAKE_PROJECT_TARGETS_FILE "${LIBSIGMF_CMAKE_CONFIG_DIR}/${PROJECT_NAME}Targets.cmake")
 
 ########################################################################
@@ -189,6 +190,11 @@ add_custom_target(makedocs
         COMMENT "Building documentation website"
         WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
 
+include(CMakePackageConfigHelpers)
+write_basic_package_version_file(
+  ${LIBSIGMF_CMAKE_VERSION_CONFIG_FILE} COMPATIBILITY SameMajorVersion
+)
+
 configure_file(
   ${CMAKE_CURRENT_SOURCE_DIR}/${LIBSIGMF_CMAKE_CONFIG_TEMPLATE}
   ${LIBSIGMF_CMAKE_PROJECT_CONFIG_FILE}
@@ -220,6 +226,7 @@ install(  # install original headers
 ########################################################################
 install(
   FILES ${LIBSIGMF_CMAKE_PROJECT_CONFIG_FILE}
+        ${LIBSIGMF_CMAKE_VERSION_CONFIG_FILE}
   DESTINATION ${LIBSIGMF_CONFIG_INSTALL_DIR}
 )
 install(TARGETS libsigmf
