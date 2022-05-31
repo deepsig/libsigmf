@@ -125,6 +125,10 @@ generate_sigmf_header(generated_signal_ns
   "${CMAKE_CURRENT_SOURCE_DIR}/sigmf_protocols/sigmf_signal.fbs"
   "${CMAKE_CURRENT_BINARY_DIR}/include"
 )
+generate_sigmf_header(generated_spatial_ns
+  "${CMAKE_CURRENT_SOURCE_DIR}/sigmf_protocols/sigmf_spatial.fbs"
+  "${CMAKE_CURRENT_BINARY_DIR}/include"
+)
 generate_sigmf_header(generated_wifi_ns
   "${CMAKE_CURRENT_SOURCE_DIR}/sigmf_protocols/sigmf_wifi.fbs"
   "${CMAKE_CURRENT_BINARY_DIR}/include"
@@ -176,6 +180,7 @@ add_custom_target(libsigmf_genheaders DEPENDS
         generate_sigmf_target_generated_adsb_ns
         generate_sigmf_target_generated_antenna_ns
         generate_sigmf_target_generated_capture_details_ns
+        generate_sigmf_target_generated_spatial_ns
         generate_sigmf_target_generated_signal_ns
         generate_sigmf_target_generated_wifi_ns
         generate_sigmf_target_generated_testing_ns

@@ -1,0 +1,46 @@
+
+namespace sigmf.spatial;
+
+table sigmf_bearing {
+    azimuth:double=null;
+    elevation:double=null;
+    range:double=null;
+    az_error:double=null;
+    el_error:double=null;
+    range_error:double=null;
+}
+
+table cartesian_point {
+    point:[double];
+    unknown:bool=null;
+}
+
+table sigmf_calibration {
+    caltype:string;         // "tone", "xcorr", "ref", "other"
+    bearing:sigmf_bearing;
+    cal_geometry:cartesian_point;
+}
+
+table Global {
+    num_elements:uint64=null;
+    channel_index:uint64=null;
+}
+
+table Capture {
+    aperture_bearing:sigmf_bearing;
+    emitter_bearing:sigmf_bearing;
+    element_geometry:[cartesian_point];
+    phase_offset:double=null;
+    calibration:sigmf_calibration;
+}
+
+table Annotation {
+    signal_azimuth:double=null;
+    signal_bearing:sigmf_bearing;
+}
+
+table Descr {
+    global:Global;
+    annotation:Annotation;
+    capture:Capture;
+}
