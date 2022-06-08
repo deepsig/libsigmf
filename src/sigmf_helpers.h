@@ -103,8 +103,9 @@ get_sigmf_in_range(sigmf::SigMF<G, C, A> &input_md, uint64_t segment_sample_star
            (applicable_capture->template get<core::DescrT>().sample_start <
             (segment_sample_start + segment_sample_count))) {
         auto new_capture = *applicable_capture;
-        if (segment_sample_start < new_capture.template get<core::DescrT>().sample_start) {
-            new_capture.template get<core::DescrT>().sample_start -= segment_sample_start;
+        if (segment_sample_start < new_capture.template get<core::DescrT>().sample_start.value_or(0)) {
+            new_capture.template get<core::DescrT>().sample_start =
+                new_capture.template get<core::DescrT>().sample_start.value_or(0) - segment_sample_start;
         } else {
             new_capture.template get<core::DescrT>().sample_start = 0;
         }
@@ -122,18 +123,16 @@ get_sigmf_in_range(sigmf::SigMF<G, C, A> &input_md, uint64_t segment_sample_star
         if (!original_annotation_md.sample_start.has_value()) {
             continue;  // this is not a valid annotation, skip it
         }
-        uint64_t original_annotation_sample_start = original_annotation_md.sample_start.value();
-        uint64_t original_annotation_sample_count = original_annotation_md.sample_count.value_or(0ULL);
 
-        if (original_annotation_sample_start >= (segment_sample_start + segment_sample_count)) {
+        if (original_annotation_md.sample_start.value() >= (segment_sample_start + segment_sample_count)) {
             // annotations are in sorted order, if above is true, all other annotations will be out of bounds
             break;
-        } else if ((original_annotation_sample_start + original_annotation_sample_count) >
+        } else if ((original_annotation_md.sample_start.value() + original_annotation_md.sample_count.value_or(0)) >
                    segment_sample_start) {
             auto new_annotation = *original_annotation;
-            uint64_t start_offset = std::max(original_annotation_sample_start, segment_sample_start);
+            uint64_t start_offset = std::max(original_annotation_md.sample_start.value(), segment_sample_start);
             uint64_t count_from_new_offset =
-                    original_annotation_sample_start + original_annotation_sample_count - start_offset;
+                    original_annotation_md.sample_start.value() + original_annotation_md.sample_count.value_or(0) - start_offset;
             uint64_t new_start = start_offset - segment_sample_start;
             uint64_t new_count = std::min(count_from_new_offset, segment_sample_count - new_start);
 
@@ -144,20 +143,22 @@ get_sigmf_in_range(sigmf::SigMF<G, C, A> &input_md, uint64_t segment_sample_star
             if (first_applicable_capture != last_applicable_capture) {
                 auto next_applicable_capture = first_applicable_capture + 1;
 
-                new_count = next_applicable_capture->template get<core::DescrT>().sample_start
+                new_count = next_applicable_capture->template get<core::DescrT>().sample_start.value()
                             - new_start;
 
                 auto implicit_annotation = *original_annotation;
                 implicit_annotation.template get<core::DescrT>().sample_start =
-                        next_applicable_capture->template get<core::DescrT>().sample_start + segment_sample_start;
+                        next_applicable_capture->template get<core::DescrT>().sample_start.value() +
+                        segment_sample_start;
 
-                original_annotation_sample_count =
-                        implicit_annotation.template get<core::DescrT>().sample_start -
-                        original_annotation_sample_start;
+                original_annotation_md.sample_count =
+                        implicit_annotation.template get<core::DescrT>().sample_start.value() -
+                        original_annotation_md.sample_start.value();
 
-                implicit_annotation.template get<core::DescrT>().sample_count -=
-                        original_annotation_sample_count;
-                if (implicit_annotation.template get<core::DescrT>().sample_start <
+                implicit_annotation.template get<core::DescrT>().sample_count =
+                        implicit_annotation.template get<sigmf::core::DescrT>().sample_count.value_or(0) -
+                        original_annotation_md.sample_count.value_or(0);
+                if (implicit_annotation.template get<core::DescrT>().sample_start.value() <
                     (segment_sample_start + segment_sample_count)) {
                     original_annotation = input_md.annotations.insert((original_annotation + 1),
                                                                       implicit_annotation);
