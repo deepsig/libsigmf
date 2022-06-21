@@ -7,6 +7,11 @@ table sigmf_extension {
     optional:bool=null;
 }
 
+table sigmf_stream {
+    name:string;
+    hash:string;
+}
+
 table geojson_point {
     type:string;
     coordinates:[double];
@@ -55,7 +60,6 @@ table Annotation {
     longitude:double=null; // deprecated, use the `global` `geolocation` field
 }
 
-// TODO: collections are not yet supported
 table Collection {
     version:string;
     description:string;
@@ -63,11 +67,12 @@ table Collection {
     collection_doi:string;
     license:string;
     extensions:[sigmf_extension];
-    streams:[string];
+    streams:[sigmf_stream];
 }
 
 table Descr {
     global:Global;
     annotation:Annotation;
     capture:Capture;
+    collection:Collection;
 }

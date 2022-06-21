@@ -21,6 +21,7 @@
 #include "global.h"
 #include "capture.h"
 #include "annotation.h"
+#include "collection.h"
 #include "sigmf_core_generated.h"
 #include "sigmf_antenna_generated.h"
 #include "sigmf_capture_details_generated.h"
@@ -78,6 +79,27 @@ struct SigMF {
     }
 };
 
+template<typename CollectionType>
+struct SigMFCollection {
+    CollectionType collection;
+
+    /**
+     * Export the record to a JSON object
+     */
+    json to_json() const {
+        json j;
+        j["collection"] = collection.to_json();
+        return j;
+    }
+
+    /**
+     * Write over the fields with a new record from a JSON object
+     */
+    void from_json(const json &j) {
+        collection.from_json(j["collection"]);
+    }
+};
+
 /*
  * This makes conversion between json types and SigMF types work out of the box
  */
@@ -89,6 +111,16 @@ void to_json(json &j, const SigMF<GlobalType, CaptureType, AnnotationType> &t) {
 
 template<typename GlobalType, typename CaptureType, typename AnnotationType>
 void from_json(const json &j, SigMF<GlobalType, CaptureType, AnnotationType> &t) {
+    t.from_json(j);
+}
+
+template<typename CollectionType>
+void to_json(json &j, const SigMFCollection<CollectionType> &t) {
+    j = t.to_json();
+}
+
+template<typename CollectionType>
+void from_json(const json &j, SigMFCollection<CollectionType> &t) {
     t.from_json(j);
 }
 

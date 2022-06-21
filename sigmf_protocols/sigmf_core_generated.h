@@ -13,6 +13,10 @@ struct sigmf_extension;
 struct sigmf_extensionBuilder;
 struct sigmf_extensionT;
 
+struct sigmf_stream;
+struct sigmf_streamBuilder;
+struct sigmf_streamT;
+
 struct geojson_point;
 struct geojson_pointBuilder;
 struct geojson_pointT;
@@ -38,6 +42,8 @@ struct DescrBuilder;
 struct DescrT;
 
 inline const flatbuffers::TypeTable *sigmf_extensionTypeTable();
+
+inline const flatbuffers::TypeTable *sigmf_streamTypeTable();
 
 inline const flatbuffers::TypeTable *geojson_pointTypeTable();
 
@@ -143,6 +149,86 @@ inline flatbuffers::Offset<sigmf_extension> Createsigmf_extensionDirect(
 }
 
 flatbuffers::Offset<sigmf_extension> Createsigmf_extension(flatbuffers::FlatBufferBuilder &_fbb, const sigmf_extensionT *_o, const flatbuffers::rehasher_function_t *_rehasher = nullptr);
+
+struct sigmf_streamT : public flatbuffers::NativeTable {
+  typedef sigmf_stream TableType;
+  std::string name{};
+  std::string hash{};
+};
+
+struct sigmf_stream FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
+  typedef sigmf_streamT NativeTableType;
+  typedef sigmf_streamBuilder Builder;
+  static const flatbuffers::TypeTable *MiniReflectTypeTable() {
+    return sigmf_streamTypeTable();
+  }
+  enum FlatBuffersVTableOffset FLATBUFFERS_VTABLE_UNDERLYING_TYPE {
+    VT_NAME = 4,
+    VT_HASH = 6
+  };
+  const flatbuffers::String *name() const {
+    return GetPointer<const flatbuffers::String *>(VT_NAME);
+  }
+  const flatbuffers::String *hash() const {
+    return GetPointer<const flatbuffers::String *>(VT_HASH);
+  }
+  bool Verify(flatbuffers::Verifier &verifier) const {
+    return VerifyTableStart(verifier) &&
+           VerifyOffset(verifier, VT_NAME) &&
+           verifier.VerifyString(name()) &&
+           VerifyOffset(verifier, VT_HASH) &&
+           verifier.VerifyString(hash()) &&
+           verifier.EndTable();
+  }
+  sigmf_streamT *UnPack(const flatbuffers::resolver_function_t *_resolver = nullptr) const;
+  void UnPackTo(sigmf_streamT *_o, const flatbuffers::resolver_function_t *_resolver = nullptr) const;
+  static flatbuffers::Offset<sigmf_stream> Pack(flatbuffers::FlatBufferBuilder &_fbb, const sigmf_streamT* _o, const flatbuffers::rehasher_function_t *_rehasher = nullptr);
+};
+
+struct sigmf_streamBuilder {
+  typedef sigmf_stream Table;
+  flatbuffers::FlatBufferBuilder &fbb_;
+  flatbuffers::uoffset_t start_;
+  void add_name(flatbuffers::Offset<flatbuffers::String> name) {
+    fbb_.AddOffset(sigmf_stream::VT_NAME, name);
+  }
+  void add_hash(flatbuffers::Offset<flatbuffers::String> hash) {
+    fbb_.AddOffset(sigmf_stream::VT_HASH, hash);
+  }
+  explicit sigmf_streamBuilder(flatbuffers::FlatBufferBuilder &_fbb)
+        : fbb_(_fbb) {
+    start_ = fbb_.StartTable();
+  }
+  flatbuffers::Offset<sigmf_stream> Finish() {
+    const auto end = fbb_.EndTable(start_);
+    auto o = flatbuffers::Offset<sigmf_stream>(end);
+    return o;
+  }
+};
+
+inline flatbuffers::Offset<sigmf_stream> Createsigmf_stream(
+    flatbuffers::FlatBufferBuilder &_fbb,
+    flatbuffers::Offset<flatbuffers::String> name = 0,
+    flatbuffers::Offset<flatbuffers::String> hash = 0) {
+  sigmf_streamBuilder builder_(_fbb);
+  builder_.add_hash(hash);
+  builder_.add_name(name);
+  return builder_.Finish();
+}
+
+inline flatbuffers::Offset<sigmf_stream> Createsigmf_streamDirect(
+    flatbuffers::FlatBufferBuilder &_fbb,
+    const char *name = nullptr,
+    const char *hash = nullptr) {
+  auto name__ = name ? _fbb.CreateString(name) : 0;
+  auto hash__ = hash ? _fbb.CreateString(hash) : 0;
+  return sigmf::core::Createsigmf_stream(
+      _fbb,
+      name__,
+      hash__);
+}
+
+flatbuffers::Offset<sigmf_stream> Createsigmf_stream(flatbuffers::FlatBufferBuilder &_fbb, const sigmf_streamT *_o, const flatbuffers::rehasher_function_t *_rehasher = nullptr);
 
 struct geojson_pointT : public flatbuffers::NativeTable {
   typedef geojson_point TableType;
@@ -862,7 +948,7 @@ struct CollectionT : public flatbuffers::NativeTable {
   std::string collection_doi{};
   std::string license{};
   std::vector<std::shared_ptr<sigmf::core::sigmf_extensionT>> extensions{};
-  std::vector<std::string> streams{};
+  std::vector<std::shared_ptr<sigmf::core::sigmf_streamT>> streams{};
 };
 
 struct Collection FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
@@ -898,8 +984,8 @@ struct Collection FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
   const flatbuffers::Vector<flatbuffers::Offset<sigmf::core::sigmf_extension>> *extensions() const {
     return GetPointer<const flatbuffers::Vector<flatbuffers::Offset<sigmf::core::sigmf_extension>> *>(VT_EXTENSIONS);
   }
-  const flatbuffers::Vector<flatbuffers::Offset<flatbuffers::String>> *streams() const {
-    return GetPointer<const flatbuffers::Vector<flatbuffers::Offset<flatbuffers::String>> *>(VT_STREAMS);
+  const flatbuffers::Vector<flatbuffers::Offset<sigmf::core::sigmf_stream>> *streams() const {
+    return GetPointer<const flatbuffers::Vector<flatbuffers::Offset<sigmf::core::sigmf_stream>> *>(VT_STREAMS);
   }
   bool Verify(flatbuffers::Verifier &verifier) const {
     return VerifyTableStart(verifier) &&
@@ -918,7 +1004,7 @@ struct Collection FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
            verifier.VerifyVectorOfTables(extensions()) &&
            VerifyOffset(verifier, VT_STREAMS) &&
            verifier.VerifyVector(streams()) &&
-           verifier.VerifyVectorOfStrings(streams()) &&
+           verifier.VerifyVectorOfTables(streams()) &&
            verifier.EndTable();
   }
   CollectionT *UnPack(const flatbuffers::resolver_function_t *_resolver = nullptr) const;
@@ -948,7 +1034,7 @@ struct CollectionBuilder {
   void add_extensions(flatbuffers::Offset<flatbuffers::Vector<flatbuffers::Offset<sigmf::core::sigmf_extension>>> extensions) {
     fbb_.AddOffset(Collection::VT_EXTENSIONS, extensions);
   }
-  void add_streams(flatbuffers::Offset<flatbuffers::Vector<flatbuffers::Offset<flatbuffers::String>>> streams) {
+  void add_streams(flatbuffers::Offset<flatbuffers::Vector<flatbuffers::Offset<sigmf::core::sigmf_stream>>> streams) {
     fbb_.AddOffset(Collection::VT_STREAMS, streams);
   }
   explicit CollectionBuilder(flatbuffers::FlatBufferBuilder &_fbb)
@@ -970,7 +1056,7 @@ inline flatbuffers::Offset<Collection> CreateCollection(
     flatbuffers::Offset<flatbuffers::String> collection_doi = 0,
     flatbuffers::Offset<flatbuffers::String> license = 0,
     flatbuffers::Offset<flatbuffers::Vector<flatbuffers::Offset<sigmf::core::sigmf_extension>>> extensions = 0,
-    flatbuffers::Offset<flatbuffers::Vector<flatbuffers::Offset<flatbuffers::String>>> streams = 0) {
+    flatbuffers::Offset<flatbuffers::Vector<flatbuffers::Offset<sigmf::core::sigmf_stream>>> streams = 0) {
   CollectionBuilder builder_(_fbb);
   builder_.add_streams(streams);
   builder_.add_extensions(extensions);
@@ -990,14 +1076,14 @@ inline flatbuffers::Offset<Collection> CreateCollectionDirect(
     const char *collection_doi = nullptr,
     const char *license = nullptr,
     const std::vector<flatbuffers::Offset<sigmf::core::sigmf_extension>> *extensions = nullptr,
-    const std::vector<flatbuffers::Offset<flatbuffers::String>> *streams = nullptr) {
+    const std::vector<flatbuffers::Offset<sigmf::core::sigmf_stream>> *streams = nullptr) {
   auto version__ = version ? _fbb.CreateString(version) : 0;
   auto description__ = description ? _fbb.CreateString(description) : 0;
   auto author__ = author ? _fbb.CreateString(author) : 0;
   auto collection_doi__ = collection_doi ? _fbb.CreateString(collection_doi) : 0;
   auto license__ = license ? _fbb.CreateString(license) : 0;
   auto extensions__ = extensions ? _fbb.CreateVector<flatbuffers::Offset<sigmf::core::sigmf_extension>>(*extensions) : 0;
-  auto streams__ = streams ? _fbb.CreateVector<flatbuffers::Offset<flatbuffers::String>>(*streams) : 0;
+  auto streams__ = streams ? _fbb.CreateVector<flatbuffers::Offset<sigmf::core::sigmf_stream>>(*streams) : 0;
   return sigmf::core::CreateCollection(
       _fbb,
       version__,
@@ -1016,6 +1102,7 @@ struct DescrT : public flatbuffers::NativeTable {
   std::shared_ptr<sigmf::core::GlobalT> global{};
   std::shared_ptr<sigmf::core::AnnotationT> annotation{};
   std::shared_ptr<sigmf::core::CaptureT> capture{};
+  std::shared_ptr<sigmf::core::CollectionT> collection{};
 };
 
 struct Descr FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
@@ -1027,7 +1114,8 @@ struct Descr FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
   enum FlatBuffersVTableOffset FLATBUFFERS_VTABLE_UNDERLYING_TYPE {
     VT_GLOBAL = 4,
     VT_ANNOTATION = 6,
-    VT_CAPTURE = 8
+    VT_CAPTURE = 8,
+    VT_COLLECTION = 10
   };
   const sigmf::core::Global *global() const {
     return GetPointer<const sigmf::core::Global *>(VT_GLOBAL);
@@ -1038,6 +1126,9 @@ struct Descr FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
   const sigmf::core::Capture *capture() const {
     return GetPointer<const sigmf::core::Capture *>(VT_CAPTURE);
   }
+  const sigmf::core::Collection *collection() const {
+    return GetPointer<const sigmf::core::Collection *>(VT_COLLECTION);
+  }
   bool Verify(flatbuffers::Verifier &verifier) const {
     return VerifyTableStart(verifier) &&
            VerifyOffset(verifier, VT_GLOBAL) &&
@@ -1046,6 +1137,8 @@ struct Descr FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
            verifier.VerifyTable(annotation()) &&
            VerifyOffset(verifier, VT_CAPTURE) &&
            verifier.VerifyTable(capture()) &&
+           VerifyOffset(verifier, VT_COLLECTION) &&
+           verifier.VerifyTable(collection()) &&
            verifier.EndTable();
   }
   DescrT *UnPack(const flatbuffers::resolver_function_t *_resolver = nullptr) const;
@@ -1066,6 +1159,9 @@ struct DescrBuilder {
   void add_capture(flatbuffers::Offset<sigmf::core::Capture> capture) {
     fbb_.AddOffset(Descr::VT_CAPTURE, capture);
   }
+  void add_collection(flatbuffers::Offset<sigmf::core::Collection> collection) {
+    fbb_.AddOffset(Descr::VT_COLLECTION, collection);
+  }
   explicit DescrBuilder(flatbuffers::FlatBufferBuilder &_fbb)
         : fbb_(_fbb) {
     start_ = fbb_.StartTable();
@@ -1081,8 +1177,10 @@ inline flatbuffers::Offset<Descr> CreateDescr(
     flatbuffers::FlatBufferBuilder &_fbb,
     flatbuffers::Offset<sigmf::core::Global> global = 0,
     flatbuffers::Offset<sigmf::core::Annotation> annotation = 0,
-    flatbuffers::Offset<sigmf::core::Capture> capture = 0) {
+    flatbuffers::Offset<sigmf::core::Capture> capture = 0,
+    flatbuffers::Offset<sigmf::core::Collection> collection = 0) {
   DescrBuilder builder_(_fbb);
+  builder_.add_collection(collection);
   builder_.add_capture(capture);
   builder_.add_annotation(annotation);
   builder_.add_global(global);
@@ -1121,6 +1219,35 @@ inline flatbuffers::Offset<sigmf_extension> Createsigmf_extension(flatbuffers::F
       _name,
       _version,
       _optional);
+}
+
+inline sigmf_streamT *sigmf_stream::UnPack(const flatbuffers::resolver_function_t *_resolver) const {
+  auto _o = std::unique_ptr<sigmf_streamT>(new sigmf_streamT());
+  UnPackTo(_o.get(), _resolver);
+  return _o.release();
+}
+
+inline void sigmf_stream::UnPackTo(sigmf_streamT *_o, const flatbuffers::resolver_function_t *_resolver) const {
+  (void)_o;
+  (void)_resolver;
+  { auto _e = name(); if (_e) _o->name = _e->str(); }
+  { auto _e = hash(); if (_e) _o->hash = _e->str(); }
+}
+
+inline flatbuffers::Offset<sigmf_stream> sigmf_stream::Pack(flatbuffers::FlatBufferBuilder &_fbb, const sigmf_streamT* _o, const flatbuffers::rehasher_function_t *_rehasher) {
+  return Createsigmf_stream(_fbb, _o, _rehasher);
+}
+
+inline flatbuffers::Offset<sigmf_stream> Createsigmf_stream(flatbuffers::FlatBufferBuilder &_fbb, const sigmf_streamT *_o, const flatbuffers::rehasher_function_t *_rehasher) {
+  (void)_rehasher;
+  (void)_o;
+  struct _VectorArgs { flatbuffers::FlatBufferBuilder *__fbb; const sigmf_streamT* __o; const flatbuffers::rehasher_function_t *__rehasher; } _va = { &_fbb, _o, _rehasher}; (void)_va;
+  auto _name = _o->name.empty() ? 0 : _fbb.CreateString(_o->name);
+  auto _hash = _o->hash.empty() ? 0 : _fbb.CreateString(_o->hash);
+  return sigmf::core::Createsigmf_stream(
+      _fbb,
+      _name,
+      _hash);
 }
 
 inline geojson_pointT *geojson_point::UnPack(const flatbuffers::resolver_function_t *_resolver) const {
@@ -1338,7 +1465,7 @@ inline void Collection::UnPackTo(CollectionT *_o, const flatbuffers::resolver_fu
   { auto _e = collection_doi(); if (_e) _o->collection_doi = _e->str(); }
   { auto _e = license(); if (_e) _o->license = _e->str(); }
   { auto _e = extensions(); if (_e) { _o->extensions.resize(_e->size()); for (flatbuffers::uoffset_t _i = 0; _i < _e->size(); _i++) { _o->extensions[_i] = std::shared_ptr<sigmf::core::sigmf_extensionT>(_e->Get(_i)->UnPack(_resolver)); } } }
-  { auto _e = streams(); if (_e) { _o->streams.resize(_e->size()); for (flatbuffers::uoffset_t _i = 0; _i < _e->size(); _i++) { _o->streams[_i] = _e->Get(_i)->str(); } } }
+  { auto _e = streams(); if (_e) { _o->streams.resize(_e->size()); for (flatbuffers::uoffset_t _i = 0; _i < _e->size(); _i++) { _o->streams[_i] = std::shared_ptr<sigmf::core::sigmf_streamT>(_e->Get(_i)->UnPack(_resolver)); } } }
 }
 
 inline flatbuffers::Offset<Collection> Collection::Pack(flatbuffers::FlatBufferBuilder &_fbb, const CollectionT* _o, const flatbuffers::rehasher_function_t *_rehasher) {
@@ -1355,7 +1482,7 @@ inline flatbuffers::Offset<Collection> CreateCollection(flatbuffers::FlatBufferB
   auto _collection_doi = _o->collection_doi.empty() ? 0 : _fbb.CreateString(_o->collection_doi);
   auto _license = _o->license.empty() ? 0 : _fbb.CreateString(_o->license);
   auto _extensions = _o->extensions.size() ? _fbb.CreateVector<flatbuffers::Offset<sigmf::core::sigmf_extension>> (_o->extensions.size(), [](size_t i, _VectorArgs *__va) { return Createsigmf_extension(*__va->__fbb, __va->__o->extensions[i].get(), __va->__rehasher); }, &_va ) : 0;
-  auto _streams = _o->streams.size() ? _fbb.CreateVectorOfStrings(_o->streams) : 0;
+  auto _streams = _o->streams.size() ? _fbb.CreateVector<flatbuffers::Offset<sigmf::core::sigmf_stream>> (_o->streams.size(), [](size_t i, _VectorArgs *__va) { return Createsigmf_stream(*__va->__fbb, __va->__o->streams[i].get(), __va->__rehasher); }, &_va ) : 0;
   return sigmf::core::CreateCollection(
       _fbb,
       _version,
@@ -1379,6 +1506,7 @@ inline void Descr::UnPackTo(DescrT *_o, const flatbuffers::resolver_function_t *
   { auto _e = global(); if (_e) _o->global = std::shared_ptr<sigmf::core::GlobalT>(_e->UnPack(_resolver)); }
   { auto _e = annotation(); if (_e) _o->annotation = std::shared_ptr<sigmf::core::AnnotationT>(_e->UnPack(_resolver)); }
   { auto _e = capture(); if (_e) _o->capture = std::shared_ptr<sigmf::core::CaptureT>(_e->UnPack(_resolver)); }
+  { auto _e = collection(); if (_e) _o->collection = std::shared_ptr<sigmf::core::CollectionT>(_e->UnPack(_resolver)); }
 }
 
 inline flatbuffers::Offset<Descr> Descr::Pack(flatbuffers::FlatBufferBuilder &_fbb, const DescrT* _o, const flatbuffers::rehasher_function_t *_rehasher) {
@@ -1392,11 +1520,13 @@ inline flatbuffers::Offset<Descr> CreateDescr(flatbuffers::FlatBufferBuilder &_f
   auto _global = _o->global ? CreateGlobal(_fbb, _o->global.get(), _rehasher) : 0;
   auto _annotation = _o->annotation ? CreateAnnotation(_fbb, _o->annotation.get(), _rehasher) : 0;
   auto _capture = _o->capture ? CreateCapture(_fbb, _o->capture.get(), _rehasher) : 0;
+  auto _collection = _o->collection ? CreateCollection(_fbb, _o->collection.get(), _rehasher) : 0;
   return sigmf::core::CreateDescr(
       _fbb,
       _global,
       _annotation,
-      _capture);
+      _capture,
+      _collection);
 }
 
 inline const flatbuffers::TypeTable *sigmf_extensionTypeTable() {
@@ -1412,6 +1542,21 @@ inline const flatbuffers::TypeTable *sigmf_extensionTypeTable() {
   };
   static const flatbuffers::TypeTable tt = {
     flatbuffers::ST_TABLE, 3, type_codes, nullptr, nullptr, nullptr, names
+  };
+  return &tt;
+}
+
+inline const flatbuffers::TypeTable *sigmf_streamTypeTable() {
+  static const flatbuffers::TypeCode type_codes[] = {
+    { flatbuffers::ET_STRING, 0, -1 },
+    { flatbuffers::ET_STRING, 0, -1 }
+  };
+  static const char * const names[] = {
+    "name",
+    "hash"
+  };
+  static const flatbuffers::TypeTable tt = {
+    flatbuffers::ST_TABLE, 2, type_codes, nullptr, nullptr, nullptr, names
   };
   return &tt;
 }
@@ -1544,10 +1689,11 @@ inline const flatbuffers::TypeTable *CollectionTypeTable() {
     { flatbuffers::ET_STRING, 0, -1 },
     { flatbuffers::ET_STRING, 0, -1 },
     { flatbuffers::ET_SEQUENCE, 1, 0 },
-    { flatbuffers::ET_STRING, 1, -1 }
+    { flatbuffers::ET_SEQUENCE, 1, 1 }
   };
   static const flatbuffers::TypeFunction type_refs[] = {
-    sigmf::core::sigmf_extensionTypeTable
+    sigmf::core::sigmf_extensionTypeTable,
+    sigmf::core::sigmf_streamTypeTable
   };
   static const char * const names[] = {
     "version",
@@ -1568,20 +1714,23 @@ inline const flatbuffers::TypeTable *DescrTypeTable() {
   static const flatbuffers::TypeCode type_codes[] = {
     { flatbuffers::ET_SEQUENCE, 0, 0 },
     { flatbuffers::ET_SEQUENCE, 0, 1 },
-    { flatbuffers::ET_SEQUENCE, 0, 2 }
+    { flatbuffers::ET_SEQUENCE, 0, 2 },
+    { flatbuffers::ET_SEQUENCE, 0, 3 }
   };
   static const flatbuffers::TypeFunction type_refs[] = {
     sigmf::core::GlobalTypeTable,
     sigmf::core::AnnotationTypeTable,
-    sigmf::core::CaptureTypeTable
+    sigmf::core::CaptureTypeTable,
+    sigmf::core::CollectionTypeTable
   };
   static const char * const names[] = {
     "global",
     "annotation",
-    "capture"
+    "capture",
+    "collection"
   };
   static const flatbuffers::TypeTable tt = {
-    flatbuffers::ST_TABLE, 3, type_codes, type_refs, nullptr, nullptr, names
+    flatbuffers::ST_TABLE, 4, type_codes, type_refs, nullptr, nullptr, names
   };
   return &tt;
 }
