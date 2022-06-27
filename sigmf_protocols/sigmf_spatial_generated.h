@@ -400,6 +400,7 @@ flatbuffers::Offset<Global> CreateGlobal(flatbuffers::FlatBufferBuilder &_fbb, c
 
 struct CaptureT : public flatbuffers::NativeTable {
   typedef Capture TableType;
+  flatbuffers::Optional<double> aperture_azimuth = flatbuffers::nullopt;
   std::shared_ptr<sigmf::spatial::sigmf_bearingT> aperture_bearing{};
   std::shared_ptr<sigmf::spatial::sigmf_bearingT> emitter_bearing{};
   std::vector<std::shared_ptr<sigmf::spatial::cartesian_pointT>> element_geometry{};
@@ -414,12 +415,16 @@ struct Capture FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
     return CaptureTypeTable();
   }
   enum FlatBuffersVTableOffset FLATBUFFERS_VTABLE_UNDERLYING_TYPE {
-    VT_APERTURE_BEARING = 4,
-    VT_EMITTER_BEARING = 6,
-    VT_ELEMENT_GEOMETRY = 8,
-    VT_PHASE_OFFSET = 10,
-    VT_CALIBRATION = 12
+    VT_APERTURE_AZIMUTH = 4,
+    VT_APERTURE_BEARING = 6,
+    VT_EMITTER_BEARING = 8,
+    VT_ELEMENT_GEOMETRY = 10,
+    VT_PHASE_OFFSET = 12,
+    VT_CALIBRATION = 14
   };
+  flatbuffers::Optional<double> aperture_azimuth() const {
+    return GetOptional<double, double>(VT_APERTURE_AZIMUTH);
+  }
   const sigmf::spatial::sigmf_bearing *aperture_bearing() const {
     return GetPointer<const sigmf::spatial::sigmf_bearing *>(VT_APERTURE_BEARING);
   }
@@ -437,6 +442,7 @@ struct Capture FLATBUFFERS_FINAL_CLASS : private flatbuffers::Table {
   }
   bool Verify(flatbuffers::Verifier &verifier) const {
     return VerifyTableStart(verifier) &&
+           VerifyField<double>(verifier, VT_APERTURE_AZIMUTH) &&
            VerifyOffset(verifier, VT_APERTURE_BEARING) &&
            verifier.VerifyTable(aperture_bearing()) &&
            VerifyOffset(verifier, VT_EMITTER_BEARING) &&
@@ -458,6 +464,9 @@ struct CaptureBuilder {
   typedef Capture Table;
   flatbuffers::FlatBufferBuilder &fbb_;
   flatbuffers::uoffset_t start_;
+  void add_aperture_azimuth(double aperture_azimuth) {
+    fbb_.AddElement<double>(Capture::VT_APERTURE_AZIMUTH, aperture_azimuth);
+  }
   void add_aperture_bearing(flatbuffers::Offset<sigmf::spatial::sigmf_bearing> aperture_bearing) {
     fbb_.AddOffset(Capture::VT_APERTURE_BEARING, aperture_bearing);
   }
@@ -486,6 +495,7 @@ struct CaptureBuilder {
 
 inline flatbuffers::Offset<Capture> CreateCapture(
     flatbuffers::FlatBufferBuilder &_fbb,
+    flatbuffers::Optional<double> aperture_azimuth = flatbuffers::nullopt,
     flatbuffers::Offset<sigmf::spatial::sigmf_bearing> aperture_bearing = 0,
     flatbuffers::Offset<sigmf::spatial::sigmf_bearing> emitter_bearing = 0,
     flatbuffers::Offset<flatbuffers::Vector<flatbuffers::Offset<sigmf::spatial::cartesian_point>>> element_geometry = 0,
@@ -493,6 +503,7 @@ inline flatbuffers::Offset<Capture> CreateCapture(
     flatbuffers::Offset<sigmf::spatial::sigmf_calibration> calibration = 0) {
   CaptureBuilder builder_(_fbb);
   if(phase_offset) { builder_.add_phase_offset(*phase_offset); }
+  if(aperture_azimuth) { builder_.add_aperture_azimuth(*aperture_azimuth); }
   builder_.add_calibration(calibration);
   builder_.add_element_geometry(element_geometry);
   builder_.add_emitter_bearing(emitter_bearing);
@@ -502,6 +513,7 @@ inline flatbuffers::Offset<Capture> CreateCapture(
 
 inline flatbuffers::Offset<Capture> CreateCaptureDirect(
     flatbuffers::FlatBufferBuilder &_fbb,
+    flatbuffers::Optional<double> aperture_azimuth = flatbuffers::nullopt,
     flatbuffers::Offset<sigmf::spatial::sigmf_bearing> aperture_bearing = 0,
     flatbuffers::Offset<sigmf::spatial::sigmf_bearing> emitter_bearing = 0,
     const std::vector<flatbuffers::Offset<sigmf::spatial::cartesian_point>> *element_geometry = nullptr,
@@ -510,6 +522,7 @@ inline flatbuffers::Offset<Capture> CreateCaptureDirect(
   auto element_geometry__ = element_geometry ? _fbb.CreateVector<flatbuffers::Offset<sigmf::spatial::cartesian_point>>(*element_geometry) : 0;
   return sigmf::spatial::CreateCapture(
       _fbb,
+      aperture_azimuth,
       aperture_bearing,
       emitter_bearing,
       element_geometry__,
@@ -806,6 +819,7 @@ inline CaptureT *Capture::UnPack(const flatbuffers::resolver_function_t *_resolv
 inline void Capture::UnPackTo(CaptureT *_o, const flatbuffers::resolver_function_t *_resolver) const {
   (void)_o;
   (void)_resolver;
+  { auto _e = aperture_azimuth(); _o->aperture_azimuth = _e; }
   { auto _e = aperture_bearing(); if (_e) _o->aperture_bearing = std::shared_ptr<sigmf::spatial::sigmf_bearingT>(_e->UnPack(_resolver)); }
   { auto _e = emitter_bearing(); if (_e) _o->emitter_bearing = std::shared_ptr<sigmf::spatial::sigmf_bearingT>(_e->UnPack(_resolver)); }
   { auto _e = element_geometry(); if (_e) { _o->element_geometry.resize(_e->size()); for (flatbuffers::uoffset_t _i = 0; _i < _e->size(); _i++) { _o->element_geometry[_i] = std::shared_ptr<sigmf::spatial::cartesian_pointT>(_e->Get(_i)->UnPack(_resolver)); } } }
@@ -821,6 +835,7 @@ inline flatbuffers::Offset<Capture> CreateCapture(flatbuffers::FlatBufferBuilder
   (void)_rehasher;
   (void)_o;
   struct _VectorArgs { flatbuffers::FlatBufferBuilder *__fbb; const CaptureT* __o; const flatbuffers::rehasher_function_t *__rehasher; } _va = { &_fbb, _o, _rehasher}; (void)_va;
+  auto _aperture_azimuth = _o->aperture_azimuth;
   auto _aperture_bearing = _o->aperture_bearing ? Createsigmf_bearing(_fbb, _o->aperture_bearing.get(), _rehasher) : 0;
   auto _emitter_bearing = _o->emitter_bearing ? Createsigmf_bearing(_fbb, _o->emitter_bearing.get(), _rehasher) : 0;
   auto _element_geometry = _o->element_geometry.size() ? _fbb.CreateVector<flatbuffers::Offset<sigmf::spatial::cartesian_point>> (_o->element_geometry.size(), [](size_t i, _VectorArgs *__va) { return Createcartesian_point(*__va->__fbb, __va->__o->element_geometry[i].get(), __va->__rehasher); }, &_va ) : 0;
@@ -828,6 +843,7 @@ inline flatbuffers::Offset<Capture> CreateCapture(flatbuffers::FlatBufferBuilder
   auto _calibration = _o->calibration ? Createsigmf_calibration(_fbb, _o->calibration.get(), _rehasher) : 0;
   return sigmf::spatial::CreateCapture(
       _fbb,
+      _aperture_azimuth,
       _aperture_bearing,
       _emitter_bearing,
       _element_geometry,
@@ -972,6 +988,7 @@ inline const flatbuffers::TypeTable *GlobalTypeTable() {
 
 inline const flatbuffers::TypeTable *CaptureTypeTable() {
   static const flatbuffers::TypeCode type_codes[] = {
+    { flatbuffers::ET_DOUBLE, 0, -1 },
     { flatbuffers::ET_SEQUENCE, 0, 0 },
     { flatbuffers::ET_SEQUENCE, 0, 0 },
     { flatbuffers::ET_SEQUENCE, 1, 1 },
@@ -984,6 +1001,7 @@ inline const flatbuffers::TypeTable *CaptureTypeTable() {
     sigmf::spatial::sigmf_calibrationTypeTable
   };
   static const char * const names[] = {
+    "aperture_azimuth",
     "aperture_bearing",
     "emitter_bearing",
     "element_geometry",
@@ -991,7 +1009,7 @@ inline const flatbuffers::TypeTable *CaptureTypeTable() {
     "calibration"
   };
   static const flatbuffers::TypeTable tt = {
-    flatbuffers::ST_TABLE, 5, type_codes, type_refs, nullptr, nullptr, names
+    flatbuffers::ST_TABLE, 6, type_codes, type_refs, nullptr, nullptr, names
   };
   return &tt;
 }

@@ -27,6 +27,7 @@ table Global {
 }
 
 table Capture {
+    aperture_azimuth:double=null;
     aperture_bearing:sigmf_bearing;
     emitter_bearing:sigmf_bearing;
     element_geometry:[cartesian_point];
