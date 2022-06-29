@@ -40,8 +40,13 @@ table Annotation {
     signal_bearing:sigmf_bearing;
 }
 
+table Collection {
+    element_geometry:[cartesian_point];
+}
+
 table Descr {
     global:Global;
     annotation:Annotation;
     capture:Capture;
+    collection:Collection;
 }
