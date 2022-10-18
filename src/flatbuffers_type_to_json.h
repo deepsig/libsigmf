@@ -15,7 +15,7 @@
  */
 
 
-#include <libsigmf/src/variadic_data_class.h>
+#include "variadic_data_class.h"
 #include <flatbuffers_json_visitor.h>
 #include <flatbuffers/minireflect.h>
 
