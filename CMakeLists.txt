@@ -3,7 +3,7 @@
 # Setup project
 ########################################################################
 cmake_minimum_required(VERSION 3.0)
-project(libsigmf VERSION 1.0.1 LANGUAGES CXX)
+project(libsigmf VERSION 1.0.2 LANGUAGES CXX)
 
 # c++17 used for supporting flatbuffers optional scalar fields via std::optional<T>
 set(CMAKE_CXX_STANDARD 17)

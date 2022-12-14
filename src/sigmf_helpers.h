@@ -230,8 +230,8 @@ static uint32_t get_sample_size(std::string dtype_str)
 }
 
 struct SigMFCaptureBoundary {
-    uint64_t start_byte;
-    uint64_t stop_byte;
+    uint64_t start_byte=0;
+    uint64_t stop_byte=0;
 };
 
 /**
@@ -246,7 +246,7 @@ template<typename CaptureType>
 static SigMFCaptureBoundary get_capture_range(sigmf::SigMFVector<CaptureType> &captures_vector, int index, int sample_size) {
     if (index >= captures_vector.size()) {
         // index exceeds captures vector length, no data to read
-        return SigMFCaptureBoundary(0,0);
+        return SigMFCaptureBoundary();
     }
     SigMFCaptureBoundary bounds;
     bounds.start_byte = captures_vector[0].template get<core::DescrT>().header_bytes.value_or(0);
