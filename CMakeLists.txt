@@ -35,7 +35,7 @@ set(libsigmf_deps "")
 
 # flatbuffers
 if (${USE_SYSTEM_FLATBUFFERS})
-  find_package(Flatbuffers REQUIRED)
+  find_package(FlatBuffers REQUIRED NAMES FlatBuffers Flatbuffers)
 endif (${USE_SYSTEM_FLATBUFFERS})
 
 if (NOT ${USE_SYSTEM_FLATBUFFERS})
@@ -146,7 +146,7 @@ set(LIBSIGMF_PREGEN_HEADERS "${CMAKE_CURRENT_SOURCE_DIR}/sigmf_protocols")
 ########################################################################
 add_library(libsigmf INTERFACE)
 target_include_directories(libsigmf INTERFACE
-  $<INSTALL_INTERFACE:include>
+  $<INSTALL_INTERFACE:include/sigmf>
   $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/src>
   $<INSTALL_INTERFACE:include/sigmf/fbs>
   $<BUILD_INTERFACE:${LIBSIGMF_PREGEN_HEADERS}>
