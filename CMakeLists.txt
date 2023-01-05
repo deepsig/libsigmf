@@ -35,7 +35,7 @@ set(libsigmf_deps "")
 
 # flatbuffers
 if (${USE_SYSTEM_FLATBUFFERS})
-  find_package(Flatbuffers REQUIRED)
+  find_package(FlatBuffers REQUIRED NAMES FlatBuffers Flatbuffers)
 endif (${USE_SYSTEM_FLATBUFFERS})
 
 if (NOT ${USE_SYSTEM_FLATBUFFERS})
